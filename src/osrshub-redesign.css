@@ -1,0 +1,97 @@
+/* OSRS Hub — Test Build visual system (layered over the preserved production baseline). */
+:root{
+  --hub-radius-sm:10px;--hub-radius-md:16px;--hub-radius-lg:22px;
+  --hub-ease:cubic-bezier(.2,.75,.25,1);
+  --hub-glass:color-mix(in srgb,var(--oh-surface) 82%,transparent);
+  --hub-ring:0 0 0 3px color-mix(in srgb,var(--oh-accent) 24%,transparent);
+  --hub-surface-gradient:linear-gradient(145deg,color-mix(in srgb,var(--oh-surface) 96%,var(--oh-accent) 4%),var(--oh-surface));
+}
+html[data-theme="frost"]{
+  --oh-bg:#f4f8fc;--oh-surface:#ffffff;--oh-surface2:#edf4fa;--oh-text:#172536;--oh-muted:#6d8094;--oh-line:#d9e5ef;--oh-accent:#4d8fcb;--oh-accent2:#c1a15b;--oh-positive:#168b66;--oh-negative:#d84b62;--oh-shadow:0 18px 48px rgba(43,84,122,.10);--oh-glow:rgba(91,164,225,.18)
+}
+html[data-theme="opera"]{
+  --oh-bg:#0b090c;--oh-surface:#151014;--oh-surface2:#20171e;--oh-text:#f7eef1;--oh-muted:#b6a0a8;--oh-line:#3b2831;--oh-accent:#ef4059;--oh-accent2:#d5aa67;--oh-positive:#56d3a0;--oh-negative:#ff6475;--oh-shadow:0 24px 68px rgba(0,0,0,.46);--oh-glow:rgba(239,64,89,.21)
+}
+html[data-theme="comfort"]{
+  --oh-bg:#f0eee8;--oh-surface:#fbfaf6;--oh-surface2:#e9e6dc;--oh-text:#262720;--oh-muted:#77796f;--oh-line:#dedbd0;--oh-accent:#72875f;--oh-accent2:#b18b4d;--oh-positive:#367b56;--oh-negative:#c84f4f;--oh-shadow:0 16px 42px rgba(51,50,37,.08);--oh-glow:rgba(114,135,95,.16)
+}
+html[data-theme="gilded"]{
+  --oh-bg:#100e0a;--oh-surface:#1a1710;--oh-surface2:#242015;--oh-text:#f8f0dc;--oh-muted:#b0a387;--oh-line:#453a24;--oh-accent:#d4aa52;--oh-accent2:#f0d38a;--oh-positive:#65c58e;--oh-negative:#ee6b70;--oh-shadow:0 26px 74px rgba(0,0,0,.48);--oh-glow:rgba(212,170,82,.2)
+}
+html[data-theme="gilded"] body:before{
+  background:radial-gradient(circle at 12% 8%,rgba(212,170,82,.14),transparent 28%),radial-gradient(circle at 92% 75%,rgba(121,91,37,.16),transparent 30%);
+  animation:auroraDrift 30s ease-in-out infinite alternate
+}
+html[data-theme="frost"] body:before{background:radial-gradient(circle at 14% 5%,rgba(86,160,221,.12),transparent 30%),radial-gradient(circle at 92% 84%,rgba(199,220,240,.32),transparent 34%)}
+html[data-theme="opera"] body:before{background:radial-gradient(circle at 12% 10%,rgba(239,64,89,.14),transparent 30%),radial-gradient(circle at 85% 80%,rgba(124,34,58,.16),transparent 32%)}
+html[data-theme="gilded"] .nav,html[data-theme="opera"] .nav,html[data-theme="aurora"] .nav,html[data-theme="void"] .nav,html[data-theme="dark"] .nav{background:color-mix(in srgb,var(--oh-surface) 88%,transparent);border-color:var(--oh-line)}
+.app{color:var(--oh-text)}
+.app .nav{
+  border-bottom-color:var(--oh-line);background:var(--hub-glass);
+  box-shadow:0 8px 32px rgba(0,0,0,.035);backdrop-filter:blur(22px) saturate(145%);
+  transition:background .25s var(--hub-ease),box-shadow .25s var(--hub-ease)
+}
+.app .brand{letter-spacing:-.9px}
+.app .brand span{color:var(--oh-muted)}
+.app .brand b{background:linear-gradient(110deg,var(--oh-text),var(--oh-accent),var(--oh-accent2));background-clip:text;-webkit-background-clip:text;color:transparent}
+.app .navlinks button,.app .extrasDock>button{border:1px solid transparent;border-radius:11px;transition:all .18s var(--hub-ease)}
+.app .navlinks button:hover,.app .extrasDock>button:hover{background:var(--oh-surface2);border-color:var(--oh-line);transform:translateY(-1px)}
+.app .navlinks button.active,.app .extrasDock>button.active{background:color-mix(in srgb,var(--oh-accent) 12%,var(--oh-surface));border-color:color-mix(in srgb,var(--oh-accent) 30%,var(--oh-line));color:var(--oh-text);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.app .globalSearch,.app input,.app select,.app textarea{border-color:var(--oh-line);background:var(--oh-surface);color:var(--oh-text)}
+.app .globalSearch:focus-within,.app input:focus-visible,.app select:focus-visible,.app textarea:focus-visible{outline:none;border-color:var(--oh-accent);box-shadow:var(--hub-ring)}
+.app .globalResults,.app .extrasMenu,.app .themePickerMenu,.app .profileMenu,.app .dropdownPanel,.app .commandPalette{background:var(--oh-surface);border-color:var(--oh-line);box-shadow:var(--oh-shadow)}
+.app button{ -webkit-tap-highlight-color:transparent }
+.app .primary,.app .secondary,.app .iconbtn,.app .filterButton,.app .loadMore,.app .mobileToolBtn,.app .themePickerButton{
+  border-radius:12px;transition:transform .18s var(--hub-ease),box-shadow .2s var(--hub-ease),background .2s var(--hub-ease),border-color .2s var(--hub-ease)
+}
+.app .primary{background:linear-gradient(115deg,var(--oh-accent),color-mix(in srgb,var(--oh-accent) 76%,var(--oh-accent2)));border:1px solid color-mix(in srgb,var(--oh-accent) 72%,white);box-shadow:0 8px 22px var(--oh-glow)}
+.app .primary:hover{transform:translateY(-2px);box-shadow:0 13px 30px var(--oh-glow)}
+.app .primary:active,.app .secondary:active,.app .iconbtn:active{transform:translateY(1px) scale(.985)}
+.app .secondary,.app .iconbtn,.app .filterButton,.app .themePickerButton{background:var(--oh-surface);border-color:var(--oh-line);color:var(--oh-text)}
+.app .secondary:hover,.app .iconbtn:hover,.app .filterButton:hover,.app .themePickerButton:hover{border-color:color-mix(in srgb,var(--oh-accent) 50%,var(--oh-line));background:color-mix(in srgb,var(--oh-accent) 7%,var(--oh-surface));box-shadow:0 8px 22px var(--oh-glow);transform:translateY(-1px)}
+.app .stat,.app .panel,.app .card,.app .marketCard,.app .analysisCard,.app .analysis-card,.app .dashboardCard,.app .toolCard,.app .watchCard,.app .rule,.app .sectionCard,.app .workspaceCard{
+  border-color:var(--oh-line);background:var(--hub-surface-gradient);box-shadow:0 8px 28px rgba(0,0,0,.035)
+}
+.app .stat{border-radius:14px;transition:transform .2s var(--hub-ease),border-color .2s ease,box-shadow .2s ease}
+.app .stat:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--oh-accent) 35%,var(--oh-line));box-shadow:0 12px 30px var(--oh-glow)}
+.app .hero h1,.app .pageIntro h1{letter-spacing:-.055em}
+.app .eyebrow{color:var(--oh-accent);letter-spacing:.16em}
+.app .status{border-color:var(--oh-line);background:var(--oh-surface)}
+.app .tablewrap,.app .lm-table-wrap{border-color:var(--oh-line);border-radius:16px;overflow:hidden}
+.app table thead th{background:var(--oh-surface2);color:var(--oh-muted)}
+.app table tbody tr{transition:background .15s ease}
+.app table tbody tr:hover{background:color-mix(in srgb,var(--oh-accent) 7%,var(--oh-surface))}
+.app .extrasMenu button:hover,.app .globalResults button:hover,.app .themePickerMenu button:hover{background:var(--oh-surface2)}
+.app .watchTicker,.app .quickToolsDock,.app .miniGeLauncher{border-color:var(--oh-line)}
+.app .siteFooter{border-top:1px solid var(--oh-line)}
+.app .commandBack{backdrop-filter:blur(12px)}
+.app :focus-visible{outline:2px solid var(--oh-accent);outline-offset:2px}
+.app .themeSwatch.swatch-gilded{background:linear-gradient(135deg,#17130b 0 50%,#d4aa52 50% 100%)}
+.app .themePickerMenu .active{color:var(--oh-accent)}
+@keyframes hubRuneSweep{0%{background-position:180% 0}100%{background-position:-80% 0}}
+@keyframes hubSoftEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes hubRunePulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 5px var(--oh-glow)}}
+.app main>*{animation:hubSoftEnter .22s ease both}
+.app .osrshubToast{border:1px solid var(--oh-line);background:var(--oh-surface);color:var(--oh-text);box-shadow:var(--oh-shadow)}
+@media(max-width:1050px){
+  .app .nav{padding-inline:3vw;gap:12px}
+  .app .navlinks{gap:2px}
+  .app .navlinks button{padding:9px 9px;font-size:12px}
+}
+@media(max-width:760px){
+  .app .nav{height:62px;padding-inline:14px}
+  .app main{padding:28px 14px 110px}
+  .app .hero{gap:14px;align-items:flex-start;flex-direction:column;margin-bottom:26px}
+  .app .hero h1{font-size:clamp(38px,12vw,60px);letter-spacing:-.05em}
+  .app .stat{min-width:0}
+  .app .tablewrap{border-radius:12px}
+  .app .mobileNav{backdrop-filter:blur(24px) saturate(150%);background:color-mix(in srgb,var(--oh-surface) 92%,transparent);border-top:1px solid var(--oh-line);box-shadow:0 -10px 32px rgba(0,0,0,.08)}
+  .app .mobileNav button.active{color:var(--oh-accent)}
+  .app .mobileQuickCalcFab{box-shadow:0 9px 26px var(--oh-glow)}
+}
+@media(prefers-reduced-motion:reduce){
+  .app *,html[data-theme="aurora"] body:before,html[data-theme="void"] body:before,html[data-theme="gilded"] body:before{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+.environmentBadge{display:inline-flex;align-items:center;gap:6px;flex:none;padding:5px 8px;border-radius:7px;border:1px solid rgba(245,158,11,.36);background:rgba(245,158,11,.12);color:#b7791f;font-size:8px;font-weight:950;letter-spacing:.13em}
+html[data-theme="dark"] .environmentBadge,html[data-theme="aurora"] .environmentBadge,html[data-theme="void"] .environmentBadge,html[data-theme="opera"] .environmentBadge,html[data-theme="gilded"] .environmentBadge{color:#f0c66e}
+@media(max-width:760px){.environmentBadge{font-size:7px;padding:4px 6px;letter-spacing:.08em}}

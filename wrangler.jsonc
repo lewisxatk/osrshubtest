@@ -3,24 +3,14 @@
   "name": "osrshubtest",
   "main": "worker.js",
   "compatibility_date": "2026-09-15",
-  "keep_vars": true,
-  "vars": {
-    "DISCORD_CLIENT_ID": "",
-    "DISCORD_REDIRECT_URI": "https://osrshubtest.prices-app.workers.dev/api/auth/callback",
-    "PUBLIC_ORIGIN": "https://osrshubtest.prices-app.workers.dev"
-  },
-  "triggers": { "crons": ["* * * * *"] },
   "assets": {
     "directory": "./site",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "osrshubtest-accounts",
-      "database_id": "REPLACE_WITH_TEST_D1_DATABASE_ID"
-    }
-  ]
+  "vars": {
+    "OSRSHUB_ENVIRONMENT": "test",
+    "PUBLIC_ORIGIN": ""
+  }
 }
