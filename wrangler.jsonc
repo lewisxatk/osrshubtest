@@ -11,6 +11,6 @@
   },
   "vars": {
     "OSRSHUB_ENVIRONMENT": "test",
-    "PUBLIC_ORIGIN": ""
+    "PUBLIC_ORIGIN": "https://osrshubtest.prices-app.workers.dev"
   }
 }

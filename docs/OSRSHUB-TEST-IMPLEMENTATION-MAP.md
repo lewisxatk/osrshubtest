@@ -8,10 +8,10 @@ This document is the acceptance ledger for the separate test build. It intention
 
 - [x] Copy the current React/Vite/Worker application and existing tests into this repository.
 - [x] Keep the production repository untouched.
-- [x] Use a separate Worker name and a separate D1 binding placeholder.
+- [x] Use a separate Worker identity with no production D1 binding; database-backed routes fail closed until a dedicated test D1 resource is created.
 - [x] Make the test page non-indexable and disallow crawling.
 - [x] Preserve the production migration files as source only; no migration has been applied.
-- [x] Keep Discord Worker code, but make test OAuth and bot credentials independently configurable.
+- [x] Keep Discord Worker code, but leave test OAuth and bot credentials unset until separate test credentials are provided.
 - [x] Add a GitHub Actions workflow for regression tests, Worker Assets build, output verification and downloadable artifacts.
 - [ ] Create the dedicated Cloudflare D1 database and replace the test database ID placeholder.
 - [ ] Configure a separate Discord OAuth application and optional test bot.
@@ -24,7 +24,7 @@ This document is the acceptance ledger for the separate test build. It intention
 - [x] Promote Market to a first-class navigation destination.
 - [x] Expand desktop sidebar and mobile More navigation to expose Screener, Market Radar, Backtester, Finance, Quest Pathway, Levelling and Tools.
 - [x] Keep the existing command palette, quick calculator, alerts popover, login area, item detail overlays, watch ticker and responsive navigation.
-- [ ] Add persistent breadcrumbs and recently viewed destinations throughout all deep routes.
+- [x] Add persistent breadcrumbs and recently visited page shortcuts throughout the existing routes.
 - [ ] Add a universal cross-page action drawer and a consistent global notification centre.
 
 ## 3. New Command Centre
@@ -36,6 +36,8 @@ This document is the acceptance ledger for the separate test build. It intention
 - [x] Daily briefing summary using available local data only.
 - [x] Persistent personal GP goal and progress indicator.
 - [x] Persistent working bankroll with budget presets.
+- [x] User-controlled workspace pins, saved across visits and prioritised in the tool grid.
+- [x] Recent-page history and breadcrumbs are synchronised through the existing cloud-data allowlist when Discord account sync is configured.
 - [x] Trading workflow with discovery → research → plan → monitor → review.
 - [x] Account, combat and knowledge launchpad linking to the existing tools.
 - [x] Separate sections for Overview, Trading, Account, OSRS Brain and GP Planner.

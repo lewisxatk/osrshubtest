@@ -1,20 +1,21 @@
-name: Validate OSRS Hub
+name: Validate OSRS Hub Test
 
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   validate:
-    name: Tests, production build, and versioned ZIPs
+    name: Regression tests and isolated production build
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out test repository
         uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -22,21 +23,26 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Run regression tests
+      - name: Run all regression tests
         run: npm test
-      - name: Build production bundle
+      - name: Build the Worker Assets site
         run: npm run build
-      - name: Package versioned source and production bundle
+      - name: Verify deployable output
         run: |
-          VERSION="$(node -p "require('./package.json').version")"
+          test -s site/index.html
+          test -s site/_osrshub_build.txt
+          test -d site/assets
+          echo "OSRS Hub Test build output verified."
+      - name: Package test build
+        run: |
           mkdir -p release
-          zip -r "release/osrshub-${VERSION}-source.zip" . -x '.git/*' 'node_modules/*' 'dist/*' 'release/*'
-          zip -r "release/osrshub-${VERSION}-production-site.zip" site
-          printf 'OSRS Hub %s\nCommit: %s\nValidation: npm test + npm run build passed\n' "$VERSION" "$GITHUB_SHA" > release/BUILD-INFO.txt
-      - name: Upload versioned build archives
+          zip -r release/osrshub-test-source.zip . -x '.git/*' 'node_modules/*' 'site/*' 'release/*'
+          zip -r release/osrshub-test-site.zip site
+          printf 'OSRS Hub Test 2.0.0-test.1\nCommit: %s\nValidation: npm test + npm run build passed\n' "$GITHUB_SHA" > release/BUILD-INFO.txt
+      - name: Upload isolated test artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: osrshub-${{ github.sha }}-build-zips
+          name: osrshub-test-${{ github.sha }}
           path: release/*
           if-no-files-found: error
           retention-days: 30

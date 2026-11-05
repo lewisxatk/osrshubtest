@@ -1,7 +1,7 @@
 {
-  "name": "osrshub",
+  "name": "osrshubtest",
   "private": true,
-  "version": "1.4.5",
+  "version": "2.0.0-test.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,8 +9,8 @@
     "preview": "vite preview",
     "test": "node --test tests/*.test.mjs",
     "test:worker": "node --test tests/*.test.mjs",
-    "deploy": "npm run build && npx wrangler deploy --config wrangler.jsonc",
-    "db:migrate": "wrangler d1 migrations apply osrshub-accounts --remote"
+    "test:smoke": "node --test tests/market-radar.test.mjs tests/backtest.test.mjs",
+    "deploy": "npm run build && npx wrangler deploy --config wrangler.jsonc"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
