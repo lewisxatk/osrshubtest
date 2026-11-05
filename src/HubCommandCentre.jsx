@@ -257,3 +257,20 @@ export default function HubCommandCentre({ items = [], watch = [], alerts = [], 
 
 function UserIcon(){return <Compass size={16}/>}
 function StarIcon(){return <Gem size={15}/>}
+
+
+const HUB_BREADCRUMB_LABELS = {
+  command:"Command Centre", market:"Market", terminal:"Trading Terminal", screener:"Screener",
+  movers:"Analysis", intelligence:"OSRS Brain", account:"Account Studio", combat:"Combat Studio",
+  quests:"Quest Pathway", levelling:"Levelling", dashboard:"Dashboard", watch:"Watchlists",
+  alerts:"Alerts", finance:"Finance", money:"Money Makers", recipes:"Recipes",
+  highalch:"High Alcher", cool:"Tools & Utilities", backtest:"Historical Backtester"
+};
+export function HubBreadcrumbs({ activeTab, navigateTab }) {
+  const label = HUB_BREADCRUMB_LABELS[activeTab] || "OSRS Hub";
+  return <nav className="hubBreadcrumbs" aria-label="Breadcrumb">
+    <button type="button" onClick={() => navigateTab?.("command")}>OSRS Hub</button>
+    <ChevronRight size={13} aria-hidden="true"/>
+    <span aria-current="page">{label}</span>
+  </nav>;
+}

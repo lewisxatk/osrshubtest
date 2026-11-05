@@ -262,3 +262,10 @@ html[data-theme="gilded"]{--oh-bg:#17130b;--oh-surface:#221c11;--oh-surface2:#35
 /* The new experience follows the legacy colour tokens on older pages too. */
 html[data-theme="graphite"] body:before{background:radial-gradient(circle at 10% 10%,rgba(145,169,191,.12),transparent 30%),radial-gradient(circle at 90% 80%,rgba(90,130,165,.1),transparent 28%)}
 html[data-theme="gilded"] body:before{background:radial-gradient(circle at 12% 10%,rgba(215,173,85,.13),transparent 29%),radial-gradient(circle at 90% 80%,rgba(120,83,30,.14),transparent 32%)}
+
+/* Navigation breadcrumb for the expanded whole-site workspace. */
+.hubBreadcrumbs{width:min(1440px,100%);margin:12px auto 0;padding:0 5vw;display:flex;align-items:center;gap:8px;color:var(--hub-muted);font-size:11px;line-height:1.3}
+.hubBreadcrumbs button{padding:4px 0;border:0;background:transparent;color:var(--hub-muted);font:inherit;cursor:pointer}
+.hubBreadcrumbs button:hover{color:var(--hub-accent)}
+.hubBreadcrumbs>span{color:var(--hub-text);font-weight:750}
+@media(max-width:760px){.hubBreadcrumbs{padding:0 14px;margin-top:8px;font-size:10px}}
