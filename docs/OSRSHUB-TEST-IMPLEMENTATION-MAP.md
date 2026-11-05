@@ -97,7 +97,7 @@ The categories below preserve every major proposal from the whole-site blueprint
 ### Personal finance and GP planning
 - [x] Existing flip log, P&L and bankroll controls.
 - [x] New personal GP goal and bankroll inputs in the Command Centre.
-- [ ] Trading performance coach with win/loss, realised P&L, average holding time and risk concentration based on actual logged trades.
+- [x] Trading Performance Coach derives win rate, average win/loss, profit factor, per-item P&L concentration and sample-size cautions from actual logged trades. (Holding time is intentionally not reported because the journal does not store verified timestamps.)
 - [ ] Allocation optimiser with explicit risk limits and no automatic order placement.
 - [ ] GP efficiency atlas connecting the user's money-making methods, XP goals and equipment targets.
 
