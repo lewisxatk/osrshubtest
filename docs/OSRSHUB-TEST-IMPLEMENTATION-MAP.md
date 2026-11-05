@@ -90,7 +90,7 @@ The categories below preserve every major proposal from the whole-site blueprint
 - [ ] Multi-horizon market calendar for daily/weekly patterns, only where sufficient timestamped history exists.
 - [ ] Market anomaly and volatility detection with explainable thresholds.
 - [ ] Alert chains and compound triggers with explicit reset behaviour.
-- [ ] Smart watchlists driven by saved, transparent filters.
+- [x] Smart Watchlists with live-snapshot filter rules, saved named presets, ranking choices and one-click add to the active manual list. Filters remain transparent and exclude records missing risk-score evidence.
 - [ ] Trade replay and fill journal that distinguishes assumed fills from verified user fills.
 - [ ] Market replay for historical windows when data coverage and granularity support it.
 

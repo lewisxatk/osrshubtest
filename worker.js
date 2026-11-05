@@ -3,7 +3,7 @@ const DISCORD_API = "https://discord.com/api/v10";
 const PRICES_API = "https://prices.runescape.wiki/api/v1/osrs";
 const SESSION_COOKIE = "osrshub_session";
 const STATE_COOKIE = "osrshub_oauth_state";
-const CLOUD_KEYS = ["osrsflipit-profiles","osrsflipit-columns","osrsflipit-column-widths","osrsflipit-detail-tiles","osrsflipit-filters","osrsflipit-watch","osrsflipit-alerts","osrsflipit-rules","osrsflipit-mini-ge","osrsflipit-sound","osrsflipit-sound-volume","osrsflipit-sound-type","osrsflipit-theme","osrsflipit-chart-layers","osrsflipit-recipe-favs","osrsflipit-flip-log","osrsflipit-bankroll","osrsflipit-portfolio","osrshub-dashboard-pins","osrshub-account"];
+const CLOUD_KEYS = ["osrsflipit-profiles","osrsflipit-columns","osrsflipit-column-widths","osrsflipit-detail-tiles","osrsflipit-filters","osrsflipit-watch","osrsflipit-alerts","osrsflipit-rules","osrsflipit-mini-ge","osrsflipit-sound","osrsflipit-sound-volume","osrsflipit-sound-type","osrsflipit-theme","osrsflipit-chart-layers","osrsflipit-recipe-favs","osrsflipit-flip-log","osrsflipit-bankroll","osrsflipit-portfolio","osrshub-dashboard-pins","osrshub-account","osrshub-smart-watch-filters","osrshub-smart-watch-presets"];
 function json(data,status=200,headers={}){return new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8",...headers}})}
 const ADMIN_COOKIE='osrshub_admin';
 const ADMIN_SESSION_MS=8*60*60*1000;
