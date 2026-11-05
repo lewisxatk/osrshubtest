@@ -82,7 +82,7 @@ export default function HubCommandCentre({ items = [], watch = [], alerts = [], 
   const [goalName, setGoalName] = useState(() => read("osrshub-command-goal-name", "Next upgrade"));
   const [goalTarget, setGoalTarget] = useState(() => String(read("osrshub-command-goal-target", 50000000)));
   const [goalCurrent, setGoalCurrent] = useState(() => String(read("osrshub-command-goal-current", 0)));
-  const [pins, setPins] = useState(() => read("osrshub-command-pins", ["next", "market", "goal", "tools"]));
+  const [pins, setPins] = useState(() => read("osrshub-command-pins", ["market", "terminal", "account", "combat", "watch", "intelligence"]));
   const [query, setQuery] = useState("");
   const [section, setSection] = useState("overview");
 
@@ -111,6 +111,7 @@ export default function HubCommandCentre({ items = [], watch = [], alerts = [], 
   const togglePin = key => setPins(current => current.includes(key) ? current.filter(x => x !== key) : [...current, key]);
   const go = key => navigateTab?.(key);
   const best = ranked[0];
+  const workspaceLinks = useMemo(() => [...GROUPS.flatMap(group => group.links)].sort((a,b) => Number(pins.includes(b[0])) - Number(pins.includes(a[0]))), [pins]);
 
   return <section className="hubCommandPage">
     <header className="hubCommandHero">
@@ -195,9 +196,12 @@ export default function HubCommandCentre({ items = [], watch = [], alerts = [], 
       <section className="hubPanel hubWorkspacePanel">
         <div className="hubPanelHeading"><div><span className="hubEyebrow">YOUR OSRS WORKSPACE</span><h2>Everything has a place.</h2><p>Pin the areas you use most. The original pages and tools remain available.</p></div><button className="hubMiniLink" onClick={() => setPins(GROUPS.flatMap(g => g.links.map(l => l[0])))}>Pin all areas</button></div>
         <div className="hubWorkspaceGrid">
-          {GROUPS.flatMap(group => group.links).map(([key,label,description,Icon]) => <button key={key} className="hubWorkspaceTile" onClick={() => go(key)}>
-            <span className="hubWorkspaceIcon"><Icon size={17}/></span><span><strong>{label}</strong><small>{description}</small></span><span className="hubWorkspaceArrow"><ArrowUpRight size={15}/></span>
-          </button>)}
+          {workspaceLinks.map(([key,label,description,Icon]) => <div key={key} className={`hubWorkspaceTile ${pins.includes(key) ? "pinned" : ""}`}>
+            <button className="hubWorkspaceOpen" onClick={() => go(key)}>
+              <span className="hubWorkspaceIcon"><Icon size={17}/></span><span><strong>{label}</strong><small>{description}</small></span><span className="hubWorkspaceArrow"><ArrowUpRight size={15}/></span>
+            </button>
+            <button className={`hubWorkspacePin ${pins.includes(key) ? "active" : ""}`} onClick={() => togglePin(key)} aria-label={pins.includes(key) ? "Unpin " + label : "Pin " + label} aria-pressed={pins.includes(key)} title={pins.includes(key) ? "Unpin tool" : "Pin tool"}>{pins.includes(key) ? "★" : "☆"}</button>
+          </div>)}
         </div>
       </section>
     </>}
@@ -253,6 +257,39 @@ export default function HubCommandCentre({ items = [], watch = [], alerts = [], 
 
     <div className="hubFooterNote"><Shield size={14}/> OSRS Hub is an intelligence and planning tool. Market snapshots can be stale, trades can fail to fill and estimates are not guarantees. Always verify important game requirements and source-backed data before acting.</div>
   </section>;
+}
+
+
+const HUB_PAGE_LABELS = {
+  market:"Market",terminal:"Trading Terminal",screener:"Opportunity Screener",movers:"Analysis",
+  heatmap:"Market Radar",backtest:"Historical Backtester",watch:"Watchlists",alerts:"Alerts",
+  account:"Account Studio",combat:"Combat Studio",quests:"Quest Pathway",levelling:"Levelling Planner",
+  intelligence:"OSRS Brain",cool:"Tools & Utilities",recipes:"Recipes",money:"Money Makers",
+  highalch:"High Alcher",dashboard:"Dashboard",finance:"Flip Journal & P&L",admin:"Data Control Centre"
+};
+
+export function HubBreadcrumbs({ activeTab, navigateTab }) {
+  const [recent,setRecent] = useState(() => read("osrshub-recent-pages", []));
+  useEffect(() => {
+    if (!activeTab || activeTab === "command" || activeTab === "item") return;
+    setRecent(previous => [activeTab, ...previous.filter(key => key !== activeTab)].slice(0, 5));
+  }, [activeTab]);
+  useEffect(() => {
+    try { localStorage.setItem("osrshub-recent-pages", JSON.stringify(recent)); } catch {}
+  }, [recent]);
+  if (!activeTab || activeTab === "command" || activeTab === "item") return null;
+  const label = HUB_PAGE_LABELS[activeTab] || "Workspace";
+  return <nav className="hubBreadcrumbs" aria-label="Breadcrumb">
+    <div className="hubBreadcrumbPath">
+      <button onClick={() => navigateTab?.("command")}>Home</button>
+      <ChevronRight size={13}/>
+      <strong>{label}</strong>
+    </div>
+    {recent.length > 1 && <div className="hubRecentPages" aria-label="Recently visited pages">
+      <span>RECENT</span>
+      {recent.filter(key => key !== activeTab).slice(0, 3).map(key => <button key={key} onClick={() => navigateTab?.(key)}>{HUB_PAGE_LABELS[key] || "Workspace"}</button>)}
+    </div>}
+  </nav>;
 }
 
 function UserIcon(){return <Compass size={16}/>}

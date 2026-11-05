@@ -262,3 +262,25 @@ html[data-theme="gilded"]{--oh-bg:#17130b;--oh-surface:#221c11;--oh-surface2:#35
 /* The new experience follows the legacy colour tokens on older pages too. */
 html[data-theme="graphite"] body:before{background:radial-gradient(circle at 10% 10%,rgba(145,169,191,.12),transparent 30%),radial-gradient(circle at 90% 80%,rgba(90,130,165,.1),transparent 28%)}
 html[data-theme="gilded"] body:before{background:radial-gradient(circle at 12% 10%,rgba(215,173,85,.13),transparent 29%),radial-gradient(circle at 90% 80%,rgba(120,83,30,.14),transparent 32%)}
+
+/* Pinned tool controls and global recent-page breadcrumbs. */
+.hubWorkspaceTile{position:relative;padding:0;overflow:hidden}
+.hubWorkspaceTile.pinned{border-color:color-mix(in srgb,var(--hub-accent) 38%,var(--hub-line))}
+.hubWorkspaceOpen{width:100%;min-height:70px;display:flex;align-items:center;gap:11px;padding:12px 42px 12px 12px;border:0;background:transparent;color:var(--hub-text);text-align:left;cursor:pointer}
+.hubWorkspaceOpen>span:nth-child(2){min-width:0;flex:1}
+.hubWorkspaceOpen strong,.hubWorkspaceOpen small{display:block}
+.hubWorkspaceOpen strong{font-size:11px;color:var(--hub-text)}
+.hubWorkspaceOpen small{font-size:9px;color:var(--hub-muted);line-height:1.45;margin-top:3px}
+.hubWorkspacePin{position:absolute;right:7px;top:7px;width:25px;height:25px;display:grid;place-items:center;border:1px solid transparent;border-radius:8px;background:var(--hub-panel-soft);color:var(--hub-muted);font-size:15px;cursor:pointer;transition:background .18s ease,color .18s ease,transform .18s ease}
+.hubWorkspacePin:hover{transform:scale(1.08);background:var(--hub-glow);color:var(--hub-accent)}
+.hubWorkspacePin.active{color:var(--hub-gold);background:color-mix(in srgb,var(--hub-gold) 14%,var(--hub-panel-strong));border-color:color-mix(in srgb,var(--hub-gold) 24%,transparent)}
+.hubBreadcrumbs{width:min(1440px,100%);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 2px;color:var(--hub-muted);min-height:38px}
+.hubBreadcrumbPath,.hubRecentPages{display:flex;align-items:center;gap:8px;min-width:0}
+.hubBreadcrumbPath button,.hubRecentPages button{border:0;background:transparent;padding:4px 0;color:var(--hub-muted);font-size:10px;font-weight:700;cursor:pointer}
+.hubBreadcrumbPath button:hover,.hubRecentPages button:hover{color:var(--hub-accent)}
+.hubBreadcrumbPath>svg{opacity:.55;flex:none}
+.hubBreadcrumbPath strong{font-size:10px;color:var(--hub-text);white-space:nowrap}
+.hubRecentPages{justify-content:flex-end;overflow:hidden}
+.hubRecentPages>span{color:var(--hub-muted);font-size:8px;font-weight:850;letter-spacing:1px;white-space:nowrap}
+.hubRecentPages button{max-width:118px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:760px){.hubBreadcrumbs{padding:8px 0 0;min-height:32px}.hubRecentPages{display:none}.hubWorkspaceOpen{min-height:66px;padding:10px 39px 10px 10px}}

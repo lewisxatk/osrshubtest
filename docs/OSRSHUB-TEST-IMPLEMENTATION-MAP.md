@@ -24,7 +24,7 @@ This document is the acceptance ledger for the separate test build. It intention
 - [x] Promote Market to a first-class navigation destination.
 - [x] Expand desktop sidebar and mobile More navigation to expose Screener, Market Radar, Backtester, Finance, Quest Pathway, Levelling and Tools.
 - [x] Keep the existing command palette, quick calculator, alerts popover, login area, item detail overlays, watch ticker and responsive navigation.
-- [ ] Add persistent breadcrumbs and recently viewed destinations throughout all deep routes.
+- [x] Add persistent breadcrumbs and recently visited page shortcuts throughout the existing routes.
 - [ ] Add a universal cross-page action drawer and a consistent global notification centre.
 
 ## 3. New Command Centre
@@ -36,6 +36,8 @@ This document is the acceptance ledger for the separate test build. It intention
 - [x] Daily briefing summary using available local data only.
 - [x] Persistent personal GP goal and progress indicator.
 - [x] Persistent working bankroll with budget presets.
+- [x] User-controlled workspace pins, saved across visits and prioritised in the tool grid.
+- [x] Recent-page history and breadcrumbs are synchronised through the existing cloud-data allowlist when Discord account sync is configured.
 - [x] Trading workflow with discovery → research → plan → monitor → review.
 - [x] Account, combat and knowledge launchpad linking to the existing tools.
 - [x] Separate sections for Overview, Trading, Account, OSRS Brain and GP Planner.
