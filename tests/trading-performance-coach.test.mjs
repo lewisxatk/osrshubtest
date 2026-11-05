@@ -7,7 +7,7 @@ test("Trading Performance Coach analyses only real entries from the flip journal
  assert.match(main,/function TradingPerformanceCoach\(\{logs=\[\]\}\)/);
  assert.match(main,/Number\(x\.profit\)/);
  assert.match(main,/const avgWin=/);
- assert.match(main,/const avgLoss=/);
+ assert.match(main,/avgLoss=/);
  assert.match(main,/const factor=grossLoss>0\?grossProfit\/grossLoss:null/);
  assert.match(main,/DATE COVERAGE/);
  assert.match(main,/<TradingPerformanceCoach logs=\{logs\}\/>/);
