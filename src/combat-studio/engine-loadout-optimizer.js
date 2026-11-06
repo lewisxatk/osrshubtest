@@ -182,9 +182,6 @@ export async function optimizeLoadoutWithEngine({
     if (!pool.length) continue;
     const current = picked.get(slot) ?? null;
     const cheapest = [...pool].sort((a,b)=>a._enginePrice-b._enginePrice)[0];
-    const highest = [...pool].sort((a,b)=>
-      preference(b,style,target.name)-preference(a,style,target.name)
-      || a._enginePrice-b._enginePrice)[0];
     const strongest = [...pool].sort((a,b)=>preference(b,style,target.name)-preference(a,style,target.name)||a._enginePrice-b._enginePrice).slice(0,3);
     const shortlist = [...new Map([cheapest,...strongest].filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,4);
     const alternatives = shortlist.filter(item=>item._engineId!==current?._engineId);
