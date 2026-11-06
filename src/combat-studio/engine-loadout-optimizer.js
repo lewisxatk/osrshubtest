@@ -13,7 +13,7 @@ const itemId = item => {
   const value = Number(item?.id ?? item?.item_id ?? item?.itemId);
   return Number.isInteger(value) && value > 0 ? value : null;
 };
-const itemPrice = item => {
+const itemPrice = item => {\n  // Budget acquisition cost from the GE high-side ask or last trade; never the low-side instant-sell value.
   const name = key(itemName(item));
   if (name === "barrowsgloves") return 0; // Untradeable quest reward: no GE price, no fabricated acquisition cost.
   for (const value of [item?._enginePrice,item?._price,item?.sell,item?.high,item?.price,item?.shop_price,item?.cost,item?.latest_price,item?.last_price]) {
