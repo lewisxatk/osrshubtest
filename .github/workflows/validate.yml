@@ -7,6 +7,10 @@ on:
     branches: [main, "feat/**"]
   workflow_dispatch:
 
+concurrency:
+  group: osrshubtest-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
