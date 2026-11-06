@@ -38,7 +38,7 @@ jobs:
           mkdir -p release
           zip -r release/osrshub-test-source.zip . -x '.git/*' 'node_modules/*' 'site/*' 'release/*'
           zip -r release/osrshub-test-site.zip site
-          printf 'OSRS Hub Test 2.0.0-test.2\nCommit: %s\nValidation: npm test + npm run build passed\n' "$GITHUB_SHA" > release/BUILD-INFO.txt
+          printf 'OSRS Hub Test 2.0.0-test.3\nCommit: %s\nValidation: npm test + npm run build passed\n' "$GITHUB_SHA" > release/BUILD-INFO.txt
       - name: Upload isolated test artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -47,9 +47,45 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  deploy-combat-runtime:
+    name: Deploy isolated canonical combat runtime
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/feat/website-evolution-a-foundation'
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Check out canonical combat engine test branch
+        uses: actions/checkout@v4
+        with:
+          repository: lewisxatk/osrshub-combat-engine
+          ref: feat/osrshubtest-canonical-catalogue-api
+          path: combat-engine
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Enable pinned Yarn
+        run: corepack enable
+      - name: Install combat engine dependencies
+        working-directory: combat-engine
+        run: yarn install --immutable
+      - name: Validate isolated combat Worker bundle
+        working-directory: combat-engine
+        run: npx --yes wrangler@4 deploy --dry-run --config wrangler.toml --name osrshubtest-combat-runtime --var "ALLOWED_ORIGIN:https://osrshubtest.prices-app.workers.dev"
+      - name: Deploy isolated combat runtime
+        working-directory: combat-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 58cc0c5ee11304ba28f879f354bd899c
+        run: npx --yes wrangler@4 deploy --config wrangler.toml --name osrshubtest-combat-runtime --var "ALLOWED_ORIGIN:https://osrshubtest.prices-app.workers.dev"
+      - name: Smoke test isolated combat runtime
+        run: |
+          curl --fail --silent --show-error https://osrshubtest-combat-runtime.prices-app.workers.dev/health
+          curl --fail --silent --show-error "https://osrshubtest-combat-runtime.prices-app.workers.dev/api/monsters?limit=1"
+
   deploy-test-worker:
     name: Deploy isolated OSRS Hub Test Worker
-    needs: validate
+    needs: [validate, deploy-combat-runtime]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/feat/website-evolution-a-foundation'
     runs-on: ubuntu-latest
     environment: test
@@ -62,7 +98,9 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Build test website
+      - name: Build test website with canonical combat runtime
+        env:
+          VITE_COMBAT_RUNTIME_URL: https://osrshubtest-combat-runtime.prices-app.workers.dev
         run: npm run build
       - name: Deploy only osrshubtest Worker
         env:
