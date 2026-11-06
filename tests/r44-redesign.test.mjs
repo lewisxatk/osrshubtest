@@ -24,10 +24,13 @@ test('R44 quest training planner uses account XP and explicit user-supplied rate
  assert.match(planner,/will not rank methods until source-backed records are available/);
  assert.doesNotMatch(planner,/Most AFK|Cheapest|Fastest/);
 });
-test('R44 keeps live price history source and explicitly labels training rates as estimates',()=>{
- assert.match(main,/api\(`\/timeseries\?timestep=1h&id=\$\{item\.id\}`\)/);
- assert.match(main,/planning estimate/);
- assert.match(main,/not a guaranteed rate/);
+test('R44 preserves live price history while keeping training time estimates user-supplied',()=>{
+ assert.match(main,/api\(`\/timeseries\?timestep=1h&id=\$\{item\.id\}\`\)/);
+ const start=main.indexOf('function QuestTrainingPlanner('),end=main.indexOf('function Screener(p)',start);
+ const planner=main.slice(start,end);
+ assert.match(planner,/Your verified XP \/ hour/);
+ assert.match(planner,/not a Hub recommendation/);
+ assert.match(planner,/No default rates or method costs are invented/);
 });
 test('R44 includes responsive and reduced-motion styling',()=>{
  assert.match(css,/@media\(max-width:1100px\)/);
