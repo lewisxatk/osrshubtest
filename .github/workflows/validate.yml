@@ -96,6 +96,7 @@ jobs:
             sleep 5
           done
           curl --fail --silent --show-error -H "Origin: https://osrshubtest.prices-app.workers.dev" "$URL/api/monsters?limit=1"
+          curl --fail --silent --show-error -H "Origin: https://osrshubtest.prices-app.workers.dev" "$URL/api/equipment?slot=weapon&limit=1"
 
   deploy-test-worker:
     name: Deploy isolated OSRS Hub Test Worker
