@@ -67,7 +67,7 @@ The Vite build outputs Worker Assets to `site/`. Wrangler deploys only the test 
 
 ## Remaining configuration
 
-1. Configure a separate Discord OAuth application with the test callback `https://osrshubtest.prices-app.workers.dev/api/auth/callback`, then add its client ID, client secret and a dedicated auth signing secret to the test Worker.
+1. Configure a separate Discord OAuth application with the test callback `https://osrshubtest.prices-app.workers.dev/api/auth/callback`, then add these GitHub repository secrets: `TEST_DISCORD_CLIENT_ID`, `TEST_DISCORD_CLIENT_SECRET` and `TEST_OSRSHUB_AUTH_SECRET`. The test deployment workflow will install them only on the test Worker.
 2. Run browser checks across all themes, keyboard navigation and desktop/mobile layouts.
 3. Continue seeding and validating structured OSRS reference data; an empty table is not evidence that a feature is complete.
 4. Continue Combat Studio accuracy testing against known account, target, budget and gear combinations.
