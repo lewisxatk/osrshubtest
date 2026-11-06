@@ -21,6 +21,7 @@
   },
   "vars": {
     "OSRSHUB_ENVIRONMENT": "test",
-    "PUBLIC_ORIGIN": "https://osrshubtest.prices-app.workers.dev"
+    "PUBLIC_ORIGIN": "https://osrshubtest.prices-app.workers.dev",
+    "DISCORD_REDIRECT_URI": "https://osrshubtest.prices-app.workers.dev/api/auth/callback"
   }
 }
