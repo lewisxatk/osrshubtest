@@ -16,3 +16,6 @@
 .accountLinkFootnote{color:var(--muted,#999);font-size:11px;line-height:1.5}
 @media(max-width:760px){.accountLinkMethods{grid-template-columns:1fr 1fr}.accountLinkMethods label:first-child{grid-column:1/-1}.accountLinkMethods button{white-space:normal}.accountLinkHeader{display:grid}.accountLinkStatus{justify-self:start}}
 @media(max-width:420px){.accountLinkMethods{grid-template-columns:1fr}.accountLinkMethods label:first-child{grid-column:auto}.accountLinkMethods button,.accountLinkDiscord{width:100%}}
+
+.calcHiscoreMode{display:grid;gap:6px;max-width:260px;margin-top:10px;color:var(--oh-muted,#999);font-size:12px;font-weight:700}
+.calcHiscoreMode select{width:100%;min-height:40px;padding:8px 11px;border:1px solid var(--oh-line,#444);border-radius:10px;background:var(--oh-surface2,#222);color:var(--oh-text,inherit)}
