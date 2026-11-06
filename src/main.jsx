@@ -1234,7 +1234,8 @@ function Finance({items,onSelect}){
   const [form,setForm]=useState({item:"",buy:0,qty:1,sell:0,date:new Date().toISOString().slice(0,10),note:""});
   const [bankroll,setBankroll]=useState(()=>safeRead("osrsflipit-bankroll",{gp:10000000,slots:8}));
   const [reservePct,setReservePct]=useState(()=>Number(safeRead("osrshub-bankroll-reserve",20))||0);
-  const importRef=useRef(null);\n const persistAccount=next=>{try{const saved=JSON.parse(localStorage.getItem("osrshub-linked-accounts")||"[]"),profiles=[next,...(Array.isArray(saved)?saved:[]).filter(p=>String(p?.name||"").toLowerCase()!==String(next.name||"").toLowerCase())].slice(0,10);localStorage.setItem("osrshub-linked-accounts",JSON.stringify(profiles));localStorage.setItem("osrshub-account",JSON.stringify(next));window.dispatchEvent(new Event("osrshub-data-changed"))}catch{localStorage.setItem("osrshub-account",JSON.stringify(next))}};
+  const importRef=useRef(null);
+ const persistAccount=next=>{try{const saved=JSON.parse(localStorage.getItem("osrshub-linked-accounts")||"[]"),profiles=[next,...(Array.isArray(saved)?saved:[]).filter(p=>String(p?.name||"").toLowerCase()!==String(next.name||"").toLowerCase())].slice(0,10);localStorage.setItem("osrshub-linked-accounts",JSON.stringify(profiles));localStorage.setItem("osrshub-account",JSON.stringify(next));window.dispatchEvent(new Event("osrshub-data-changed"))}catch{localStorage.setItem("osrshub-account",JSON.stringify(next))}};
   useEffect(()=>localStorage.setItem("osrsflipit-flip-log",JSON.stringify(logs)),[logs]);
   useEffect(()=>localStorage.setItem("osrsflipit-bankroll",JSON.stringify(bankroll)),[bankroll]);
   useEffect(()=>localStorage.setItem("osrshub-bankroll-reserve",String(Math.max(0,Math.min(80,Number(reservePct)||0)))),[reservePct]);
