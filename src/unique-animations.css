@@ -1,0 +1,28 @@
+.osrs-rune-ambient{position:relative;isolation:isolate}
+.osrs-rune-ambient:before{content:"";position:absolute;z-index:-1;inset:-35%;pointer-events:none;opacity:.48;background:conic-gradient(from 0deg at 70% 35%,transparent 0deg,rgba(213,173,85,.12) 38deg,transparent 84deg,rgba(129,104,226,.08) 145deg,transparent 205deg,rgba(213,173,85,.1) 270deg,transparent 330deg);filter:blur(22px);animation:osrsRuneDrift 26s linear infinite}
+.osrs-rune-ambient:after{content:"";position:absolute;z-index:-1;width:210px;height:210px;right:-82px;top:-112px;border:1px solid rgba(213,173,85,.2);border-radius:50%;box-shadow:0 0 0 18px rgba(213,173,85,.025),0 0 0 38px rgba(129,104,226,.025),inset 0 0 34px rgba(213,173,85,.06);pointer-events:none;animation:osrsRuneOrbit 34s linear infinite}
+.accountStudioHero.osrs-rune-ambient,.marketEvents.osrs-rune-ambient,.combat-studio.osrs-rune-ambient{overflow:hidden}
+.accountStudioHero.osrs-rune-ambient>* ,.marketEvents.osrs-rune-ambient>* ,.combat-studio.osrs-rune-ambient>*{position:relative;z-index:1}
+.marketEvents.osrs-rune-ambient .liveBadge{animation:osrsSignalPulse 2.8s ease-in-out infinite}
+.marketEvents.isOpen .eventRows>button{animation:osrsSignalEnter .42s cubic-bezier(.2,.8,.2,1) both}
+.marketEvents.isOpen .eventRows>button:nth-child(1){animation-delay:.02s}
+.marketEvents.isOpen .eventRows>button:nth-child(2){animation-delay:.07s}
+.marketEvents.isOpen .eventRows>button:nth-child(3){animation-delay:.12s}
+.marketEvents.isOpen .eventRows>button:nth-child(4){animation-delay:.17s}
+.marketEvents.isOpen .eventRows>button:nth-child(5){animation-delay:.22s}
+.combat-studio .cs-tabs button{transition:transform .2s ease,background .25s ease,border-color .25s ease,box-shadow .25s ease}
+.combat-studio .cs-tabs button:active{transform:scale(.97)}
+.combat-studio .cs-tabs button.active{box-shadow:0 0 0 1px rgba(213,173,85,.12),0 5px 22px rgba(213,173,85,.09)}
+.combat-studio .cs-controls{animation:osrsSignalEnter .45s ease-out both}
+.drawer.fullDetail{animation:osrsDossierReveal .38s cubic-bezier(.2,.8,.2,1) both}
+.accountStudioStats span{animation:osrsSignalEnter .45s ease-out both}
+.accountStudioStats span:nth-child(2){animation-delay:.04s}
+.accountStudioStats span:nth-child(3){animation-delay:.08s}
+.accountStudioStats span:nth-child(4){animation-delay:.12s}
+.accountStudioStats span:nth-child(5){animation-delay:.16s}
+@keyframes osrsRuneDrift{from{transform:rotate(0deg) scale(1)}to{transform:rotate(360deg) scale(1.04)}}
+@keyframes osrsRuneOrbit{from{transform:rotate(0deg) scale(1)}to{transform:rotate(-360deg) scale(1)}}
+@keyframes osrsSignalPulse{0%,100%{box-shadow:0 0 0 0 rgba(213,173,85,0)}50%{box-shadow:0 0 0 6px rgba(213,173,85,.09)}}
+@keyframes osrsSignalEnter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes osrsDossierReveal{from{opacity:0;transform:translateY(16px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.osrs-rune-ambient:before,.osrs-rune-ambient:after,.marketEvents .liveBadge,.marketEvents.isOpen .eventRows>button,.combat-studio .cs-controls,.drawer.fullDetail,.accountStudioStats span{animation:none!important}.combat-studio .cs-tabs button{transition:none!important}}
