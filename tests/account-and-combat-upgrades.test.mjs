@@ -90,3 +90,9 @@ test("all theme families use shared surface, control and feature-card tokens", (
   assert.match(themeCss, /\.calcLabCard/);
   assert.match(themeCss, /var\(--oh-surface2\)/);
 });
+
+test("Market discovery toolbar and floating profile panels are hidden on focused item dossier pages", () => {
+  assert.match(themeCss, /body:has\(\.routeItemPage\) \.filterbar/);
+  assert.match(themeCss, /body:has\(\.routeItemPage\) \.mobileQuickTools/);
+  assert.match(themeCss, /body:has\(\.routeItemPage\) \.mobileColumnsPanel/);
+});
