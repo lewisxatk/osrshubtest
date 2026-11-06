@@ -36,3 +36,10 @@ test("cloud sync status reflects app state and alert rules count stays grounded"
   assert.ok(feed.some(entry => entry.id === "system:cloud:syncing"));
   assert.ok(feed.some(entry => entry.description === "2 rule(s) are stored in this workspace."));
 });
+
+
+test("cached market rows are not misreported as an empty market while refresh is active", () => {
+  const feed = buildNotificationFeed({ items: [{ id: 1 }], loading: true, updated: null });
+  assert.ok(!feed.some(entry => entry.id === "system:market:empty"));
+  assert.ok(!feed.some(entry => entry.id === "system:market:loading"));
+});

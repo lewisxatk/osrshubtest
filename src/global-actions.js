@@ -1,6 +1,6 @@
 export const GLOBAL_ACTIONS = [
   { id: "home", label: "Open Command Centre", description: "Your OSRS Hub overview, goals and next moves.", type: "navigate", target: "command", icon: "compass", group: "Navigate", keywords: ["home", "overview", "dashboard", "next move"] },
-  { id: "market", label: "Open Live Market", description: "Grand Exchange prices, margins and item research.", type: "navigate", target: "market", icon: "activity", group: "Navigate", keywords: ["grand exchange", "ge", "prices", "items"] },
+  { id: "market", label: "Open Live Market", description: "Grand Exchange prices, margins and item research.", type: "navigate", target: "market", icon: "activity", group: "Navigate", aliases: ["grand exchange", "live ge", "ge market"], keywords: ["grand exchange", "ge", "prices", "items"] },
   { id: "terminal", label: "Open Trading Terminal", description: "Charts, comparison, scanner and saved trading profiles.", type: "navigate", target: "terminal", icon: "chart", group: "Navigate", keywords: ["trading", "charts", "terminal", "compare"] },
   { id: "screener", label: "Open Opportunity Screener", description: "Filter, rank and scan the current market snapshot.", type: "navigate", target: "screener", icon: "radar", group: "Navigate", keywords: ["scanner", "filters", "flips"] },
   { id: "watch", label: "Open Watchlists", description: "Manage tracked items and saved market lists.", type: "navigate", target: "watch", icon: "target", group: "Navigate", keywords: ["watchlist", "favourites", "tracked"] },
@@ -19,7 +19,7 @@ export const GLOBAL_ACTIONS = [
   { id: "tools", label: "Open Tools & Utilities", description: "Browse calculators and supporting OSRS tools.", type: "navigate", target: "cool", icon: "calculator", group: "Navigate", keywords: ["utilities", "calculators"] },
   { id: "data", label: "Open Data Control Centre", description: "Inspect available datasets and data-health tools.", type: "navigate", target: "admin", icon: "database", group: "Navigate", keywords: ["data", "health", "admin", "provenance"] },
   { id: "calculator", label: "Open Quick Profit Calculator", description: "Calculate after-tax GP profit, ROI and capital needed.", type: "calculator", icon: "calculator", group: "Quick tools", keywords: ["flip calculator", "tax", "margin", "roi"] },
-  { id: "mini-ge", label: "Open Mini Grand Exchange", description: "Manage your eight-slot buy and sell planning workspace.", type: "mini-ge", icon: "shopping", group: "Quick tools", keywords: ["mini ge", "buy slots", "sell slots", "orders"] },
+  { id: "mini-ge", label: "Open Mini Grand Exchange", description: "Manage your eight-slot buy and sell planning workspace.", type: "mini-ge", icon: "shopping", group: "Quick tools", aliases: ["mini ge", "buy slots", "sell slots"], keywords: ["mini ge", "buy slots", "sell slots", "orders"] },
   { id: "new-alert", label: "Create a Price Alert", description: "Start a new item price or margin alert rule.", type: "alert", icon: "bell", group: "Quick tools", keywords: ["new alert", "threshold", "notification"] }
 ];
 
@@ -29,9 +29,11 @@ function scoreAction(query, action) {
   const label = String(action.label || "").toLowerCase();
   const terms = [label, action.description, ...(action.keywords || []), action.target].filter(Boolean).join(" ").toLowerCase();
   if (label === q) return 1000;
-  if (terms.includes(q)) return 820 - Math.max(0, terms.indexOf(q)) * 0.01;
-  if (label.startsWith(q)) return 850 - Math.max(0, label.length - q.length);
-  if (label.includes(q)) return 700 - label.indexOf(q);
+  if ((action.aliases || []).some(alias => String(alias).toLowerCase() === q)) return 960;
+  if (label.startsWith(q)) return 900 - Math.max(0, label.length - q.length);
+  if (label.includes(q)) return 850 - label.indexOf(q);
+  if ((action.keywords || []).some(keyword => String(keyword).toLowerCase() === q)) return 800;
+  if (terms.includes(q)) return 720 - Math.max(0, terms.indexOf(q)) * 0.01;
   const tokens = q.split(/\s+/).filter(Boolean);
   const matched = tokens.filter(token => terms.includes(token));
   if (!matched.length) return -1;
