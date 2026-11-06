@@ -29,6 +29,7 @@ import AccountReadiness from "./AccountReadiness.jsx";
 import AccountLinkPanel from "./AccountLinkPanel.jsx";
 import "./navigation-consolidation.css";
 import "./unique-animations.css";
+import "./theme-compatibility.css";
 import "./account-link.css";
 import { xpRangeToTarget, estimateXpHours } from "./xp-planning.js";
 import "./xp-planning.css";
