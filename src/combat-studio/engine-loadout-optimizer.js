@@ -89,7 +89,7 @@ const EMPTY_BUFFS = Object.freeze({
 /**
  * A bounded coordinate search. Every candidate that can enter a recommendation is
  * evaluated by the canonical combat engine; item stats only narrow the search.
- * At most two shortlisted alternatives are evaluated per slot, plus the starting setup (23 total).
+ * At most four shortlisted alternatives are evaluated per slot, plus the starting setup (45 total).
  */
 export async function optimizeLoadoutWithEngine({
   items = [], playerName, stats = {}, quests = [], questOverrides = {}, accountAware = true,
@@ -175,7 +175,7 @@ export async function optimizeLoadoutWithEngine({
     calculations,rejected,skippedUnknownPrice,skippedMissingId,
   };
   currentResult = initial;
-  onProgress({checked:calculations,total:23,slot:"Weapon",dps:currentResult.result.dps});
+  onProgress({checked:calculations,total:45,slot:"Weapon",dps:currentResult.result.dps});
 
   for (const slot of SLOT_ORDER) {
     const pool = pools.get(slot);
@@ -185,7 +185,7 @@ export async function optimizeLoadoutWithEngine({
     const highest = [...pool].sort((a,b)=>
       preference(b,style,target.name)-preference(a,style,target.name)
       || a._enginePrice-b._enginePrice)[0];
-    const shortlist = [...new Map([cheapest,highest].filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,2);
+    const strongest = [...pool].sort((a,b)=>preference(b,style,target.name)-preference(a,style,target.name)||a._enginePrice-b._enginePrice).slice(0,3);\n    const shortlist = [...new Map([cheapest,...strongest].filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,4);
     const alternatives = shortlist.filter(item=>item._engineId!==current?._engineId);
     const evaluated = await Promise.all(alternatives.map(async candidate=>{
       const draft = new Map(picked);
@@ -204,7 +204,7 @@ export async function optimizeLoadoutWithEngine({
       return better?option:selected;
     },null);
     if (best) { picked.clear(); for (const [keyName,item] of best.draft) picked.set(keyName,item); currentResult=best.response; }
-    onProgress({checked:calculations,total:23,slot,dps:currentResult.result.dps});
+    onProgress({checked:calculations,total:45,slot,dps:currentResult.result.dps});
   }
 
   const outputSlots=asSlotPairs(picked);
@@ -215,7 +215,7 @@ export async function optimizeLoadoutWithEngine({
   if (skippedMissingId) warnings.push(`${skippedMissingId} equipment records had no canonical item ID and were not considered.`);
   if (rejected) warnings.push(`${rejected} candidate calculation(s) were rejected by the canonical engine and were skipped.`);
   warnings.push("The returned DPS is engine-calculated with zero boosts and no prayers.");
-  warnings.push("The search tests at most two shortlisted alternatives per slot. It returns the best verified setup it checked, not a proof of the global best combination.");
+  warnings.push("The search tests up to four shortlisted alternatives per slot. It returns the best verified setup it checked, not a proof of the global best combination.");
   return {
     status:"calculated",slots:outputSlots,totalCost,remainingBudget:Math.max(0,budgetGp-totalCost),
     engineResult:currentResult.result,calculations,eligibleItemCount:SLOT_ORDER.reduce((n,slot)=>n+pools.get(slot).length,0),
