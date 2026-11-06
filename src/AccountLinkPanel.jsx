@@ -1,4 +1,4 @@
-import React,{useRef,useState} from "react";
+import React,{useState} from "react";
 import {CheckCircle2,Cloud,Download,Link2,RefreshCw,ShieldCheck,Upload,UserRound} from "lucide-react";
 
 const SKILLS=["Attack","Defence","Strength","Hitpoints","Ranged","Prayer","Magic","Cooking","Woodcutting","Fletching","Fishing","Firemaking","Crafting","Smithing","Mining","Herblore","Agility","Thieving","Slayer","Farming","Runecraft","Hunter","Construction","Sailing"];
