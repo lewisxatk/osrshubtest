@@ -21,7 +21,7 @@ const iconUrl=value=>{if(typeof value!=="string"||!value.trim())return "";const 
 const itemReqOkCompat=(item,stats)=>{const req=item?.requirements??item?.level_requirements??item?.skill_requirements??{};if(!req||typeof req!=="object"||Array.isArray(req))return null;const aliases={att:"Attack",attack:"Attack",str:"Strength",strength:"Strength",def:"Defence",defence:"Defence",ranged:"Ranged",range:"Ranged",magic:"Magic",prayer:"Prayer"};for(const [k,v] of Object.entries(req)){const skill=aliases[keyName(k)],need=Number(typeof v==="object"?(v.level??v.value):v);if(skill&&Number.isFinite(need)&&need>1&&levelOf(stats,skill)!==null&&levelOf(stats,skill)<need)return false}return true};
 const styleItemCompatible=(item,style,slot)=>{const n=keyName(item?._name||item?.name||"");if(slot==="Ammo")return style==="Ranged"&&(/arrow|bolt|javelin|dart|chinchompa|throwingknife|tokkul/.test(n));if(slot!=="Weapon")return true;if(style==="Melee")return !/bow|crossbow|blowpipe|chinchompa|ballista|shortbow|longbow|staff|wand|trident|sceptre|tome/.test(n);if(style==="Ranged")return /bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife/.test(n);return /staff|wand|trident|sceptre|battlestaff|mystic/.test(n)};
 const TEST_COMBAT_RUNTIME_URL="https://osrshubtest-combat-runtime.prices-app.workers.dev";
-export default function CombatStudioPage
+export default function CombatStudioPage({items=[],account,onSelect}){
  const [activeWorkspaceTab,setActiveWorkspaceTab]=useState("Loadout Builder");
  const [savedLoadouts,setSavedLoadouts]=useState(()=>safeStoredArray("osrshub-combat-saved-builds"));
  const [style,setStyle]=useState("Ranged"),[boss,setBoss]=useState("Vorkath"),[bossQuery,setBossQuery]=useState(""),[targetOpen,setTargetOpen]=useState(false);
