@@ -87,7 +87,8 @@ This ledger supplements OSRSHUB-TEST-IMPLEMENTATION-MAP.md. A route, tile, scree
 ## 8. Screener — PARTIAL
 - [x] Preserve snapshot search, filters, sort, volume, margin and price columns.
 - [x] Preserve saved scan profiles and Smart Watchlists.
-- [ ] Add visual nested AND/OR filter builder.
+- [x] Add a visual filter builder with ALL (AND) / ANY (OR) logic, accessible rule fields/operators, responsive layout and saved profile match mode.
+- [ ] Extend to nested AND/OR groups with per-group conditions.
 - [ ] Add reorderable configurable columns and saved layouts.
 - [ ] Add desktop high-density table and mobile card/bottom-sheet version.
 - [ ] Add explicit unknown-data filters.
