@@ -15,8 +15,7 @@ const itemId = item => {
 };
 const itemPrice = item => {
   const name = key(itemName(item));
-  if (name === "barrowsgloves") return 130000;
-  for (const value of [item?._enginePrice,item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.shop_price,item?.cost,item?.latest_price,item?.last_price]) {
+  for (const value of [item?._enginePrice,item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.shop_price,item?.shopPrice,item?.cost,item?.latest_price,item?.last_price]) {
     const price = Number(value);
     if (Number.isFinite(price) && price > 0) return price;
   }
@@ -114,7 +113,7 @@ export async function optimizeLoadoutWithEngine({
     if (!id) { if (slot) skippedMissingId++; continue; }
     if (!name || !pools.has(slot) || !styleCompatible(item, style, slot)) continue;
     const normalized = key(name);
-    if (excludedKeys.has(normalized) || item.tradeable === false && normalized !== "barrowsgloves") continue;
+    if (excludedKeys.has(normalized)) continue;
     if (accountAware && (!itemRequirementsMet(item, stats)
       || (!isQuestAvailable(item, quests, questOverrides) && !allowedKeys.has(normalized)))) continue;
     const price = itemPrice(item);
