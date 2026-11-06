@@ -30,11 +30,12 @@ test("Hiscores import parses the Overall row and all supported skills including 
   assert.match(worker, /hiscore_oldschool_hardcore_ironman/);
 });
 
-test("RuneLite profile JSON import is explicitly local and does not claim remote desktop access", () => {
-  assert.match(panel, /Import RuneLite JSON/);
-  assert.match(panel, /parseRuneLiteProfile/);
-  assert.match(panel, /RuneLite desktop is not remotely controlled/);
-  assert.match(panel, /Local first/);
+test("RuneLite profile import reuses the existing settings-profile parser and persists the resulting account", () => {
+  assert.match(panel, /Import RuneLite profile/);
+  assert.match(main, /Import profile/);
+  assert.match(main, /RuneLite profile export/);
+  assert.match(main, /persistAccount\(next\)/);
+  assert.match(main, /RuneLite/);
 });
 
 test("linked account profiles are included in both sides of Discord cloud backup", () => {
