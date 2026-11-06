@@ -14,7 +14,7 @@ const itemId = item => {
   return Number.isInteger(value) && value > 0 ? value : null;
 };
 const itemPrice = item => {
-  // Budget acquisition cost from the GE high-side ask or last trade; never the low-side instant-sell value.
+  // Use the GE high-side ask or last trade; never low-side instant-sell. Shop prices are only valid for verified untradeables.
   const name = key(itemName(item));
   if (name === "barrowsgloves") return 0; // Untradeable quest reward: no GE price, no fabricated acquisition cost.
   const values = [item?._enginePrice,item?._price,item?.sell,item?.high,item?.price,item?.latest_price,item?.last_price];
