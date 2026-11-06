@@ -89,7 +89,8 @@ This ledger supplements OSRSHUB-TEST-IMPLEMENTATION-MAP.md. A route, tile, scree
 - [x] Preserve saved scan profiles and Smart Watchlists.
 - [x] Add a visual filter builder with ALL (AND) / ANY (OR) logic, accessible rule fields/operators, responsive layout and saved profile match mode.
 - [ ] Extend to nested AND/OR groups with per-group conditions.
-- [ ] Add reorderable configurable columns and saved layouts.
+- [x] Keep configurable, reorderable columns and saved scan profiles; add Trading, Liquidity, Risk and Full column presets for desktop and mobile.
+- [ ] Add nested filter groups and more advanced saved column layouts with independent names.
 - [ ] Add desktop high-density table and mobile card/bottom-sheet version.
 - [ ] Add explicit unknown-data filters.
 - [ ] Add right-side item preview, two-line graph and context actions without breaking quick item menu.
