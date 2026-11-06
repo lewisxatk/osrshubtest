@@ -70,3 +70,13 @@ test("new OSRS-inspired motion is theme-aware and respects reduced-motion prefer
   assert.match(animations, /@keyframes osrsDossierReveal/);
   assert.match(animations, /prefers-reduced-motion:reduce/);
 });
+
+test("Account Studio RuneLite import uses the official export flow and persists imported profiles", () => {
+  assert.match(main, /Import RuneLite profile/);
+  assert.match(main, /Export profile/);
+  assert.match(main, /api\/hiscores\?player=/);
+  assert.match(main, /hiscoreMode/);
+  assert.match(main, /lines\[index\+1\]/);
+  assert.match(main, /const persistAccount=next=>/);
+  assert.match(main, /osrshub-linked-accounts/);
+});
