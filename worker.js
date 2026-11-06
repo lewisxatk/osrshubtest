@@ -31,20 +31,21 @@ async function sendDiscordAlert(env,userId,a){const itemUrl=`${env.PUBLIC_ORIGIN
 async function currentUser(request,env){if(!authConfigured(env))return null;const c=cookies(request)[SESSION_COOKIE];if(!c)return null;const [uid,exp,sig]=c.split(".");if(!uid||!exp||!sig||Number(exp)<Date.now()||!(await validSig(env.OSRSHUB_AUTH_SECRET,`${uid}.${exp}`,sig)))return null;return env.DB.prepare("SELECT id,username,global_name,avatar FROM users WHERE id=?1").bind(uid).first()}
 async function hiscores(request){
  const url=new URL(request.url);
- const player=String(url.searchParams.get("player")||"").trim().replace(/\\+/g," ").slice(0,20),mode=String(url.searchParams.get("mode")||"STANDARD").toUpperCase();
+ const player=String(url.searchParams.get("player")||"").trim().replace(/\+/g," ").slice(0,20);
+ const mode=String(url.searchParams.get("mode")||"STANDARD").toUpperCase();
+ const endpoints={STANDARD:UPSTREAM,IRONMAN:"https://secure.runescape.com/m=hiscore_oldschool_ironman/index_lite.ws",ULTIMATE:"https://secure.runescape.com/m=hiscore_oldschool_ultimate/index_lite.ws",HARDCORE:"https://secure.runescape.com/m=hiscore_oldschool_hardcore_ironman/index_lite.ws"};
  if(!player)return json({error:"Player name required."},400,{"Cache-Control":"no-store"});
+ if(!endpoints[mode])return json({error:"Unsupported Hiscores game mode."},400,{"Cache-Control":"no-store"});
  if(!/^[A-Za-z0-9 _-]{1,20}$/.test(player))return json({error:"Player name contains unsupported characters."},400,{"Cache-Control":"no-store"});
  try{
-  const upstream=new URL(endpoints[mode]);
-  upstream.searchParams.set("player",player);
+  const upstream=new URL(endpoints[mode]);upstream.searchParams.set("player",player);
   const response=await fetch(upstream.toString(),{headers:{"User-Agent":"OSRS Hub Test/1.0 (public Hiscores lookup)","Accept":"text/plain"},cf:{cacheTtl:300,cacheEverything:true}});
   const body=await response.text();
-  if(!response.ok)return json({error:response.status===404?"Player not found on the selected public Hiscores table.":`Hiscores upstream returned HTTP ${response.status}.`},response.status===404?404:502,{"Cache-Control":"no-store"});
-  if(!body.trim()||!/^\\s*-?\\d+,\\s*-?\\d+,\\s*-?\\d+/m.test(body))return json({error:"Hiscores returned an empty or unrecognised response."},502,{"Cache-Control":"no-store"});
+  if(!response.ok)return json({error:response.status===404?"Player not found on the selected public Hiscores table.":"Hiscores upstream returned HTTP "+response.status+"."},response.status===404?404:502,{"Cache-Control":"no-store"});
+  if(!body.trim()||!/^-?\\d+,\\s*-?\\d+,\\s*-?\\d+/m.test(body.trim()))return json({error:"Hiscores returned an empty or unrecognised response."},502,{"Cache-Control":"no-store"});
   return new Response(body,{status:200,headers:{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"public, max-age=300","Access-Control-Allow-Origin":"*"}});
  }catch(error){return json({error:"Could not reach the public OSRS Hiscores service.",detail:String(error?.message||"upstream unavailable").slice(0,120)},502,{"Cache-Control":"no-store"});}
 }
-
 async function accountSync(request,env){
  const url=new URL(request.url);const player=String(url.searchParams.get("player")||"").trim().slice(0,20),mode=String(url.searchParams.get("mode")||"STANDARD").toUpperCase();if(!player)return json({error:"Player name required."},400);if(!["STANDARD","IRONMAN","ULTIMATE","HARDCORE"].includes(mode))return json({error:"Unsupported Hiscores game mode."},400);
  const quests=[];let levels={};let questSource="none";
