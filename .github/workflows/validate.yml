@@ -46,3 +46,26 @@ jobs:
           path: release/*
           if-no-files-found: error
           retention-days: 30
+
+  deploy-test-worker:
+    name: Deploy isolated OSRS Hub Test Worker
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/feat/website-evolution-a-foundation'
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Check out validated test branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build test website
+        run: npm run build
+      - name: Deploy only osrshubtest Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 58cc0c5ee11304ba28f879f354bd899c
+        run: npx wrangler deploy --config wrangler.jsonc --name osrshubtest
