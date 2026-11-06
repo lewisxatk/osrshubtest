@@ -1,0 +1,36 @@
+.notificationCentre{position:absolute;top:calc(100% + 10px);right:12px;z-index:10030;width:min(430px,calc(100vw - 24px));max-height:min(690px,calc(100dvh - 100px));display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--hub-line);border-radius:18px;background:var(--hub-panel-strong);color:var(--hub-text);box-shadow:0 24px 75px rgba(0,0,0,.25);animation:ncIn .18s ease both}
+.ncHeader{display:flex;justify-content:space-between;gap:12px;padding:18px 18px 13px}
+.ncEyebrow{display:flex;align-items:center;gap:6px;color:var(--hub-accent);font-size:9px;font-weight:850;letter-spacing:1.2px}
+.ncHeader h2{margin:8px 0 4px;font-size:20px;letter-spacing:-.04em}
+.ncHeader h2 small{margin-left:7px;color:var(--hub-muted);font-size:10px;font-weight:600;letter-spacing:0}
+.ncHeader p{margin:0;color:var(--hub-muted);font-size:10px;line-height:1.5}
+.ncClose{width:31px;height:31px;display:grid;place-items:center;border:1px solid var(--hub-line);border-radius:9px;background:var(--hub-panel);color:var(--hub-text);cursor:pointer}
+.ncTabs{display:flex;gap:5px;padding:0 14px 11px;border-bottom:1px solid var(--hub-line)}
+.ncTabs button{display:flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--hub-muted);font-size:10px;font-weight:750;cursor:pointer}
+.ncTabs button.active{border-color:color-mix(in srgb,var(--hub-accent) 32%,transparent);background:var(--hub-glow);color:var(--hub-text)}
+.ncTabs b{min-width:17px;padding:2px 4px;border-radius:99px;background:var(--hub-panel-soft);font-size:9px;text-align:center}
+.ncActions{display:flex;justify-content:space-between;gap:9px;padding:9px 14px}
+.ncActions button{display:inline-flex;align-items:center;gap:5px;border:0;background:transparent;color:var(--hub-accent);font-size:9px;font-weight:750;cursor:pointer}
+.ncActions button:disabled{opacity:.35;cursor:default}
+.ncList{overflow:auto;overscroll-behavior:contain;padding:0 8px 8px}
+.ncRow{width:100%;display:flex;align-items:flex-start;gap:10px;padding:12px 10px;border:1px solid transparent;border-radius:11px;background:transparent;color:var(--hub-text);text-align:left;cursor:pointer;transition:background .16s ease,border-color .16s ease}
+.ncRow:hover{background:var(--hub-panel-soft);border-color:var(--hub-line)}
+.ncRow.isUnread{background:color-mix(in srgb,var(--hub-glow) 34%,transparent)}
+.ncIcon{width:32px;height:32px;display:grid;place-items:center;flex:none;border:1px solid var(--hub-line);border-radius:10px;background:var(--hub-panel);color:var(--hub-accent)}
+.tone-warning .ncIcon{color:var(--hub-red)}
+.tone-success .ncIcon{color:var(--hub-green)}
+.tone-alert .ncIcon{color:var(--hub-gold)}
+.ncCopy{display:block;min-width:0;flex:1}
+.ncCopy strong,.ncCopy small,.ncCopy em{display:block}
+.ncCopy strong{font-size:11px;font-weight:800}
+.ncCopy small{margin-top:4px;color:var(--hub-muted);font-size:10px;line-height:1.45}
+.ncCopy em{margin-top:6px;color:var(--hub-muted);font-size:8px;font-style:normal}
+.ncUnreadDot{width:6px;height:6px;flex:none;margin-top:12px;border-radius:50%;background:var(--hub-accent);box-shadow:0 0 0 3px var(--hub-glow)}
+.ncEmpty{min-height:145px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--hub-muted);font-size:10px}
+.ncEmpty svg{color:var(--hub-accent)}
+.ncEmpty strong{color:var(--hub-text);font-size:11px}
+.ncFooter{display:flex;align-items:center;gap:7px;padding:11px 14px;border-top:1px solid var(--hub-line);color:var(--hub-muted);font-size:8px;line-height:1.4}
+.ncFooter svg{flex:none;color:var(--hub-accent)}
+@keyframes ncIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:700px){.notificationCentre{position:fixed;top:auto;right:10px;bottom:calc(72px + env(safe-area-inset-bottom));width:calc(100vw - 20px);max-height:min(72dvh,640px);border-radius:17px}.ncHeader{padding:15px}.ncList{max-height:46dvh}}
+@media(prefers-reduced-motion:reduce){.notificationCentre,.ncRow{animation:none!important;transition:none!important}}
