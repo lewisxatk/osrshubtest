@@ -16,7 +16,7 @@ test("comparison independently indexes each item's first midpoint to 100", () =>
   assert.equal(result.lines.length, 2);
   assert.equal(result.data[0].item_4151, 100);
   assert.equal(result.data[0].item_11802, 100);
-  assert.equal(result.data[1].item_4151, 120);
+  assert.ok(Math.abs(result.data[1].item_4151 - (120 / 110 * 100)) < 1e-10);
   assert.equal(result.data[1].item_11802, 90.9090909090909);
   assert.equal(result.hasComparableSeries, true);
 });
@@ -35,7 +35,7 @@ test("missing or one-sided price observations are omitted, not interpolated", ()
   ]);
   assert.equal(result.lines[0].pointCount, 1);
   assert.equal(result.data.find(row => row.timestamp === 2000).item_1, undefined);
-  assert.equal(result.data.find(row => row.timestamp === 2000).item_2, 105);
+  assert.ok(Math.abs(result.data.find(row => row.timestamp === 2000).item_2 - (220 / 210 * 100)) < 1e-10);
 });
 
 test("invalid IDs, duplicate IDs, non-positive prices and malformed timestamps are ignored", () => {
