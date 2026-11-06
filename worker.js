@@ -29,6 +29,22 @@ async function discordBotRequest(env,path,options={}){if(!botConfigured(env))thr
 async function sendDiscordDM(env,userId,payload){const channel=await discordBotRequest(env,"/users/@me/channels",{method:"POST",body:JSON.stringify({recipient_id:String(userId)})});if(!channel?.id)throw new Error("Discord did not return a DM channel.");await discordBotRequest(env,`/channels/${channel.id}/messages`,{method:"POST",body:JSON.stringify(payload)});return channel.id}
 async function sendDiscordAlert(env,userId,a){const itemUrl=`${env.PUBLIC_ORIGIN||""}/?item=${encodeURIComponent(a.itemId)}`;return sendDiscordDM(env,userId,{embeds:[{title:`${a.name} alert triggered`,description:`**${a.metric}** ${a.metric==="roi"?"is":"reached"} **${a.metric==="roi"?Number(a.target).toFixed(2)+"%":Math.round(a.target).toLocaleString("en-GB")+" gp"}**`,color:0x8b5cf6,fields:[{name:"Current value",value:a.metric==="roi"?`${Number(a.value).toFixed(2)}%`:`${Math.round(a.value).toLocaleString("en-GB")} gp`,inline:true},{name:"Condition",value:`${a.direction||"threshold"}`,inline:true},{name:"Item",value:a.name,inline:true}],footer:{text:"OSRS Hub · Discord alerts"},timestamp:new Date(a.at).toISOString(),url:itemUrl||undefined,thumbnail:a.icon?{url:`https://prices.runescape.wiki/osrs/item/${a.itemId}/icon`}:undefined}]});}
 async function currentUser(request,env){if(!authConfigured(env))return null;const c=cookies(request)[SESSION_COOKIE];if(!c)return null;const [uid,exp,sig]=c.split(".");if(!uid||!exp||!sig||Number(exp)<Date.now()||!(await validSig(env.OSRSHUB_AUTH_SECRET,`${uid}.${exp}`,sig)))return null;return env.DB.prepare("SELECT id,username,global_name,avatar FROM users WHERE id=?1").bind(uid).first()}
+async function hiscores(request){
+ const url=new URL(request.url);
+ const player=String(url.searchParams.get("player")||"").trim().replace(/\\+/g," ").slice(0,20);
+ if(!player)return json({error:"Player name required."},400,{"Cache-Control":"no-store"});
+ if(!/^[A-Za-z0-9 _-]{1,20}$/.test(player))return json({error:"Player name contains unsupported characters."},400,{"Cache-Control":"no-store"});
+ try{
+  const upstream=new URL(UPSTREAM);
+  upstream.searchParams.set("player",player);
+  const response=await fetch(upstream.toString(),{headers:{"User-Agent":"OSRS Hub Test/1.0 (public Hiscores lookup)","Accept":"text/plain"},cf:{cacheTtl:300,cacheEverything:true}});
+  const body=await response.text();
+  if(!response.ok)return json({error:response.status===404?"Player not found on the selected public Hiscores table.":`Hiscores upstream returned HTTP ${response.status}.`},response.status===404?404:502,{"Cache-Control":"no-store"});
+  if(!body.trim()||!/^\\s*-?\\d+,\\s*-?\\d+,\\s*-?\\d+/m.test(body))return json({error:"Hiscores returned an empty or unrecognised response."},502,{"Cache-Control":"no-store"});
+  return new Response(body,{status:200,headers:{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"public, max-age=300","Access-Control-Allow-Origin":"*"}});
+ }catch(error){return json({error:"Could not reach the public OSRS Hiscores service.",detail:String(error?.message||"upstream unavailable").slice(0,120)},502,{"Cache-Control":"no-store"});}
+}
+
 async function accountSync(request,env){
  const url=new URL(request.url);const player=String(url.searchParams.get("player")||"").trim().slice(0,12);if(!player)return json({error:"Player name required."},400);
  const quests=[];let levels={};let questSource="none";
