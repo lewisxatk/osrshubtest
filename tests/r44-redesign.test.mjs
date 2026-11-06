@@ -5,12 +5,16 @@ const main=fs.readFileSync(new URL('../src/main.jsx',import.meta.url),'utf8');
 const css=fs.readFileSync(new URL('../src/styles.css',import.meta.url),'utf8');
 test('R44 navigation is simplified and hidden legacy pages remain directly routable',()=>{
  assert.match(main,/>Home<\/button>/);
+ assert.match(main,/>Market<\/button>/);
  assert.match(main,/>Trading<\/button>/);
  assert.match(main,/>Account<\/button>/);
- assert.doesNotMatch(main.slice(main.indexOf('<div className="navlinks">'),main.indexOf('<div className="globalSearch">')),/>Screener<\/button>/);
- assert.match(main,/>OSRS Brain<\/button>/);\n assert.match(main,/>More <ChevronDown/);
+ assert.match(main,/>OSRS Brain<\/button>/);
+ const nav=main.slice(main.indexOf('<div className="navlinks">'),main.indexOf('<button className="globalActionTrigger"'));
+ assert.doesNotMatch(nav,/>Screener<\/button>/);
+ assert.match(nav,/>More <ChevronDown/);
  assert.match(main,/screener:"\/screener"/);
  assert.match(main,/backtest:"\/backtest"/);
+ assert.match(main,/hubSidebarGroup/);
  assert.match(css,/\.desktopHubSidebar\{display:none!important\}/);
  assert.match(css,/\.app>main\{max-width:none!important/);
 });
@@ -25,7 +29,7 @@ test('R44 quest training planner uses account XP and explicit user-supplied rate
  assert.doesNotMatch(planner,/Most AFK|Cheapest|Fastest/);
 });
 test('R44 preserves live price history while keeping training time estimates user-supplied',()=>{
- assert.match(main,/api\(`\/timeseries\?timestep=1h&id=\$\{item\.id\}\`\)/);
+ assert.match(main,/api\(`\/timeseries\?timestep=1h&id=\$\{item\.id\}`\)/);
  const start=main.indexOf('function QuestTrainingPlanner('),end=main.indexOf('function Screener(p)',start);
  const planner=main.slice(start,end);
  assert.match(planner,/Your verified XP \/ hour/);
