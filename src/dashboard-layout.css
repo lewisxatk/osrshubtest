@@ -1,0 +1,21 @@
+.dashboardLayoutControls{margin:-3px 0 15px;padding:12px 14px;border:1px solid var(--hub-line);border-radius:13px;background:var(--hub-panel);color:var(--hub-text)}
+.dlcTitle{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}
+.dlcTitle>span,.dlcTitle>strong{display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:850;letter-spacing:.5px}
+.dlcTitle>span{color:var(--hub-muted)}
+.dlcTitle>strong{color:var(--hub-accent)}
+.dlcBody{display:flex;align-items:center;gap:17px;flex-wrap:wrap}
+.dlcTemplate{display:flex;align-items:center;gap:9px;color:var(--hub-muted);font-size:10px;font-weight:700}
+.dlcTemplate select{min-width:145px;height:34px;padding:0 9px;border:1px solid var(--hub-line);border-radius:8px;background:var(--hub-panel-soft);color:var(--hub-text);font:inherit;font-size:10px}
+.dlcWidgets{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.dlcWidgets label{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid var(--hub-line);border-radius:8px;background:var(--hub-panel-soft);color:var(--hub-muted);font-size:9px;font-weight:700;cursor:pointer}
+.dlcWidgets input{accent-color:var(--hub-accent);margin:0}
+.dashboardGrid[data-hidden-widgets~="opportunities"]>.dashboardCard:nth-child(1),
+.dashboardGrid[data-hidden-widgets~="market"]>.dashboardCard:nth-child(2),
+.dashboardGrid[data-hidden-widgets~="workspace"]>.dashboardCard:nth-child(3),
+.dashboardGrid[data-hidden-widgets~="journal"]>.dashboardCard:nth-child(4),
+.dashboardGrid[data-hidden-widgets~="competition"]>.dashboardCard:nth-child(5){display:none}
+.dashboardGrid.dashboardLayout-trading{grid-template-columns:minmax(0,1.5fr) minmax(270px,.8fr)}
+.dashboardGrid.dashboardLayout-workspace{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1000px){.dashboardGrid.dashboardLayout-trading,.dashboardGrid.dashboardLayout-workspace{grid-template-columns:1fr}}
+@media(max-width:700px){.dashboardLayoutControls{padding:11px}.dlcTitle{align-items:flex-start;flex-direction:column}.dlcBody{align-items:stretch;gap:10px}.dlcTemplate{justify-content:space-between}.dlcTemplate select{flex:1}.dlcWidgets{display:grid;grid-template-columns:1fr 1fr}.dlcWidgets label{min-height:32px}}
+@media(prefers-reduced-motion:reduce){.dashboardLayoutControls *{transition:none!important;animation:none!important}}

@@ -36,7 +36,7 @@ export function buildItemMovementEvidence(history = [], item = {}) {
     sellChangePct: comparable ? percentChange(first?.sell, last?.sell) : null,
     midChangePct,
     direction: midChangePct == null ? "unknown" : midChangePct > 0 ? "rising" : midChangePct < 0 ? "falling" : "flat",
-    currentVolume: Number.isFinite(volume) && volume >= 0 ? volume : null,
+    currentVolume: item?.volume == null || item.volume === "" ? null : (Number.isFinite(volume) && volume >= 0 ? volume : null),
     hasComparableHistory: comparable
   };
 }
