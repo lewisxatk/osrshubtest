@@ -79,7 +79,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
     .filter(item => !search.trim() || itemName(item).toLowerCase().includes(search.trim().toLowerCase()))
     .filter(item => itemPrice(item) !== null ? itemPrice(item) <= numericBudget : item.tradeable === false)
     .sort((a, b) => (itemPrice(a) ?? Infinity) - (itemPrice(b) ?? Infinity))
-    .slice(0, 80), [items, activeSlot, search, numericBudget]);
+    .slice(0, 80), [items, activeSlot, search, numericBudget, style]);
 
   const applyEstimate = option => {
     const next = (option?.estimate?.slots ?? []).map(pair => [...pair]);
