@@ -185,7 +185,8 @@ export async function optimizeLoadoutWithEngine({
     const highest = [...pool].sort((a,b)=>
       preference(b,style,target.name)-preference(a,style,target.name)
       || a._enginePrice-b._enginePrice)[0];
-    const strongest = [...pool].sort((a,b)=>preference(b,style,target.name)-preference(a,style,target.name)||a._enginePrice-b._enginePrice).slice(0,3);\n    const shortlist = [...new Map([cheapest,...strongest].filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,4);
+    const strongest = [...pool].sort((a,b)=>preference(b,style,target.name)-preference(a,style,target.name)||a._enginePrice-b._enginePrice).slice(0,3);
+    const shortlist = [...new Map([cheapest,...strongest].filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,4);
     const alternatives = shortlist.filter(item=>item._engineId!==current?._engineId);
     const evaluated = await Promise.all(alternatives.map(async candidate=>{
       const draft = new Map(picked);
