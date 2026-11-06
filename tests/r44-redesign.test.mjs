@@ -14,10 +14,15 @@ test('R44 navigation is simplified and hidden legacy pages remain directly routa
  assert.match(css,/\.desktopHubSidebar\{display:none!important\}/);
  assert.match(css,/\.app>main\{max-width:none!important/);
 });
-test('R44 quest training planner exposes target level, budget and four ranking modes',()=>{
+test('R44 quest training planner uses account XP and explicit user-supplied rates instead of invented method rankings',()=>{
  assert.match(main,/function QuestTrainingPlanner\(/);
- assert.match(main,/Fastest/); assert.match(main,/Most AFK/); assert.match(main,/Cheapest/); assert.match(main,/XP remaining/);
- assert.match(main,/QUEST_XP_LEVELS/);
+ const start=main.indexOf('function QuestTrainingPlanner('),end=main.indexOf('function Screener(p)',start);
+ const planner=main.slice(start,end);
+ assert.match(planner,/Your verified XP \/ hour/);
+ assert.match(planner,/xpRangeToTarget/);
+ assert.match(planner,/estimateXpHours/);
+ assert.match(planner,/will not rank methods until source-backed records are available/);
+ assert.doesNotMatch(planner,/Most AFK|Cheapest|Fastest/);
 });
 test('R44 keeps live price history source and explicitly labels training rates as estimates',()=>{
  assert.match(main,/api\(`\/timeseries\?timestep=1h&id=\$\{item\.id\}`\)/);
