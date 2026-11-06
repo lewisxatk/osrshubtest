@@ -8,9 +8,9 @@ This document is the acceptance ledger for the separate test build. It intention
 
 - [x] Copy the current React/Vite/Worker application and existing tests into this repository.
 - [x] Keep the production repository untouched.
-- [x] Use a separate Worker identity with no production D1 binding; database-backed routes fail closed until a dedicated test D1 resource is created.
+- [x] Use a separate Worker identity with a dedicated test-only D1 binding; no production database ID or binding is referenced.
 - [x] Make the test page non-indexable and disallow crawling.
-- [x] Preserve the production migration files as source only; no migration has been applied.
+- [x] Apply migrations 0001–0006 to the dedicated test D1 database only; production migrations and bindings remain untouched.
 - [x] Keep Discord Worker code, but leave test OAuth and bot credentials unset until separate test credentials are provided.
 - [x] Add a GitHub Actions workflow for regression tests, Worker Assets build, output verification and downloadable artifacts.
 - [ ] Create the dedicated Cloudflare D1 database and replace the test database ID placeholder.
@@ -21,7 +21,7 @@ This document is the acceptance ledger for the separate test build. It intention
 - [x] Make the new Command Centre the root route.
 - [x] Keep the original market page accessible at `/market`.
 - [x] Retain `/command-centre` as a compatibility route.
-- [x] Promote Market to a first-class navigation destination.
+- [x] Promote Market to a first-class navigation destination.\n- [x] Consolidate the primary navigation into five workspaces: Home, Market, Trading, Account and OSRS Brain.\n- [x] Group secondary tools into Trading, Account progression, Home & Personal, and OSRS Brain sections in the More menus.\n- [x] Reduce the mobile bottom navigation to five core destinations while retaining direct access to Watchlists in More.
 - [x] Expand desktop sidebar and mobile More navigation to expose Screener, Market Radar, Backtester, Finance, Quest Pathway, Levelling and Tools.
 - [x] Keep the existing command palette, quick calculator, alerts popover, login area, item detail overlays, watch ticker and responsive navigation.
 - [x] Add persistent breadcrumbs and recently visited page shortcuts throughout the existing routes.
@@ -53,7 +53,7 @@ This document is the acceptance ledger for the separate test build. It intention
 - [x] Full visual token overrides for Paper, Aurora Frost, Comfort, Obsidian, Aurora, Void, Opera Red, Graphite and Gilded.
 - [x] New aurora-inspired command hero with animated rune/orb treatment.
 - [x] Refined cards, hover lift, focus states, market rows, segmented tabs, progress tracks and responsive grid.
-- [x] Signature motion includes hero atmosphere drift, rune glow, orbit ring, live pulse, page entrance and interaction transitions.
+- [x] Signature motion includes hero atmosphere drift, rune glow, orbit ring, live market-signal pulse, staggered Market Events, Combat Studio entrance transitions and item-dossier reveal.\n- [x] Add a shared OSRS-inspired ambient motion layer to Account, Market Events and Combat Studio with theme-aware colours.
 - [x] Reduced-motion support.
 - [x] Keyboard-visible focus rings.
 - [ ] Audit every legacy page against each theme and remove any remaining hard-coded colour exceptions.
@@ -72,8 +72,8 @@ These are copied working application modules; the current test pass must prove t
 - [x] Alerts, alert rules, history and Discord integration code.
 - [x] Dashboard, finance tools, flip log, bankroll and portfolio records.
 - [x] Personal Dashboard layout builder with Balanced, Trading Focus and Workspace Focus templates, persistent visibility controls for the five existing dashboard widgets, and cloud-sync allowlist support.
-- [x] Account Studio, account tracker, loadout studio, quest progression and calculators.
-- [x] Combat Studio, engine bridge, live calculation clients, loadout optimizer and saved builds.
+- [x] Account Studio, account tracker, loadout studio, quest progression and calculators.\n- [x] Add a global Account Link panel with public Hiscores import, supported game-mode selection, WikiSync/RuneMetrics supplement and local multi-profile persistence.\n- [x] Add a local RuneLite/WikiSync JSON profile import path with clear provenance and no false claim of remote RuneLite control.\n- [x] Add the linked-account profile keys to the per-Discord-user cloud-sync allowlist; test OAuth remains a separate configuration task.
+- [x] Combat Studio, engine bridge, live calculation clients, loadout optimizer and saved builds.\n- [x] Expose canonical monster and equipment catalogue endpoints from the isolated combat runtime.\n- [x] Join canonical equipment IDs to live market prices and enrich gear with public item/quest requirements where available.\n- [x] Improve price precedence so zero-valued fields cannot mask valid live prices; remove fabricated GE cost for untradeable Barrows gloves.\n- [x] Expand the verified auto-build shortlist to up to four candidates per equipment slot. The bounded search is explicitly not claimed to prove the global optimum.
 - [x] OSRS Brain/intelligence search and Data Control Centre.
 - [x] Levelling planner, Recipes, Money Makers and High Alcher.
 - [x] Analysis, Market Radar and Historical Backtester.
