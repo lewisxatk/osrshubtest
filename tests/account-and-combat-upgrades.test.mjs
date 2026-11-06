@@ -57,6 +57,8 @@ test("Combat Studio only accepts positive live prices and does not invent Barrow
   assert.ok(combat.includes("[x._price,x.sell,x.high,x.price]"));
   assert.ok(!combat.includes("x.buy"));
   assert.doesNotMatch(optimizer, /item\?\.buy/);
+  assert.match(optimizer, /const untradeable = item\?\.tradeable/);
+  assert.match(optimizer, /if \(untradeable\) values\.push/);
   assert.doesNotMatch(combat, /barrowsgloves\?130000/);
   assert.match(optimizer, /if \(name === "barrowsgloves"\) return 0/);
   assert.match(optimizer, /up to four shortlisted alternatives per slot/);
