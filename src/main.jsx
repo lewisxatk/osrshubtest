@@ -568,7 +568,8 @@ function App() {
       try{
         const me=await cloudFetch("/api/auth/me");
         if(!alive)return;
-        setCloudUser(me.user||null);\n        setCloudConfigured(me.configured!==false);
+        setCloudUser(me.user||null);
+        setCloudConfigured(me.configured!==false);
         if(me.user&&me.data){
           const hydrateKey=`osrshub-cloud-hydrated:${me.user.id}`;
           const alreadyHydrated=sessionStorage.getItem(hydrateKey)==="1";
