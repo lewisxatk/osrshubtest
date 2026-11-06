@@ -7,10 +7,20 @@
     "directory": "./site",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
   "vars": {
     "OSRSHUB_ENVIRONMENT": "test",
-    "PUBLIC_ORIGIN": "https://osrshubtest.prices-app.workers.dev"
-  }
+    "PUBLIC_ORIGIN": "https://osrshubtest.prices-app.workers.dev",
+    "DISCORD_REDIRECT_URI": "https://osrshubtest.prices-app.workers.dev/api/auth/callback"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "osrshubtest-db",
+      "database_id": "d66af6c1-3ddb-4c43-91bb-78385629b357"
+    }
+  ]
 }
