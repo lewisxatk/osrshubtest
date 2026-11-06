@@ -53,8 +53,9 @@ test("Combat Studio loads canonical equipment and monster IDs from its isolated 
 
 test("Combat Studio only accepts positive live prices and does not invent Barrows gloves GP cost", () => {
   assert.ok(combat.includes("find(v=>Number.isFinite(v)&&v>0)"));
-  assert.ok(combat.includes("[market.sell,market.high,market.price,e.sell,e.high,e.price,e._price]"));
+  assert.ok(combat.includes("[it.sell,it.high,it.price,it._price,prev._price]"));
   assert.ok(combat.includes("[x._price,x.sell,x.high,x.price]"));
+  assert.doesNotMatch(combat, /x\\.buy/);
   assert.doesNotMatch(optimizer, /item\?\.buy/);
   assert.doesNotMatch(combat, /barrowsgloves\?130000/);
   assert.match(optimizer, /if \(name === "barrowsgloves"\) return 0/);
