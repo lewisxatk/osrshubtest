@@ -118,7 +118,8 @@ test('an inverted example trade is correctly identified as a loss after tax', as
   assert.match(source, /Margin = Sell − Buy − GE tax/);
   assert.match(source, /Buy \u003d low-side offer/);
   assert.match(source, /chartMode==="margin"\?\[Math\.min\(0,min-pad\),max\+pad\]/);
-  assert.match(source, /Math\.log10\(Math\.abs\(item\.margin\)\+1\)/);
+  assert.match(source, /buildItemDnaProfile/);
+  assert.doesNotMatch(source, /Math\.log10\(Math\.abs\(item\.margin\)\+1\)/);
 });
 
 test('terminal persists selected item, range, theme and watchlist with retry support', async () => {
