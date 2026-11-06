@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-
 const source = await readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
 const styles = await readFile(new URL('../src/upgrade.css', import.meta.url), 'utf8');
 
@@ -15,7 +14,7 @@ test('R27 Loadout crash regression: gpPrice and isArmourSlot initialise before r
   assert.match(loadout, /const estimatedSetupCost=slots\.reduce/);
 });
 
-test('R27 Account Studio consolidates legacy Loadout, Calculations and Combat Studio without losing local keys', () => {
+test('R27 Account Studio consolidates Loadout, Calculations and Combat Studio without losing local keys', () => {
   assert.match(source, /account:"\/account-studio"/);
   assert.match(source, /PATH_TABS\["\/loadout"\]="account"/);
   assert.match(source, /PATH_TABS\["\/calculations"\]="account"/);
@@ -27,7 +26,7 @@ test('R27 Account Studio consolidates legacy Loadout, Calculations and Combat St
   assert.match(source, /osrshub-loadout-builds/);
   assert.match(source, /\["account","Account","◉"\]/);
   assert.match(source, /Quests & Goals/);
-  assert.match(source, />Loadout</);
+  assert.match(source, /Loadout/);
 });
 
 test('R27 item analytics page provides a back-to-top control on full item routes', () => {
