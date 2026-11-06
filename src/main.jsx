@@ -1253,7 +1253,7 @@ function Finance({items,onSelect}){
 
 function xpForLevel(level){const l=Math.max(1,Math.min(99,Number(level)||1));let total=0;for(let i=1;i<l;i++)total+=Math.floor(i+300*Math.pow(2,i/7));return Math.floor(total/4);}
 function levelForXp(xp){const x=Math.max(0,Number(xp)||0);let level=1;for(let i=1;i<=99;i++){if(x>=xpForLevel(i))level=i;else break}return level}
-const SKILL_NAMES=["Attack","Defence","Strength","Hitpoints","Ranged","Prayer","Magic","Cooking","Woodcutting","Fletching","Fishing","Firemaking","Crafting","Smithing","Mining","Runecraft","Hunter","Construction","Thieving","Slayer","Farming","Herblore","Agility","Sailing"];
+const SKILL_NAMES=["Attack","Defence","Strength","Hitpoints","Ranged","Prayer","Magic","Cooking","Woodcutting","Fletching","Fishing","Firemaking","Crafting","Smithing","Mining","Herblore","Agility","Thieving","Slayer","Farming","Runecraft","Hunter","Construction","Sailing"];
 const SKILL_XP={};
 function parseAccountText(text){const out={};const raw=String(text||"");SKILL_NAMES.forEach(skill=>{const esc=skill.replace(/[-/]/g,"[-/]");const m=raw.match(new RegExp(esc+"\\s*[:=|,]?\\s*(?:level\\s*)?(\\d{1,2})(?:\\s*(?:xp|experience)\\s*[:=|,]?\\s*([\\d,]+))?","i"));if(m){const level=Number(m[1]);if(level>=1&&level<=99)out[skill]={level,xp:m[2]?Number(m[2].replace(/,/g,"")):xpForLevel(level)}}});return out}
 const QUEST_DATA=[
