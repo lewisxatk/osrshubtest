@@ -1,4 +1,4 @@
-export const OSRS_SKILLS=["Attack","Defence","Strength","Hitpoints","Ranged","Prayer","Magic","Cooking","Woodcutting","Fletching","Fishing","Firemaking","Crafting","Smithing","Mining","Herblore","Agility","Thieving","Slayer","Farming","Runecraft","Hunter","Construction"];
+export const OSRS_SKILLS=["Attack","Defence","Strength","Hitpoints","Ranged","Prayer","Magic","Cooking","Woodcutting","Fletching","Fishing","Firemaking","Crafting","Smithing","Mining","Herblore","Agility","Thieving","Slayer","Farming","Runecraft","Hunter","Construction","Sailing"];
 const statusOf=value=>{const s=String(value??"").trim().toUpperCase().replace(/[\s-]+/g,"_");if(["FINISHED","COMPLETE","COMPLETED"].includes(s))return"completed";if(["IN_PROGRESS","STARTED","ONGOING"].includes(s))return"inProgress";if(["NOT_STARTED","NOTSTARTED","UNSTARTED"].includes(s))return"notStarted";return"unknown"};
 export function assessAccountDataCoverage(account){
  const stats=account?.stats&&typeof account.stats==="object"&&!Array.isArray(account.stats)?account.stats:{};
