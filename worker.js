@@ -42,7 +42,7 @@ async function hiscores(request){
   const response=await fetch(upstream.toString(),{headers:{"User-Agent":"OSRS Hub Test/1.0 (public Hiscores lookup)","Accept":"text/plain"},cf:{cacheTtl:300,cacheEverything:true}});
   const body=await response.text();
   if(!response.ok)return json({error:response.status===404?"Player not found on the selected public Hiscores table.":"Hiscores upstream returned HTTP "+response.status+"."},response.status===404?404:502,{"Cache-Control":"no-store"});
-  if(!body.trim()||!/^-?\\d+,\\s*-?\\d+,\\s*-?\\d+/m.test(body.trim()))return json({error:"Hiscores returned an empty or unrecognised response."},502,{"Cache-Control":"no-store"});
+  if(!body.trim()||!/^-?\d+,\s*-?\d+,\s*-?\d+/m.test(body.trim()))return json({error:"Hiscores returned an empty or unrecognised response."},502,{"Cache-Control":"no-store"});
   return new Response(body,{status:200,headers:{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"public, max-age=300","Access-Control-Allow-Origin":"*"}});
  }catch(error){return json({error:"Could not reach the public OSRS Hiscores service.",detail:String(error?.message||"upstream unavailable").slice(0,120)},502,{"Cache-Control":"no-store"});}
 }
@@ -142,7 +142,7 @@ async function questDetails(request){
   const html=String(tj?.parse?.text?.["*"]||"");
   const li=[...html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)].map(m=>m[1].replace(/<br\s*\/?>/gi," ").replace(/<[^>]+>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/\s+/g," ").trim()).filter(Boolean);
   const skills=["Attack","Strength","Defence","Hitpoints","Ranged","Prayer","Magic","Cooking","Woodcutting","Fletching","Fishing","Firemaking","Crafting","Smithing","Mining","Runecraft","Hunter","Construction","Thieving","Slayer","Farming","Herblore","Agility","Sailing"];
-  const skillPattern=new RegExp(`(?:^|\\b)(\\d{1,3})\\s+(${skills.map(x=>x.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\$&")).join("|")})(?:\\s|$)`,"i");
+  const skillPattern=new RegExp(`(?:^|\\b)(\d{1,3})\s+(${skills.map(x=>x.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\$&")).join("|")})(?:\s|$)`,"i");
   const requirements=[],quests=[];
   for(const text of li){
    const clean=text.replace(/\[[^\]]*\]/g,"");const sm=clean.match(skillPattern);
