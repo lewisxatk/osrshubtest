@@ -68,6 +68,8 @@ test("Combat Studio never shows hard-coded sample gear as a completed recommenda
   assert.match(page, /setSlots\(EMPTY_SLOTS\.map/);
   assert.match(page, /Engine verified/);
   assert.match(page, /Not built/);
+  assert.match(page, /osrshubtest-combat-runtime\.prices-app\.workers\.dev/);
+  assert.doesNotMatch(page, /localStorage\.getItem\(["\x27]osrshub-combat-runtime-url/);
 });
 
 test("Combat Studio rejects an engine result that exceeds the user budget", () => {
