@@ -17,3 +17,10 @@ html[data-theme] .accountLinkPanel,html[data-theme] .accountLinkMethods input,ht
 html[data-theme] .accountLinkMethods input,html[data-theme] .accountLinkMethods select{background:var(--oh-surface2)!important}
 html[data-theme] .marketEvents,html[data-theme] .marketPulse,html[data-theme] .constellation{background-color:var(--oh-surface)!important;border-color:var(--oh-line)!important;color:var(--oh-text)!important}
 html[data-theme] .siteFooter{background:color-mix(in srgb,var(--oh-surface) 92%,transparent)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+
+/* Item dossier is a focused document view: hide the Market discovery controls behind it. */
+body:has(.routeItemPage) .filterbar,
+body:has(.routeItemPage) .mobileQuickTools,
+body:has(.routeItemPage) .toolbar,
+body:has(.routeItemPage) .mobileColumnsPanel,
+body:has(.routeItemPage) .mobileProfilePanel{display:none!important}
