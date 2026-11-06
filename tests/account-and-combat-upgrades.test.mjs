@@ -8,6 +8,7 @@ const worker = await readFile(new URL("../worker.js", import.meta.url), "utf8");
 const combat = await readFile(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
 const optimizer = await readFile(new URL("../src/combat-studio/engine-loadout-optimizer.js", import.meta.url), "utf8");
 const runtimeWorkflow = await readFile(new URL("../.github/workflows/validate.yml", import.meta.url), "utf8");
+const animations = await readFile(new URL("../src/unique-animations.css", import.meta.url), "utf8");
 
 test("account linking is available in Account Studio and remembers multiple profiles locally", () => {
   assert.match(main, /AccountLinkPanel/);
@@ -55,4 +56,14 @@ test("Combat Studio only accepts positive live prices and does not invent Barrow
   assert.match(optimizer, /if \(name === "barrowsgloves"\) return 0/);
   assert.match(optimizer, /up to four shortlisted alternatives per slot/);
   assert.match(optimizer, /Choose a monster with a canonical combat-engine ID/);
+});
+
+test("new OSRS-inspired motion is theme-aware and respects reduced-motion preferences", () => {
+  assert.match(main, /accountStudioHero osrs-rune-ambient/);
+  assert.match(main, /marketEvents osrs-rune-ambient/);
+  assert.match(combat, /combat-studio osrs-rune-ambient/);
+  assert.match(animations, /@keyframes osrsRuneDrift/);
+  assert.match(animations, /@keyframes osrsSignalPulse/);
+  assert.match(animations, /@keyframes osrsDossierReveal/);
+  assert.match(animations, /prefers-reduced-motion:reduce/);
 });
