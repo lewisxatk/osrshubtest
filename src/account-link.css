@@ -1,0 +1,18 @@
+.accountLinkPanel{display:grid;gap:16px;padding:20px;border:1px solid var(--border,rgba(180,150,90,.28));border-radius:20px;background:var(--surface,rgba(30,30,30,.72));color:var(--text,inherit)}
+.accountLinkHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.accountLinkEyebrow{display:flex;align-items:center;gap:7px;color:var(--accent,#d5ad55);font-size:11px;font-weight:800;letter-spacing:.16em}
+.accountLinkHeader h3{margin:7px 0 4px;font-size:21px}.accountLinkHeader p{margin:0;color:var(--muted,#999);font-size:13px}
+.accountLinkStatus{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--border,rgba(180,150,90,.3));border-radius:999px;color:var(--muted,#aaa);font-size:12px}
+.accountLinkMethods{display:grid;grid-template-columns:minmax(180px,1.3fr) minmax(150px,.8fr) auto auto;align-items:end;gap:10px}
+.accountLinkMethods label{display:grid;gap:6px;color:var(--muted,#aaa);font-size:12px;font-weight:700}
+.accountLinkMethods input,.accountLinkMethods select{min-width:0;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--border,rgba(180,150,90,.3));border-radius:11px;background:var(--input,var(--surface));color:var(--text,inherit)}
+.accountLinkMethods button,.accountLinkDiscord{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border:1px solid var(--accent,#b99545);border-radius:11px;background:var(--accent,#b99545);color:#19150d;font-weight:800;white-space:nowrap}
+.accountLinkMethods button:disabled{opacity:.6}.accountLinkMethods .accountLinkSecondary{background:transparent;color:var(--text,inherit);border-color:var(--border,rgba(180,150,90,.3))}
+.accountLinkMessage{display:flex;align-items:center;gap:8px;margin:0;color:#39b979;font-size:13px}.accountLinkMessage.error{color:#e07b73}
+.accountLinkPrivacy{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid var(--border,rgba(180,150,90,.22));border-radius:12px;background:var(--surface-2,rgba(0,0,0,.12));color:var(--muted,#aaa);font-size:12px;line-height:1.55}.accountLinkPrivacy svg{flex:none;margin-top:2px;color:var(--accent,#d5ad55)}.accountLinkPrivacy b{color:var(--text,inherit)}
+.accountLinkDiscord{justify-self:start;background:transparent;color:var(--text,inherit)}
+.accountLinkSaved{display:grid;gap:8px}.accountLinkSaved>div{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.accountLinkSaved>div small,.accountLinkSaved article small{color:var(--muted,#999);font-size:11px}
+.accountLinkSaved article{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border,rgba(180,150,90,.2));border-radius:12px}.accountLinkSaved article span{display:grid;gap:3px;flex:1;min-width:0}.accountLinkSaved article em{font-size:11px;color:#39b979;font-style:normal;font-weight:800}.accountLinkSaved article button{border:1px solid var(--border,rgba(180,150,90,.3));border-radius:9px;background:transparent;color:var(--text,inherit);padding:6px 10px}.accountLinkSaved article button.remove{font-size:18px;line-height:1;color:var(--muted,#999)}
+.accountLinkFootnote{color:var(--muted,#999);font-size:11px;line-height:1.5}
+@media(max-width:760px){.accountLinkMethods{grid-template-columns:1fr 1fr}.accountLinkMethods label:first-child{grid-column:1/-1}.accountLinkMethods button{white-space:normal}.accountLinkHeader{display:grid}.accountLinkStatus{justify-self:start}}
+@media(max-width:420px){.accountLinkMethods{grid-template-columns:1fr}.accountLinkMethods label:first-child{grid-column:auto}.accountLinkMethods button,.accountLinkDiscord{width:100%}}
