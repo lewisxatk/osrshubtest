@@ -9,6 +9,7 @@ const combat = await readFile(new URL("../src/CombatStudioPage.jsx", import.meta
 const optimizer = await readFile(new URL("../src/combat-studio/engine-loadout-optimizer.js", import.meta.url), "utf8");
 const runtimeWorkflow = await readFile(new URL("../.github/workflows/validate.yml", import.meta.url), "utf8");
 const animations = await readFile(new URL("../src/unique-animations.css", import.meta.url), "utf8");
+const themeCss = await readFile(new URL("../src/theme-compatibility.css", import.meta.url), "utf8");
 
 test("account linking is available in Account Studio and remembers multiple profiles locally", () => {
   assert.match(main, /AccountLinkPanel/);
@@ -79,4 +80,13 @@ test("Account Studio RuneLite import uses the official export flow and persists 
   assert.match(main, /lines\[index\+1\]/);
   assert.match(main, /const persistAccount=next=>/);
   assert.match(main, /osrshub-linked-accounts/);
+});
+
+test("all theme families use shared surface, control and feature-card tokens", () => {
+  for (const theme of ["frost","comfort","graphite","gilded","opera"]) assert.ok(themeCss.includes('html[data-theme="'+theme+'"]'));
+  assert.match(themeCss, /input:not\(\[type="checkbox"\]\)/);
+  assert.match(themeCss, /\.mobileToolBtn/);
+  assert.match(themeCss, /\.itemDetailCard/);
+  assert.match(themeCss, /\.calcLabCard/);
+  assert.match(themeCss, /var\(--oh-surface2\)/);
 });
