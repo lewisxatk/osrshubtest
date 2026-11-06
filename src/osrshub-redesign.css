@@ -170,3 +170,122 @@ html[data-theme="dark"] .environmentBadge,html[data-theme="aurora"] .environment
 .tradingCoachFoot svg{flex:none;color:var(--oh-positive)}
 @media(max-width:760px){.tradingCoach{padding:14px}.tradingCoachHead{flex-direction:column;gap:9px}.tradingCoachMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.tradingCoachBody{grid-template-columns:1fr}.tradingCoachLeaders{grid-template-columns:repeat(2,minmax(0,1fr))}.tradingCoachLeaders>div:last-child{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){.tradingCoach *{transition:none!important;animation:none!important}}
+
+
+/* OSRS Hub Test — cross-theme component tokens and mobile detail focus */
+.app .search,
+.app .mobileSortSelect,
+.app .mobileToolBtn,
+.app .mobileColumnsPanel,
+.app .mobileProfilePanel,
+.app .mobileScreenerFilterPanel,
+.app .filterPanel,
+.app .profileMenu,
+.app .itemDetailCard,
+.app .drawer,
+.app .fullDetail,
+.app .detailTileControls,
+.app .chartbox,
+.app .charthead,
+.app .itemDetailCard code {
+  color:var(--oh-text);
+  border-color:var(--oh-line);
+  background:var(--oh-surface);
+}
+.app .search,
+.app .mobileSortSelect,
+.app .mobileToolBtn,
+.app .mobileColumnsPanel,
+.app .mobileProfilePanel,
+.app .filterPanel,
+.app .profileMenu,
+.app .itemDetailCard,
+.app .detailTileControls {
+  box-shadow:0 8px 24px rgba(0,0,0,.06);
+}
+.app .search input,
+.app .mobileSortSelect,
+.app .mobileToolBtn,
+.app .mobileColumnsPanel button,
+.app .mobileProfilePanel button,
+.app .filterPanel button,
+.app .filterPanel input,
+.app .filterPanel select,
+.app .profileMenu button,
+.app .profileMenu input,
+.app .itemDetailCard,
+.app .itemDetailCard h3,
+.app .itemDetailCard strong {
+  color:var(--oh-text);
+}
+.app .mobileToolBtn,
+.app .mobileColumnsPanel,
+.app .mobileProfilePanel,
+.app .filterPanel,
+.app .profileMenu,
+.app .itemDetailCard,
+.app .detailTileControls {
+  background:linear-gradient(145deg,color-mix(in srgb,var(--oh-surface) 94%,var(--oh-accent) 6%),var(--oh-surface));
+}
+.app .mobileToolBtn:hover,
+.app .mobileColumnsPanel button:hover,
+.app .mobileProfilePanel button:hover,
+.app .filterPanel button:hover {
+  background:color-mix(in srgb,var(--oh-accent) 9%,var(--oh-surface));
+  border-color:color-mix(in srgb,var(--oh-accent) 42%,var(--oh-line));
+}
+.app .mobileColumnsPanel small,
+.app .mobileProfilePanel small,
+.app .itemDetailCard p,
+.app .itemDetailCard li,
+.app .filterPanel small {
+  color:var(--oh-muted);
+}
+.app .mobileColumnsPanel,
+.app .mobileProfilePanel {
+  border-radius:14px;
+  backdrop-filter:blur(18px);
+}
+.app .drawer,
+.app .fullDetail {
+  background:var(--oh-bg)!important;
+  color:var(--oh-text)!important;
+}
+.app .fullDetailBack {
+  background:color-mix(in srgb,var(--oh-bg) 78%,transparent)!important;
+}
+.app .drawer .panel,
+.app .fullDetail .panel,
+.app .fullDetail .chartbox,
+.app .fullDetail .itemDetailCard {
+  background:var(--oh-surface);
+  color:var(--oh-text);
+  border-color:var(--oh-line);
+}
+/* The item dossier is a focused reading surface: market discovery controls must not
+   remain pinned over its charts or relationship sections while the user scrolls. */
+body:has(.fullDetailBack) .screenerWide .screenerTopbar,
+body:has(.fullDetailBack) .screenerWide .filterbar,
+body:has(.fullDetailBack) .screenerWide .mobileQuickTools,
+body:has(.fullDetailBack) .screenerWide .mobileScreenerFilterPanel {
+  position:static!important;
+  top:auto!important;
+  z-index:auto!important;
+}
+body:has(.fullDetailBack) .screenerWide .mobileQuickTools,
+body:has(.fullDetailBack) .screenerWide .filterbar {
+  display:none!important;
+}
+@media(max-width:700px){
+  .app .mobileToolBtn{min-height:40px;border:1px solid var(--oh-line);background:var(--oh-surface);color:var(--oh-text)}
+  .app .mobileSortSelect{min-width:0;max-width:42vw;border:1px solid var(--oh-line);background:var(--oh-surface);color:var(--oh-text)}
+  .app .fullDetail{padding-bottom:calc(100px + env(safe-area-inset-bottom))!important}
+}
+@media(prefers-reduced-motion:no-preference){
+  .app .marketPulse .pulseMeter em{transition:width .9s cubic-bezier(.2,.8,.2,1)}
+  .app .mobileToolBtn:active{transform:scale(.97)}
+  .app .itemDetailCard{animation:hubSoftEnter .32s var(--hub-ease) both}
+  .app .itemDetailCard:nth-child(2){animation-delay:35ms}
+  .app .itemDetailCard:nth-child(3){animation-delay:70ms}
+  .app .itemDetailCard:nth-child(4){animation-delay:105ms}
+}
