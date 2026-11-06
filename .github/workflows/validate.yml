@@ -121,6 +121,18 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 58cc0c5ee11304ba28f879f354bd899c
         run: npx wrangler deploy --config wrangler.jsonc --name osrshubtest
+      - name: Configure separate test Discord OAuth when credentials are supplied
+        if: ${{ secrets.TEST_DISCORD_CLIENT_ID != '' && secrets.TEST_DISCORD_CLIENT_SECRET != '' && secrets.TEST_OSRSHUB_AUTH_SECRET != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 58cc0c5ee11304ba28f879f354bd899c
+          TEST_DISCORD_CLIENT_ID: ${{ secrets.TEST_DISCORD_CLIENT_ID }}
+          TEST_DISCORD_CLIENT_SECRET: ${{ secrets.TEST_DISCORD_CLIENT_SECRET }}
+          TEST_OSRSHUB_AUTH_SECRET: ${{ secrets.TEST_OSRSHUB_AUTH_SECRET }}
+        run: |
+          printf %s "$TEST_DISCORD_CLIENT_ID" | npx wrangler secret put DISCORD_CLIENT_ID --config wrangler.jsonc --name osrshubtest
+          printf %s "$TEST_DISCORD_CLIENT_SECRET" | npx wrangler secret put DISCORD_CLIENT_SECRET --config wrangler.jsonc --name osrshubtest
+          printf %s "$TEST_OSRSHUB_AUTH_SECRET" | npx wrangler secret put OSRSHUB_AUTH_SECRET --config wrangler.jsonc --name osrshubtest
       - name: Smoke test isolated site and D1 binding
         run: |
           URL="https://osrshubtest.prices-app.workers.dev"
