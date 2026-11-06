@@ -1,0 +1,23 @@
+.itemMovementEvidence{margin:18px 0 4px;padding:19px;border:1px solid var(--hub-line);border-radius:15px;background:var(--hub-panel-soft);color:var(--hub-text)}
+.imeHeading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.imeHeading .eyebrow{display:flex;align-items:center;gap:6px;color:var(--hub-accent);font-size:9px;font-weight:850;letter-spacing:1px}
+.imeHeading h3{margin:8px 0 4px;font-size:17px;letter-spacing:-.025em}
+.imeHeading p{margin:0;color:var(--hub-muted);font-size:10px}
+.imeDirection{display:inline-flex;align-items:center;gap:5px;flex:none;padding:6px 9px;border:1px solid var(--hub-line);border-radius:9px;background:var(--hub-panel);color:var(--hub-muted);font-size:9px;font-weight:750}
+.imeDirection.rising{color:var(--hub-green)}
+.imeDirection.falling{color:var(--hub-red)}
+.imeMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:15px}
+.imeMetrics>div{min-width:0;padding:11px;border:1px solid var(--hub-line);border-radius:10px;background:var(--hub-panel)}
+.imeMetrics small,.imeMetrics strong{display:block}
+.imeMetrics small{margin-bottom:7px;color:var(--hub-muted);font-size:9px}
+.imeMetrics strong{font-size:14px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.imeUnavailable{display:flex;align-items:center;gap:10px;margin-top:14px;padding:13px;border:1px dashed var(--hub-line);border-radius:10px;color:var(--hub-muted);font-size:11px}
+.imeUnavailable svg{flex:none;color:var(--hub-accent)}
+.imeUnavailable strong,.imeUnavailable small{display:block}
+.imeUnavailable strong{color:var(--hub-text)}
+.imeUnavailable small{margin-top:4px;color:var(--hub-muted);font-size:9px;line-height:1.5}
+.imeEvidenceFoot{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-top:12px}
+.imeEvidenceFoot>span{flex:none;color:var(--hub-muted);font-size:8px;font-weight:750}
+.imeEvidenceFoot p{max-width:480px;margin:0;color:var(--hub-muted);font-size:9px;line-height:1.55;text-align:right}
+@media(max-width:700px){.itemMovementEvidence{padding:14px}.imeHeading{flex-direction:column}.imeMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.imeEvidenceFoot{flex-direction:column}.imeEvidenceFoot p{text-align:left}}
+@media(prefers-reduced-motion:reduce){.itemMovementEvidence *{transition:none!important;animation:none!important}}
