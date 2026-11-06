@@ -71,7 +71,8 @@ jobs:
         run: yarn install --immutable
       - name: Run canonical combat engine regression tests
         working-directory: combat-engine
-        run: yarn test --runInBand\n      - name: Validate isolated combat Worker bundle
+        run: yarn test --runInBand
+      - name: Validate isolated combat Worker bundle
         working-directory: combat-engine
         run: npx --yes wrangler@4 deploy --dry-run --config wrangler.toml --name osrshubtest-combat-runtime --var "ALLOWED_ORIGIN:https://osrshubtest.prices-app.workers.dev"
       - name: Deploy isolated combat runtime
