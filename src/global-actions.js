@@ -55,7 +55,10 @@ export function searchGlobalActions(query, items = [], limit = 12) {
       type: "item", item, icon: "item", group: "Items", score, resultType: "item"
     };
   }).filter(Boolean) : [];
-  return [...actions, ...itemResults]
-    .sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
-    .slice(0, Math.max(1, Number(limit) || 12));
+  const defaultOrder = ["home", "market", "terminal", "screener", "calculator", "mini-ge", "new-alert", "watch", "alerts", "finance", "account", "combat", "quests", "levelling", "intelligence", "recipes", "highalch", "money", "heatmap", "backtest", "tools", "data"];
+  const results = [...actions, ...itemResults];
+  results.sort((a, b) => q
+    ? b.score - a.score || a.label.localeCompare(b.label)
+    : defaultOrder.indexOf(a.id) - defaultOrder.indexOf(b.id));
+  return results.slice(0, Math.max(1, Number(limit) || 12));
 }

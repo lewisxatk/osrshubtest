@@ -43,3 +43,13 @@ test("cached market rows are not misreported as an empty market while refresh is
   assert.ok(!feed.some(entry => entry.id === "system:market:empty"));
   assert.ok(!feed.some(entry => entry.id === "system:market:loading"));
 });
+
+
+test("alert notifications format volume and score metrics without GP units", () => {
+  const feed = buildNotificationFeed({ alerts: [
+    { id: "volume", name: "Abyssal whip", metric: "volume", target: 1200 },
+    { id: "score", name: "Dragon bones", metric: "riskScore", target: 35 }
+  ]});
+  assert.equal(feed.find(entry => entry.id === "alert:volume").description, "VOLUME reached 1,200 observed trades");
+  assert.equal(feed.find(entry => entry.id === "alert:score").description, "RISKSCORE reached 35 score");
+});

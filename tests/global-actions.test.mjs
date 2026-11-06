@@ -38,3 +38,9 @@ test("search results are bounded and no-match searches remain empty", () => {
   assert.equal(searchGlobalActions("zzzxqv", []).length, 0);
   assert.ok(searchGlobalActions("market", [], 2).length <= 2);
 });
+
+
+test("default drawer results show quick tools in the first screen", () => {
+  const ids = searchGlobalActions("", [], 12).map(result => result.id);
+  for (const id of ["market", "terminal", "calculator", "mini-ge", "new-alert"]) assert.ok(ids.includes(id));
+});

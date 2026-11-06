@@ -9,13 +9,13 @@ export function buildNotificationFeed({ alerts = [], alertRules = [], items = []
     const at = asTime(alert?.at);
     const metric = String(alert?.metric || "condition");
     const rawTarget = alert?.target ?? alert?.value;
-    const target = rawTarget == null ? "the saved threshold" : metric === "roi" ? `${Number(rawTarget).toFixed(2)}%` : `${Number(rawTarget).toLocaleString("en-GB")} gp`;
+    const formattedTarget = rawTarget == null ? "the saved threshold" : metric === "roi" ? `${Number(rawTarget).toFixed(2)}%` : metric === "volume" ? `${Number(rawTarget).toLocaleString("en-GB")} observed trades` : ["flipScore", "riskScore"].includes(metric) ? `${Number(rawTarget).toLocaleString("en-GB")} score` : `${Number(rawTarget).toLocaleString("en-GB")} gp`;
     return {
       id: `alert:${String(alert?.id ?? index)}`,
       kind: "alert",
       tone: "alert",
       title: `${String(alert?.name || "Item")} alert triggered`,
-      description: `${metric.toUpperCase()} reached ${target}`,
+      description: `${metric.toUpperCase()} reached ${formattedTarget}`,
       at,
       itemId: alert?.itemId ?? null,
       target: "item"
