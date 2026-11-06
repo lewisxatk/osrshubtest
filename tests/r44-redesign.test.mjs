@@ -5,10 +5,10 @@ const main=fs.readFileSync(new URL('../src/main.jsx',import.meta.url),'utf8');
 const css=fs.readFileSync(new URL('../src/styles.css',import.meta.url),'utf8');
 test('R44 navigation is simplified and hidden legacy pages remain directly routable',()=>{
  assert.match(main,/>Home<\/button>/);
- assert.match(main,/>Trading Terminal<\/button>/);
- assert.match(main,/>Account Studio<\/button>/);
+ assert.match(main,/>Trading<\/button>/);
+ assert.match(main,/>Account<\/button>/);
  assert.doesNotMatch(main.slice(main.indexOf('<div className="navlinks">'),main.indexOf('<div className="globalSearch">')),/>Screener<\/button>/);
- assert.match(main,/>More <ChevronDown/);
+ assert.match(main,/>OSRS Brain<\/button>/);\n assert.match(main,/>More <ChevronDown/);
  assert.match(main,/screener:"\/screener"/);
  assert.match(main,/backtest:"\/backtest"/);
  assert.match(css,/\.desktopHubSidebar\{display:none!important\}/);
