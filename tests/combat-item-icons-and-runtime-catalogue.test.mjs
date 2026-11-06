@@ -1,4 +1,5 @@
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { equipmentIconUrl } from "../src/combat-studio/item-icons.js";
 import { loadRuntimeCombatCatalogue } from "../src/combat-studio/runtime-catalogue.js";
@@ -58,4 +59,33 @@ test("fails closed when the canonical catalogue API is unavailable", async () =>
     }),
     /canonical .* catalogue|HTTP 503/i,
   );
+});
+
+
+test("Combat Studio never shows hard-coded sample gear as a completed recommendation", () => {
+  const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
+  assert.doesNotMatch(page, /STYLE_SLOTS/);
+  assert.match(page, /setSlots\(EMPTY_SLOTS\.map/);
+  assert.match(page, /Engine verified/);
+  assert.match(page, /Not built/);
+});
+
+test("Combat Studio rejects an engine result that exceeds the user budget", () => {
+  const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
+  assert.match(page, /Number\(outcome\.totalCost\)>Number\(budget\)/);
+  assert.match(page, /returned a loadout above your budget/);
+});
+
+test("untradeable equipment remains discoverable and uses canonical engine icons", () => {
+  const workbench = readFileSync(new URL("../src/combat-studio/LoadoutWorkbench.jsx", import.meta.url), "utf8");
+  assert.match(workbench, /item\.tradeable === false/);
+  assert.match(workbench, /equipmentIconUrl/);
+  assert.match(workbench, /Untradeable · manual selection/);
+});
+
+test("the test Worker exposes untradeable quest and unlock metadata from D1", () => {
+  const worker = readFileSync(new URL("../worker.js", import.meta.url), "utf8");
+  assert.match(worker, /quest_requirements:Array\.isArray\(item\.quest_requirements\)/);
+  assert.match(worker, /unlock_requirements_note:item\.unlock_requirements_note/);
+  assert.match(worker, /shopPrice:Number\(item\.shop_price/);
 });
