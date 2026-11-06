@@ -91,3 +91,30 @@ test("the test Worker exposes untradeable quest and unlock metadata from D1", ()
   assert.match(worker, /unlock_requirements_note:item\.unlock_requirements_note/);
   assert.match(worker, /shopPrice:Number\(item\.shop_price/);
 });
+
+
+test("changing the budget or target clears every old equipment slot and recommendation", () => {
+  const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
+  assert.match(page, /setSlots\(EMPTY_SLOTS\.map\(x=>\[\.\.\.x\]\)\);setStatus\(""\);setError\(false\)\},\[boss,attackType,stance,budget,account\?\.name,accountAware\]\)/);
+});
+
+test("Auto Build gives an actionable message instead of silently attempting a guest build", () => {
+  const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
+  assert.match(page, /if\(!account\?\.name\)/);
+  assert.match(page, /No OSRS account is linked/);
+  assert.match(page, /cs-account-settings/);
+});
+
+test("verified Auto Build only accepts a canonical monster record, never a heuristic target", () => {
+  const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
+  assert.match(page, /loadedTargetRecords\.find\(record=>keyName\(record\.name\)===keyName\(boss\)\)/);
+  assert.match(page, /heuristic target hints cannot be used/);
+  assert.doesNotMatch(page, /Use “\{bossQuery\.trim\(\)\}” as target/);
+});
+
+test("untradeable gear can enter DPS search only when its acquisition price is recorded", () => {
+  const optimizer = readFileSync(new URL("../src/combat-studio/engine-loadout-optimizer.js", import.meta.url), "utf8");
+  assert.match(optimizer, /item\?\.shopPrice/);
+  assert.match(optimizer, /if \(price == null\)/);
+  assert.doesNotMatch(optimizer, /item\.tradeable === false && normalized !==/);
+});
