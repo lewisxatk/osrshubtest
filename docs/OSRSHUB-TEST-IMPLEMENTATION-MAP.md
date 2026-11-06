@@ -25,7 +25,8 @@ This document is the acceptance ledger for the separate test build. It intention
 - [x] Expand desktop sidebar and mobile More navigation to expose Screener, Market Radar, Backtester, Finance, Quest Pathway, Levelling and Tools.
 - [x] Keep the existing command palette, quick calculator, alerts popover, login area, item detail overlays, watch ticker and responsive navigation.
 - [x] Add persistent breadcrumbs and recently visited page shortcuts throughout the existing routes.
-- [ ] Add a universal cross-page action drawer and a consistent global notification centre.
+- [x] Universal cross-page action drawer: keyboard shortcut, page/tool launch, live item-name/ID lookup, desktop drawer and mobile sheet.
+- [x] Global notification centre: real triggered alert history, filter/read state, market-data freshness, workspace/cloud status and honest empty states.
 
 ## 3. New Command Centre
 
@@ -42,7 +43,7 @@ This document is the acceptance ledger for the separate test build. It intention
 - [x] Account, combat and knowledge launchpad linking to the existing tools.
 - [x] Separate sections for Overview, Trading, Account, OSRS Brain and GP Planner.
 - [x] Classic quick-launch command panel retained behind an expandable disclosure.
-- [ ] Do not interpret the heuristic score as an optimal flip, forecast, guaranteed fill or profit recommendation.
+- [x] Next Move explicitly labels its transparent screening rank as a heuristic, not an optimal flip, forecast, guaranteed fill or profit recommendation.
 - [ ] Add account-import-aware daily briefing once the account data contract is reliably available.
 - [ ] Add time-windowed briefing and personal performance trends when reliable historical data is available.
 
@@ -70,6 +71,7 @@ These are copied working application modules; the current test pass must prove t
 - [x] Watchlists and per-item watch actions.
 - [x] Alerts, alert rules, history and Discord integration code.
 - [x] Dashboard, finance tools, flip log, bankroll and portfolio records.
+- [x] Personal Dashboard layout builder with Balanced, Trading Focus and Workspace Focus templates, persistent visibility controls for the five existing dashboard widgets, and cloud-sync allowlist support.
 - [x] Account Studio, account tracker, loadout studio, quest progression and calculators.
 - [x] Combat Studio, engine bridge, live calculation clients, loadout optimizer and saved builds.
 - [x] OSRS Brain/intelligence search and Data Control Centre.
@@ -86,6 +88,7 @@ The categories below preserve every major proposal from the whole-site blueprint
 - [x] Existing multi-chart terminal, scanner/screener, profiles and watchlists.
 - [x] Existing price alerts, CSV export, historical chart views and backtester.
 - [ ] Item dossier 2.0 with dedicated market quality, liquidity, volatility, margin, GE limit, tax, alchemy, requirements, related items, history and source panels.
+- [x] Evidence-led “Why is it moving?” panel on full item dossiers: observed buy/sell movement, sample coverage, time window and current volume; sparse data stays unknown and no causal explanation is fabricated.
 - [ ] Multi-item comparison workspace with correlated price overlays.
 - [ ] Multi-horizon market calendar for daily/weekly patterns, only where sufficient timestamped history exists.
 - [ ] Market anomaly and volatility detection with explainable thresholds.
