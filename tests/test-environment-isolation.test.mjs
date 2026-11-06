@@ -6,11 +6,14 @@ const worker=readFileSync(new URL("../worker.js",import.meta.url),"utf8");
 const html=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 test("test Worker is isolated from production services",()=>{
  assert.match(config,/"name":\s*"osrshubtest"/);
- assert.doesNotMatch(config,/database_id|database_name|triggers/);
+ assert.match(config,/"binding":\s*"DB"/);
+ assert.match(config,/"database_name":\s*"osrshubtest-db"/);
+ assert.match(config,/"database_id":\s*"d66af6c1-3ddb-4c43-91bb-78385629b357"/);
+ assert.doesNotMatch(config,/production-db|osrshub-production/);
  assert.match(config,/"OSRSHUB_ENVIRONMENT":\s*"test"/);
  assert.match(config,/osrshubtest\.prices-app\.workers\.dev/);
 });
-test("database-backed Worker routes fail closed until a test database is connected",()=>{
+test("database-backed Worker routes use the isolated test D1 and fail closed if its binding is missing",()=>{
  assert.match(worker,/\/api\/test\/status/);
  assert.match(worker,/databaseConfigured:!!env\.DB/);
  assert.match(worker,/if\(!env\.DB&&d1Required\)/);
