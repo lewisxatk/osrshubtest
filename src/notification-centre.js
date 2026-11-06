@@ -25,9 +25,9 @@ export function buildNotificationFeed({ alerts = [], alertRules = [], items = []
   const system = [];
   const snapshotTime = asTime(updated);
   const stale = snapshotTime != null && now - snapshotTime > 5 * 60 * 1000;
-  if (loading && !Array.isArray(items).length) {
+  if (loading && !(Array.isArray(items) && items.length)) {
     system.push({ id: "system:market:loading", kind: "system", tone: "info", title: "Market data is loading", description: "The market snapshot is being refreshed.", target: "market", at: now });
-  } else if (!Array.isArray(items).length) {
+  } else if (!(Array.isArray(items) && items.length)) {
     system.push({ id: "system:market:empty", kind: "system", tone: "warning", title: "No market snapshot available", description: "Market-dependent tools may show empty or unavailable data until the price feed responds.", target: "market", at: now });
   } else if (stale) {
     system.push({ id: "system:market:stale", kind: "system", tone: "warning", title: "Market snapshot may be stale", description: `${items.length.toLocaleString("en-GB")} items are loaded; the last refresh was more than five minutes ago.`, target: "market", at: snapshotTime });

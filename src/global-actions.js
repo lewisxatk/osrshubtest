@@ -29,6 +29,7 @@ function scoreAction(query, action) {
   const label = String(action.label || "").toLowerCase();
   const terms = [label, action.description, ...(action.keywords || []), action.target].filter(Boolean).join(" ").toLowerCase();
   if (label === q) return 1000;
+  if (terms.includes(q)) return 820 - Math.max(0, terms.indexOf(q)) * 0.01;
   if (label.startsWith(q)) return 850 - Math.max(0, label.length - q.length);
   if (label.includes(q)) return 700 - label.indexOf(q);
   const tokens = q.split(/\s+/).filter(Boolean);
