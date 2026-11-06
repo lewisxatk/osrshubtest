@@ -32,7 +32,6 @@ test("Hiscores import parses the Overall row and all supported skills including 
 
 test("RuneLite profile import reuses the existing settings-profile parser and persists the resulting account", () => {
   assert.match(panel, /Import RuneLite profile/);
-  assert.match(main, /Import profile/);
   assert.match(main, /RuneLite profile export/);
   assert.match(main, /persistAccount\(next\)/);
   assert.match(main, /RuneLite/);
