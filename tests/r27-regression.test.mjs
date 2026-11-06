@@ -15,17 +15,18 @@ test('R27 Loadout crash regression: gpPrice and isArmourSlot initialise before r
   assert.match(loadout, /const estimatedSetupCost=slots\.reduce/);
 });
 
-test('R27 Account Studio consolidates legacy Loadout and Calculations routes without losing the existing local keys', () => {
+test('R27 Account Studio consolidates legacy Loadout, Calculations and Combat Studio without losing local keys', () => {
   assert.match(source, /account:"\/account-studio"/);
   assert.match(source, /PATH_TABS\["\/loadout"\]="account"/);
   assert.match(source, /PATH_TABS\["\/calculations"\]="account"/);
   assert.match(source, /function AccountStudio\(/);
   assert.match(source, /<Loadout items=\{items\} account=\{account\} onSelect=\{onSelect\}\/>/);
   assert.match(source, /<Calculators items=\{items\}\/>/);
+  assert.match(source, /<CombatStudioPage items=\{items\} account=\{account\}/);
   assert.match(source, /osrshub-loadout-budget/);
   assert.match(source, /osrshub-loadout-builds/);
   assert.match(source, /\["account","Account","◉"\]/);
-  assert.match(source, /Quests &amp; Goals|Quests & Goals/);\n  assert.match(source, /Combat Studio/);
+  assert.match(source, /Quests & Goals/);
   assert.match(source, />Loadout</);
 });
 
