@@ -26,7 +26,7 @@ export default function CombatStudioPage({items=[],account,onSelect}){
  const [savedLoadouts,setSavedLoadouts]=useState(()=>safeStoredArray("osrshub-combat-saved-builds"));
  const [style,setStyle]=useState("Ranged"),[boss,setBoss]=useState("Vorkath"),[bossQuery,setBossQuery]=useState(""),[targetOpen,setTargetOpen]=useState(false);
  const [attackType,setAttackType]=useState("ranged"),[stance,setStance]=useState("Rapid"),[spellName,setSpellName]=useState(""),[spellOptions,setSpellOptions]=useState([]),[spellLoadIssue,setSpellLoadIssue]=useState("");
- const [runtimeUrl,setRuntimeUrl]=useState(()=>{const fallback=String(import.meta.env.VITE_COMBAT_RUNTIME_URL||TEST_COMBAT_RUNTIME_URL).trim();try{return String(localStorage.getItem("osrshub-combat-runtime-url")||fallback).trim()}catch{return fallback}});
+ const [runtimeUrl,setRuntimeUrl]=useState(()=>String(import.meta.env.VITE_COMBAT_RUNTIME_URL||TEST_COMBAT_RUNTIME_URL).trim());
  const [budget,setBudget]=useState("150000000"),[accountAware,setAccountAware]=useState(true),[saved,setSaved]=useState(false);
  const [username,setUsername]=useState(account?.name||""),[busy,setBusy]=useState(false),[status,setStatus]=useState(""),[error,setError]=useState(false),[loadedTargets,setLoadedTargets]=useState([]),[loadedTargetRecords,setLoadedTargetRecords]=useState([]),[catalogItems,setCatalogItems]=useState([]);
  const fileRef=useRef(null),targetRef=useRef(null),excludeRef=useRef(null);
