@@ -15,7 +15,7 @@ const itemId = item => {
 };
 const itemPrice = item => {
   const name = key(itemName(item));
-  if (name === "barrowsgloves") return 130000;
+  if (name === "barrowsgloves") return 0; // Untradeable quest reward: no GE price, no fabricated acquisition cost.
   for (const value of [item?._enginePrice,item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.shop_price,item?.cost,item?.latest_price,item?.last_price]) {
     const price = Number(value);
     if (Number.isFinite(price) && price > 0) return price;
