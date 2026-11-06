@@ -1,0 +1,13 @@
+.itemDnaEvidence{margin:14px 0;padding:17px;border:1px solid var(--hub-line);border-radius:16px;background:var(--hub-panel);color:var(--hub-text)}
+.ideHeader{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+.ideEyebrow{display:flex;align-items:center;gap:6px;color:var(--hub-accent);font-size:9px;font-weight:850;letter-spacing:1.1px}
+.ideHeader h3{margin:7px 0 4px;font-size:16px;letter-spacing:-.025em}.ideHeader p{margin:0;color:var(--hub-muted);font-size:9px}
+.ideScores{display:flex;gap:7px;flex:none}.ideScores>div{min-width:104px;padding:8px 10px;border:1px solid var(--hub-line);border-radius:9px;background:var(--hub-panel-soft)}
+.ideScores small,.ideScores strong,.ideScores em{display:block}.ideScores small{color:var(--hub-muted);font-size:8px}.ideScores strong{margin-top:4px;font-size:14px;font-variant-numeric:tabular-nums}.ideScores em{margin-top:2px;color:var(--hub-muted);font-size:8px;font-style:normal}
+.ideMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:13px}.ideMetrics article{display:flex;gap:8px;align-items:flex-start;min-width:0;padding:10px;border:1px solid var(--hub-line);border-radius:10px;background:var(--hub-panel-soft)}
+.ideMetricIcon{width:27px;height:27px;display:grid;place-items:center;flex:none;border:1px solid var(--hub-line);border-radius:8px;background:var(--hub-panel);color:var(--hub-accent)}
+.ideMetrics article>div{min-width:0}.ideMetrics small,.ideMetrics strong,.ideMetrics em{display:block}.ideMetrics small{color:var(--hub-muted);font-size:8px}.ideMetrics strong{margin-top:4px;font-size:11px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.ideMetrics em{margin-top:3px;color:var(--hub-muted);font-size:7px;font-style:normal;line-height:1.35}
+.ideFoot{display:flex;gap:7px;align-items:flex-start;margin-top:12px;padding-top:10px;border-top:1px solid var(--hub-line);color:var(--hub-muted)}.ideFoot svg{flex:none;margin-top:1px;color:var(--hub-accent)}.ideFoot p{margin:0;font-size:8px;line-height:1.55}
+@media(max-width:900px){.ideMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.itemDnaEvidence{padding:13px}.ideHeader{flex-direction:column}.ideScores{width:100%}.ideScores>div{flex:1;min-width:0}.ideMetrics{gap:6px}.ideMetrics article{padding:8px;gap:6px}.ideMetricIcon{width:23px;height:23px}.ideMetrics strong{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.itemDnaEvidence *{animation:none!important;transition:none!important}}
