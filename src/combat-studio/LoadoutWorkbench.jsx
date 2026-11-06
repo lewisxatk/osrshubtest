@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArrowDownRight, ArrowRightLeft, Bookmark, Check, ChevronDown, Coins, Search, ShieldCheck, Sparkles, Swords } from "lucide-react";
 import { estimateLoadout, inferEquipmentSlot } from "./optimizer.js";
+import { equipmentIconUrl } from "./item-icons.js";
 import "./loadout-workbench.css";
 
 const SLOT_ORDER = ["Head", "Cape", "Neck", "Ammo", "Weapon", "Body", "Legs", "Shield", "Hands", "Feet", "Ring"];
@@ -15,7 +16,7 @@ const compatibleStyle = (item, style, slot) => {
   if (style === "Ranged") return /bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife/.test(name);
   return /staff|wand|trident|sceptre|battlestaff|mystic/.test(name);
 };
-const iconSource = item => { const raw = String(item?.icon_url ?? item?.wiki_image ?? item?.icon ?? "").trim(); if (!raw) return ""; if (raw.startsWith("http://") || raw.startsWith("https://") || raw.startsWith("/") || raw.startsWith("data:")) return raw; return "https://oldschool.runescape.wiki/images/" + encodeURIComponent(raw.replace(/ /g, "_")); };
+const iconSource = item => equipmentIconUrl(itemName(item), item?._icon ?? item?.icon_url ?? item?.wiki_image ?? item?.icon ?? item?.image ?? "");
 const itemPrice = item => {
   for (const value of [item?._price, item?.sell, item?.high, item?.price, item?.buy]) {
     const price = Number(value);
