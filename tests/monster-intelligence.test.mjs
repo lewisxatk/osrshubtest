@@ -19,7 +19,7 @@ test("canonical monster intelligence reads elemental weakness objects and exact 
   assert.equal(intel.source,"Canonical Combat Engine monster record");
   assert.deepEqual(intel.attributes,["dragon","undead","fiery"]);
   assert.deepEqual(intel.weakness,{element:"fire",severity:40});
-  assert.match(intel.elementalAdvice,/matching fire elemental spell/i);
+  assert.match(intel.elementalAdvice,/matching standard spellbook fire spell/i);
   assert.deepEqual(intel.rangedDefences.map(x=>x.field),["light","standard","heavy"]);
   assert.equal(intel.immunities.burn,"Normal");
   assert.ok(intel.counters.some(x=>x.attribute==="dragon"));
@@ -95,4 +95,18 @@ test("vampyre tier metadata shows tier-aware restrictions and supported counters
   const names=getTargetSpecificEquipmentNames(tier2,"Melee");
   assert.ok(names.includes("Ivandis flail"));
   assert.ok(names.includes("Efaritay's aid"));
+});
+
+test("elemental weakness adds its matching elemental amulets to Magic candidates",()=>{
+  const names=getTargetSpecificEquipmentNames(vorkath,"Magic");
+  assert.ok(names.includes("Elemental amulet"));
+  assert.ok(names.includes("Amulet of fire"));
+  const neckPool=[
+    {_engineId:1,_name:"Elemental amulet",slot:"neck"},
+    {_engineId:2,_name:"Amulet of fire",slot:"neck"},
+    {_engineId:3,_name:"Amulet of water",slot:"neck"},
+    {_engineId:4,_name:"Salve amulet(ei)",slot:"neck"},
+  ];
+  const candidates=targetSpecificCandidates("Neck",neckPool,"Magic",vorkath);
+  assert.deepEqual(candidates.map(x=>x._name),["Elemental amulet","Amulet of fire","Salve amulet(ei)"]);
 });
