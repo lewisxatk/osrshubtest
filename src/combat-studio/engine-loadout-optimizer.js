@@ -9,7 +9,7 @@ const SLOT_MAP = Object.freeze({
 });
 const key = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const itemName = item => String(item?._name ?? item?.name ?? item?.item_name ?? "");
-const isDeadmanOnlyEquipment = item => /\\bdeadman(?:\\s+mode)?\\b/i.test([
+const isDeadmanOnlyEquipment = item => /deadman(?:\s+mode)?/i.test([
   itemName(item), item?.gameMode, item?.game_mode, item?.worldType, item?.world_type,
   item?.seasonalMode, item?.seasonal_mode,
 ].filter(Boolean).join(" "));
