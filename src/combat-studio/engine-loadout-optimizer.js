@@ -91,10 +91,10 @@ function targetSpecificCandidates(slot, pool, style, target) {
     if (style === "Magic") wanted.push("dragonhunterwand");
   }
   if (slot === "Ammo" && dragon && style === "Ranged") {
-    wanted.push("rubydragonbolts(e)", "diamonddragonbolts(e)");
+    wanted.push("rubydragonboltse", "diamonddragonboltse");
   }
   if (slot === "Neck" && undead) {
-    wanted.push("salveamulet(ei)", "salveamulet(i)");
+    wanted.push("salveamuletei", "salveamuleti");
   }
   if (slot === "Shield" && dragon) {
     wanted.push("dragonfireward", "antidragonshield");
