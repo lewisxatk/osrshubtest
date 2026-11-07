@@ -61,10 +61,44 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 58cc0c5ee11304ba28f879f354bd899c
-      - name: Verify test combat runtime health and catalogues
+      - name: Verify test combat runtime health, catalogue data and browser CORS
+        shell: bash
         run: |
-          curl --fail --silent --show-error --retry 8 --retry-delay 5 https://osrshubtest-combat-runtime.prices-app.workers.dev/health
-          curl --fail --silent --show-error https://osrshubtest-combat-runtime.prices-app.workers.dev/api/monsters?limit=1
-          curl --fail --silent --show-error https://osrshubtest-combat-runtime.prices-app.workers.dev/api/equipment?limit=1
+          set -euo pipefail
+          ORIGIN="https://osrshubtest.prices-app.workers.dev"
+          BASE="https://osrshubtest-combat-runtime.prices-app.workers.dev"
+          verify_get() {
+            local endpoint="$1"
+            local headers body status
+            headers="$(mktemp)"
+            body="$(mktemp)"
+            status="$(curl --silent --show-error --retry 8 --retry-delay 5 -D "$headers" -o "$body" -w '%{http_code}' -H "Origin: $ORIGIN" -H 'Accept: application/json' "$BASE$endpoint")"
+            test "$status" = "200"
+            grep -Eiq "^access-control-allow-origin:[[:space:]]*$ORIGIN" "$headers"
+            if [[ "$endpoint" != "/health" ]]; then
+              node - "$body" <<'NODE'
+          const fs = require('node:fs');
+          const payload = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (payload.status !== 'ok' || !Number.isInteger(payload.total) || payload.total <= 0 || !Array.isArray(payload.results) || payload.results.length === 0) {
+            throw new Error('Canonical combat catalogue returned an empty or invalid payload');
+          }
+          for (const row of payload.results) {
+            if (!Number.isInteger(Number(row.id)) || !String(row.name || '').trim()) {
+              throw new Error('Canonical catalogue contains an item without a stable ID or name');
+            }
+          }
+          NODE
+            fi
+            rm -f "$headers" "$body"
+          }
+          verify_get /health
+          verify_get '/api/monsters?limit=2'
+          verify_get '/api/equipment?limit=2'
+          PREFLIGHT_HEADERS="$(mktemp)"
+          PREFLIGHT_STATUS="$(curl --silent --show-error -X OPTIONS -D "$PREFLIGHT_HEADERS" -o /dev/null -w '%{http_code}' -H "Origin: $ORIGIN" -H 'Access-Control-Request-Method: GET' -H 'Access-Control-Request-Headers: accept' "$BASE/api/monsters")"
+          test "$PREFLIGHT_STATUS" = "204"
+          grep -Eiq "^access-control-allow-origin:[[:space:]]*$ORIGIN" "$PREFLIGHT_HEADERS"
+          grep -Eiq '^access-control-allow-headers:.*accept' "$PREFLIGHT_HEADERS"
+          rm -f "$PREFLIGHT_HEADERS"
       - name: Verify test website responds
         run: curl --fail --silent --show-error --retry 8 --retry-delay 5 https://osrshubtest.prices-app.workers.dev/ -o /dev/null
