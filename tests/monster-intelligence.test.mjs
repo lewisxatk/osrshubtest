@@ -96,3 +96,17 @@ test("vampyre tier metadata shows tier-aware restrictions and supported counters
   assert.ok(names.includes("Ivandis flail"));
   assert.ok(names.includes("Efaritay's aid"));
 });
+
+test("elemental weakness adds its matching elemental amulets to Magic candidates",()=>{
+  const names=getTargetSpecificEquipmentNames(vorkath,"Magic");
+  assert.ok(names.includes("Elemental amulet"));
+  assert.ok(names.includes("Amulet of fire"));
+  const neckPool=[
+    {_engineId:1,_name:"Elemental amulet",slot:"neck"},
+    {_engineId:2,_name:"Amulet of fire",slot:"neck"},
+    {_engineId:3,_name:"Amulet of water",slot:"neck"},
+    {_engineId:4,_name:"Salve amulet(ei)",slot:"neck"},
+  ];
+  const candidates=targetSpecificCandidates("Neck",neckPool,"Magic",vorkath);
+  assert.deepEqual(candidates.map(x=>x._name),["Elemental amulet","Amulet of fire","Salve amulet(ei)"]);
+});
