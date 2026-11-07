@@ -306,3 +306,8 @@
  .combat-studio .cs-intel-heading{display:grid}
  .combat-studio .cs-intel-heading span{text-align:left}
 }
+
+.combat-studio .cs-intel-action{justify-self:start;margin-top:5px;padding:6px 9px;border:1px solid var(--cs-accent);border-radius:7px;background:color-mix(in srgb,var(--cs-accent) 12%,var(--oh-surface2,var(--cs-bg2)));color:var(--cs-accent);font-size:10px;font-weight:850;cursor:pointer}
+.combat-studio .cs-intel-spells{display:grid;gap:3px;margin-top:7px;padding-top:7px;border-top:1px solid var(--cs-line)}
+.combat-studio .cs-intel-spells span{font-size:10px;line-height:1.45;color:var(--cs-text)}
+.combat-studio .cs-intel-spells em{font-size:9px;line-height:1.4;font-style:normal;color:var(--cs-muted)}
