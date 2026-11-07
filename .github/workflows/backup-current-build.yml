@@ -17,8 +17,9 @@ jobs:
       - name: Check out website snapshot
         uses: actions/checkout@v4
         with:
+          ref: 71e07ce3031470a6682ff01d2db341e47a0727a3
           path: website
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Check out matching Combat Engine source
         uses: actions/checkout@v4
