@@ -110,3 +110,12 @@ test("elemental weakness adds its matching elemental amulets to Magic candidates
   const candidates=targetSpecificCandidates("Neck",neckPool,"Magic",vorkath);
   assert.deepEqual(candidates.map(x=>x._name),["Elemental amulet","Amulet of fire","Salve amulet(ei)"]);
 });
+
+test("weakest recorded defence is compared separately for melee, ranged and magic",()=>{
+  const intel=buildMonsterIntelligence(vorkath);
+  assert.deepEqual(intel.weakestByStyle,[
+    {style:"Melee",value:80,defences:["Stab"]},
+    {style:"Ranged",value:70,defences:["Ranged · light","Ranged · standard","Ranged · heavy"]},
+    {style:"Magic",value:80,defences:["Magic"]},
+  ]);
+});
