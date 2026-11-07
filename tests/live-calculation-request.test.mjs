@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildLiveCalculationRequest } from "../src/combat-studio/live-calculation-request.js";
+import { buildLiveCalculationRequest, getMissingEngineSkills } from "../src/combat-studio/live-calculation-request.js";
 
 const stats = {
   Attack: { level: 80 }, Defence: { level: 80 }, Hitpoints: { level: 90 },
@@ -98,6 +98,5 @@ test("accepts account skills in nested and alternate-key formats",()=>{
  assert.equal(result.request.player.skills.farming,50);
 });
 test("reports the missing engine skills once using readable OSRS names",()=>{
- const {getMissingEngineSkills}=await import("../src/combat-studio/live-calculation-request.js");
  assert.deepEqual(getMissingEngineSkills({...stats,Hitpoints:undefined,Mining:undefined,Herblore:undefined,Farming:undefined}),["Hitpoints","Mining","Herblore","Farming"]);
 });
