@@ -4,6 +4,8 @@
  * recorded item bonuses/speed/requirements where present, target hints, and price
  * inputs, and leaves missing data unknown instead of inventing values.
  */
+import { buildMonsterIntelligence } from "./monster-intelligence.js";
+
 const slots = ["Head","Cape","Neck","Ammo","Weapon","Body","Legs","Shield","Hands","Feet","Ring"];
 const key = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g,"");
 const num = (...values) => {
@@ -127,41 +129,37 @@ const priceOf = item => {
 export function targetProfile(name, records = []) {
   const n = key(name);
   const record = (Array.isArray(records) ? records : []).find(row => key(row?.name) === n) ?? null;
-  const defensive = record?.defensiveBonuses ?? record?.defensive_bonuses ?? record?.defensive ?? null;
-  const weaknessRaw = record?.weakness ?? record?.weaknesses ?? null;
-  const weakness = Array.isArray(weaknessRaw) ? weaknessRaw.join(", ") : (typeof weaknessRaw === "string" ? weaknessRaw : null);
-  let recordStyle = null;
-  if (defensive && typeof defensive === "object" && !Array.isArray(defensive)) {
-    const bonusKeys = [
-      ["Melee / Stab", ["stab", "attack_stab", "defence_stab"]],
-      ["Melee / Slash", ["slash", "attack_slash", "defence_slash"]],
-      ["Melee / Crush", ["crush", "attack_crush", "defence_crush"]],
-      ["Ranged", ["ranged", "range", "attack_ranged", "defence_ranged"]],
-      ["Magic", ["magic", "attack_magic", "defence_magic"]]
-    ];
-    const values = bonusKeys.map(([label, keys]) => ({label, value: keys.map(k => Number(defensive[k])).find(v => Number.isFinite(v))})).filter(x => x.value !== undefined);
-    if (values.length) recordStyle = values.sort((a, b) => a.value - b.value)[0].label;
+  if (record) {
+    const intelligence = buildMonsterIntelligence(record);
+    const defensive = record.defensive ?? {};
+    const combatLevel = Number(record.combatLevel ?? record.combat_level ?? record.combat) || null;
+    const hp = Number(record.skills?.hp ?? record.hitpoints ?? record.hp) || null;
+    const weakness = intelligence?.weakness
+      ? `${intelligence.weakness.element} elemental weakness (${intelligence.weakness.severity}%)`
+      : null;
+    const lowest = intelligence?.weakestStyles?.length
+      ? `Lowest recorded defence: ${intelligence.weakestStyles.join(" / ")}`
+      : null;
+    return {
+      recommendedStyle: null,
+      weakness: weakness || lowest,
+      confidence: "Canonical engine record",
+      combatLevel,
+      hitpoints: hp,
+      recordId: record.id ?? null,
+      attributes: intelligence?.attributeLabels ?? [],
+      elementalWeakness: intelligence?.weakness ?? null,
+      defensive,
+      summary: `${record.name}${record.version ? ` — ${record.version}` : ""}. ${weakness ? `Recorded ${weakness}.` : "No elemental weakness is recorded for this exact variant."} Attribute affinities and defensive values are shown from the canonical engine record; the live engine decides the actual DPS.`,
+    };
   }
-  const combatLevel = Number(record?.combatLevel ?? record?.combat_level ?? record?.combat) || null;
-  const hp = Number(record?.hitpoints ?? record?.hp) || null;
-  const recordSummary = record ? (" Source record" + (combatLevel ? " (combat " + combatLevel : "") + (hp ? ", " + hp + " HP" : "") + (combatLevel ? ")" : "") + ".") : "";
   const base = (() => {
     if (/vorkath|dragon|wyvern|galvek|elvarg|hydra|olm/.test(n)) return {recommendedStyle:"Ranged",weakness:"Dragon-bane bonus may apply only to eligible target variants",confidence:"Heuristic hint",summary:"Dragon-bane weapons can be strong against eligible dragon targets; the exact NPC/phase bonus must be source-verified."};
     if (/zulrah|kraken|whisperer|phantommuspah/.test(n)) return {recommendedStyle:"Compare styles / phases",weakness:"The best style can change by phase/form",confidence:"Phase-dependent hint",summary:"This target may change form or phase; a single-style recommendation is not a phase-accurate result."};
     if (/cerberus|kalphitequeen|dagannothrex|scurrius|sarachnis|mole/.test(n)) return {recommendedStyle:"Melee candidate",weakness:"Compare the source-backed stab/slash/crush defence fields",confidence:"Heuristic hint",summary:"Melee is only a starting candidate; weapon attack type and target defence values determine the better option."};
     return {recommendedStyle:null,weakness:null,confidence:"Target weaknesses not verified",summary:"No confirmed target-specific weakness data is available for this name in the current source catalogue."};
   })();
-  if (record) {
-    return {
-      ...base,
-      recommendedStyle: recordStyle || base.recommendedStyle,
-      weakness: weakness || (recordStyle ? "Lowest recorded defensive value: " + recordStyle : base.weakness),
-      confidence: weakness || recordStyle ? "Source field present; needs rule validation" : base.confidence,
-      combatLevel, hitpoints: hp, recordId: record.id ?? null,
-      summary: (recordSummary || " A source monster record is available.") + (weakness ? " Recorded weakness: " + weakness + "." : " The ingested record does not establish a verified style weakness.")
-    };
-  }
-  return {...base, combatLevel:null, hitpoints:null, recordId:null, summary:base.summary + recordSummary};
+  return {...base,combatLevel:null,hitpoints:null,recordId:null};
 }
 const gearScore = (item, style, target = "") => {
   const a=attackBonus(item,style),s=strengthBonus(item,style),speed=valueOf(item,["attack_speed","attackSpeed","speed","ticks"]);
