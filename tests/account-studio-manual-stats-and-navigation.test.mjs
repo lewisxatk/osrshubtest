@@ -13,8 +13,9 @@ test("Account Studio exposes a local manual editor for every OSRS skill",()=>{
  assert.match(source,/localStorage\.setItem\("osrshub-account"/);
 });
 test("manual account levels are validated before account-restricted live combat builds",()=>{
- assert.match(combat,/these live-engine skills are missing or invalid:/);
- assert.match(combat,/Account Studio → Account Tracker/);
+ assert.match(combat,/getMissingEngineSkills\(stats\)/);
+ assert.match(combat,/CombatMissingSkillsEditor/);
+ assert.match(combat,/Save missing skill levels/);
 });
 test("More navigation groups tools beneath clear category headings on desktop and mobile",()=>{
  assert.match(source,/groupedToolsMenu/);assert.match(source,/groupedMobileMore/);
