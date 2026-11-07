@@ -39,3 +39,14 @@ test("target helper avoids claiming source-verified weaknesses", () => {
   assert.match(targetProfile("Vorkath").confidence,/hint/i);
   assert.match(targetProfile("Unknown boss").confidence,/not verified/i);
 });
+
+
+test("candidate ranking reads the combat engine's nested offensive and bonus records", () => {
+  const cheap={id:1,name:"Bronze crossbow",slot:"weapon",price:100,speed:6,
+    offensive:{stab:0,slash:0,crush:0,magic:0,ranged:8},
+    bonuses:{str:0,ranged_str:1,magic_str:0,prayer:0}};
+  const strong={id:2,name:"Dragon hunter crossbow",slot:"weapon",price:1000000,speed:5,
+    offensive:{stab:0,slash:0,crush:0,magic:0,ranged:95},
+    bonuses:{str:0,ranged_str:10,magic_str:0,prayer:0}};
+  assert.ok(estimateItemScore(strong,"Ranged","Vorkath")>estimateItemScore(cheap,"Ranged","Vorkath"));
+});
