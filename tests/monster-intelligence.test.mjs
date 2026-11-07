@@ -48,17 +48,17 @@ test("dragon, undead and fiery target attributes inject their matching Vorkath c
   assert.ok(names.includes("pearl bolts (e)"));
   assert.ok(names.includes("pearl dragon bolts (e)"));
   assert.ok(names.includes("salve amulet (e)"));
-  const pool=[
-    {_engineId:21012,_name:"Dragon hunter crossbow"},
-    {_engineId:21944,_name:"Ruby dragon bolts (e)"},
-    {_engineId:21946,_name:"Diamond dragon bolts (e)"},
-    {_engineId:9238,_name:"Pearl bolts (e)"},
-    {_engineId:21936,_name:"Pearl dragon bolts (e)"},
-    {_engineId:10588,_name:"Salve amulet (e)"},
+  const weaponPool=[{_engineId:21012,_name:"Dragon hunter crossbow",slot:"weapon"}];
+  const ammoPool=[
+    {_engineId:21944,_name:"Ruby dragon bolts (e)",slot:"ammo"},
+    {_engineId:21946,_name:"Diamond dragon bolts (e)",slot:"ammo"},
+    {_engineId:9238,_name:"Pearl bolts (e)",slot:"ammo"},
+    {_engineId:21936,_name:"Pearl dragon bolts (e)",slot:"ammo"},
   ];
-  const weapons=targetSpecificCandidates("Weapon",pool,"Ranged",vorkath);
-  const ammo=targetSpecificCandidates("Ammo",pool,"Ranged",vorkath);
-  const neck=targetSpecificCandidates("Neck",pool,"Ranged",vorkath);
+  const neckPool=[{_engineId:10588,_name:"Salve amulet (e)",slot:"neck"}];
+  const weapons=targetSpecificCandidates("Weapon",weaponPool,"Ranged",vorkath);
+  const ammo=targetSpecificCandidates("Ammo",ammoPool,"Ranged",vorkath);
+  const neck=targetSpecificCandidates("Neck",neckPool,"Ranged",vorkath);
   assert.deepEqual(weapons.map(x=>x._name),["Dragon hunter crossbow"]);
   assert.deepEqual(new Set(ammo.map(x=>x._name)),new Set(["Ruby dragon bolts (e)","Diamond dragon bolts (e)","Pearl bolts (e)","Pearl dragon bolts (e)"]));
   assert.deepEqual(neck.map(x=>x._name),["Salve amulet (e)"]);
