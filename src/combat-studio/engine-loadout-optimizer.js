@@ -157,7 +157,7 @@ export async function optimizeLoadoutWithEngine({
   let calculations = 0, rejected = 0, currentResult = null;
   const evaluate = async nextPicked => {
     const slotList = asSlotPairs(nextPicked);
-    const keyFor = JSON.stringify({runtimeUrl,playerName,target:target.id,style:attackType,stance,spell:spell?.name,stats,slotList});
+    const keyFor = JSON.stringify({runtimeUrl,playerName,target:target.id,recordIndex:target.recordIndex,version:target.version,style:attackType,stance,spell:spell?.name,stats,slotList});
     if (memo.has(keyFor)) return memo.get(keyFor);
     const built = requestFor(nextPicked);
     if (built.status !== "ready") return {status:"review-required",issues:built.issues};
