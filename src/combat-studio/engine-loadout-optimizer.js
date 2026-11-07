@@ -1,5 +1,5 @@
 import { estimateItemScore, inferEquipmentSlot, isQuestAvailable } from "./optimizer.js";
-import { buildLiveCalculationRequest } from "./live-calculation-request.js";
+import { buildLiveCalculationRequest, getMissingEngineSkills } from "./live-calculation-request.js";
 import { calculateLiveCombat } from "./live-calculation-client.js";
 
 const SLOT_ORDER = ["Weapon", "Ammo", "Head", "Neck", "Cape", "Body", "Legs", "Shield", "Hands", "Feet", "Ring"];
@@ -110,6 +110,15 @@ export async function optimizeLoadoutWithEngine({
     issues:["Import an OSRS account or switch Account Progress to Ignore account restrictions. Guest builds use an explicitly labelled maxed-level demo profile."],
   };
   const resolvedPlayerName = hasAccount ? playerName.trim() : "OSRS Hub guest demo profile";
+  if (hasAccount && accountAware) {
+    const missingSkills = getMissingEngineSkills(stats);
+    if (missingSkills.length) {
+      return {
+        status: "review-required",
+        issues: ["Your linked account is missing valid levels for: " + missingSkills.join(", ") + ". Add those levels in Combat Studio's account skill editor."],
+      };
+    }
+  }
   // A guest has no real skill data. Use a clearly disclosed maxed baseline only
   // when account restrictions are explicitly disabled; never present it as the
   // user's actual account levels.
