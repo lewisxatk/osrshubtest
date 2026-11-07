@@ -164,7 +164,7 @@ test("Combat Studio resolves monster variants by record index and keeps variant 
  assert.match(page,/recordIndex:Number\.isInteger\(m\.recordIndex\)\?m\.recordIndex:index/);
  assert.match(page,/const selectedTargetRecord=useMemo\(\(\)=>loadedTargetRecords\.find\(record=>record\.recordIndex===selectedTargetRecordIndex\)/);
  assert.match(page,/target:\{id:Number\(canonicalTarget\.id\),name:canonicalTarget\.name,version:canonicalTarget\.version\?\?\"\",recordIndex:Number\(canonicalTarget\.recordIndex\)\}/);
- assert.match(page,/record\.name\+\" — \"\+record\.version/);
+ assert.match(page,/record\.version\?\" — \"\+record\.version/);
 });
 
 test("paper-doll slots open the matching canonical item picker",()=>{
