@@ -19,7 +19,7 @@ test("canonical monster intelligence reads elemental weakness objects and exact 
   assert.equal(intel.source,"Canonical Combat Engine monster record");
   assert.deepEqual(intel.attributes,["dragon","undead","fiery"]);
   assert.deepEqual(intel.weakness,{element:"fire",severity:40});
-  assert.match(intel.elementalAdvice,/matching fire elemental spell/i);
+  assert.match(intel.elementalAdvice,/matching standard spellbook fire spell/i);
   assert.deepEqual(intel.rangedDefences.map(x=>x.field),["light","standard","heavy"]);
   assert.equal(intel.immunities.burn,"Normal");
   assert.ok(intel.counters.some(x=>x.attribute==="dragon"));
