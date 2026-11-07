@@ -16,7 +16,7 @@ const ATTRIBUTE_COUNTERS = Object.freeze({
   demon: {
     label: "Demon",
     summary: "Demonbane effects are target-specific. The engine handles Arclight/Emberlight, Silverlight/Darklight and supported demonbane spells, including target effectiveness.",
-    equipment: { Weapon: { Melee: ["Arclight", "Emberlight", "Silverlight", "Darklight", "Burning claws"] , Ranged: ["Scorching bow"] } },
+    equipment: { Weapon: { Melee: ["Arclight", "Emberlight", "Silverlight", "Darklight", "Bone claws", "Burning claws"] , Ranged: ["Scorching bow"] } },
     spells: ["Inferior Demonbane", "Superior Demonbane", "Dark Demonbane"],
   },
   undead: {
@@ -39,7 +39,7 @@ const ATTRIBUTE_COUNTERS = Object.freeze({
     label: "Vampyre (tier 2)",
     summary: "Tier 2 vampyres have silver-weapon restrictions. Efaritay's aid can modify which weapons are effective; the engine checks the exact tier and weapon.",
     equipment: {
-      Weapon: { Melee: ["Silverlight", "Darklight", "Arclight", "Emberlight", "Ivandis flail", "Blisterwood flail", "Blisterwood sickle", "Hallowed flail", "Sunspear"], Ranged: ["Blisterwood stake"] },
+      Weapon: { Melee: ["Silverlight", "Darklight", "Arclight", "Emberlight", "Rod of Ivandis", "Ivandis flail", "Blisterwood flail", "Blisterwood sickle", "Hallowed flail", "Sunspear"], Ranged: ["Blisterwood stake"] },
       Ammo: { Ranged: ["Silver bolts"] },
       Ring: { Melee: ["Efaritay's aid"], Ranged: ["Efaritay's aid"] },
     },
