@@ -62,7 +62,7 @@ const styleCompatible = (item, style, slot) => {
   if (slot === "Ammo") return style === "Ranged" && /arrow|bolt|javelin|dart|chinchompa|throwingknife/.test(name);
   if (slot !== "Weapon") return true;
   if (style === "Melee") return !/bow|crossbow|blowpipe|chinchompa|ballista|staff|wand|trident|sceptre|tome|dart|javelin/.test(name);
-  if (style === "Ranged") return /bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife/.test(name);
+  if (style === "Ranged") return /bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife|stake/.test(name);
   return /staff|wand|trident|sceptre|battlestaff|mystic|salamander/.test(name);
 };
 const twoHanded = item => item?.two_handed === true || item?.twoHanded === true || item?.equipment?.two_handed === true
