@@ -14,14 +14,14 @@ const SLOT_MAP = Object.freeze({
 const SKILLS = Object.freeze({
   atk: ["Attack", "attack", "atk"],
   def: ["Defence", "defence", "Defense", "defense", "def"],
-  hp: ["Hitpoints", "Hitpoints level", "hitpoints", "hp"],
+  hp: ["Hitpoints", "Hitpoints level", "hitpoints", "hit_points", "hp", "hp_level"],
   magic: ["Magic", "magic"],
   prayer: ["Prayer", "prayer"],
   ranged: ["Ranged", "ranged", "Range", "range"],
   str: ["Strength", "strength", "str"],
-  mining: ["Mining", "mining"],
-  herblore: ["Herblore", "herblore"],
-  farming: ["Farming", "farming"],
+  mining: ["Mining", "mining", "mining_level"],
+  herblore: ["Herblore", "herblore", "herblore_level"],
+  farming: ["Farming", "farming", "farming_level"],
 });
 const VALID_STANCES = new Set([
   null, "Accurate", "Aggressive", "Autocast", "Controlled", "Defensive",
@@ -36,14 +36,36 @@ const DEFAULT_BUFFS = Object.freeze({
   fragmentOfEarth: false, fragmentOfFire: false,
 });
 
+const normaliseSkillKey = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
 function readLevel(stats, aliases) {
-  for (const key of aliases) {
-    if (!Object.prototype.hasOwnProperty.call(stats ?? {}, key)) continue;
-    const raw = stats[key];
-    const value = Number(isRecord(raw) ? (raw.level ?? raw.lvl ?? raw.value) : raw);
-    if (Number.isInteger(value) && value >= 1 && value <= 99) return value;
+  // Account providers do not all use the same shape. Support the Hub's
+  // canonical flat map plus common nested skills/levels containers and
+  // equivalent key spellings (Hitpoints, hit_points, hp_level, etc.).
+  const roots = [
+    stats,
+    stats?.skills,
+    stats?.levels,
+    stats?.skill_levels,
+    stats?.skills?.levels,
+  ].filter(isRecord);
+  const accepted = new Set(aliases.map(normaliseSkillKey));
+  for (const root of roots) {
+    for (const [key, raw] of Object.entries(root)) {
+      if (!accepted.has(normaliseSkillKey(key))) continue;
+      const value = Number(isRecord(raw) ? (raw.level ?? raw.lvl ?? raw.value) : raw);
+      if (Number.isInteger(value) && value >= 1 && value <= 99) return value;
+    }
   }
   return null;
+}
+
+export function getMissingEngineSkills(stats = {}) {
+  return Object.entries(SKILLS)
+    .filter(([, aliases]) => readLevel(stats, aliases) === null)
+    .map(([key]) => key === "hp" ? "Hitpoints" : key === "atk" ? "Attack"
+      : key === "def" ? "Defence" : key === "str" ? "Strength"
+      : key[0].toUpperCase() + key.slice(1));
 }
 
 /**

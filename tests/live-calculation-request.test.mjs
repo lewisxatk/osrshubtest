@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildLiveCalculationRequest } from "../src/combat-studio/live-calculation-request.js";
+import { buildLiveCalculationRequest, getMissingEngineSkills } from "../src/combat-studio/live-calculation-request.js";
 
 const stats = {
   Attack: { level: 80 }, Defence: { level: 80 }, Hitpoints: { level: 90 },
@@ -86,4 +86,17 @@ test("keeps explicit monster inputs and does not mutate caller state", () => {
   assert.equal(result.status, "ready");
   assert.deepEqual(result.request.monsterInputs, monsterInputs);
   assert.deepEqual(monsterInputs, { partySize: 1, monsterCurrentHp: 750 });
+});
+
+test("accepts account skills in nested and alternate-key formats",()=>{
+ const alternate={skills:{attack:{level:80},strength:86,defence:80,hp_level:90,ranged:93,magic:84,prayer:70},levels:{mining:60,herblore:70,farming:50}};
+ const result=buildLiveCalculationRequest({...base,stats:alternate});
+ assert.equal(result.status,"ready",JSON.stringify(result.issues));
+ assert.equal(result.request.player.skills.hp,90);
+ assert.equal(result.request.player.skills.mining,60);
+ assert.equal(result.request.player.skills.herblore,70);
+ assert.equal(result.request.player.skills.farming,50);
+});
+test("reports the missing engine skills once using readable OSRS names",()=>{
+ assert.deepEqual(getMissingEngineSkills({...stats,Hitpoints:undefined,Mining:undefined,Herblore:undefined,Farming:undefined}),["Hitpoints","Mining","Herblore","Farming"]);
 });

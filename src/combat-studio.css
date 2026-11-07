@@ -116,3 +116,16 @@ html[data-theme="comfort"] .combat-studio{--cs-accent:#a65b38;--cs-bg:#fffaf4;--
 .mobileMoreGroup button.active{color:var(--oh-accent,#7357e8);background:var(--oh-surface2,#f3f4f6)}
 @media(max-width:900px){.manualAccountGrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:600px){.manualAccountStats{padding:13px}.manualAccountHead{display:block}.manualAccountSource{display:inline-flex;margin-top:8px}.manualAccountGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.manualAccountFoot{align-items:stretch;flex-direction:column}.manualAccountFoot .primary{width:100%;min-height:42px}.toolsMenu.groupedToolsMenu{width:min(330px,calc(100vw - 24px))}}
+
+
+.cs-missing-skills{display:grid;gap:12px;margin-top:10px;padding:14px;border:1px solid var(--cs-line,var(--oh-line,#394456));border-radius:12px;background:var(--cs-bg2,var(--oh-surface2,#171d28));color:var(--cs-text,var(--oh-text,#f3f4f6))}
+.cs-missing-skills>div:first-child strong{font-size:14px;color:var(--cs-accent,var(--oh-accent,#9678ff))}
+.cs-missing-skills>div:first-child p{margin:4px 0 0;color:var(--cs-muted,var(--oh-muted,#aeb6c4));font-size:12px;line-height:1.5}
+.cs-missing-skills-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.cs-missing-skills-grid label{display:grid;gap:5px;color:var(--cs-muted,var(--oh-muted,#aeb6c4));font-size:11px}
+.cs-missing-skills-grid input{width:100%;min-width:0;height:40px;padding:0 10px;border:1px solid var(--cs-line,var(--oh-line,#394456));border-radius:8px;background:var(--cs-bg,var(--oh-surface,#10151e));color:var(--cs-text,var(--oh-text,#f3f4f6));font:inherit;font-size:14px}
+.cs-missing-skills-grid input:focus{outline:2px solid var(--cs-accent,var(--oh-accent,#9678ff));outline-offset:1px}
+.cs-missing-skills>button{justify-self:start;min-height:40px;padding:0 14px}
+.cs-missing-skills>p{margin:0;color:var(--cs-muted,var(--oh-muted,#aeb6c4));font-size:12px}
+.cs-missing-skills>p.is-saved{color:var(--cs-accent,var(--oh-accent,#9678ff))}
+@media(max-width:600px){.cs-missing-skills{padding:12px}.cs-missing-skills-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cs-missing-skills>button{width:100%;justify-self:stretch}}
