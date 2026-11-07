@@ -39,9 +39,13 @@ const styleCompatible = (item, style, slot) => {
   const name = key(itemName(item));
   const values = Object.assign({},item?.equipment,item?.bonuses,item?.stats,item);
   const has = fields => fields.some(field => Number.isFinite(Number(values[field])) && Number(values[field]) !== 0);
-  const hasMelee = has(["melee_strength","meleeStrength","strength_bonus","strengthBonus","str","stab_attack","slash_attack","crush_attack"]);
-  const hasRanged = has(["ranged_attack","rangedAttack","attack_ranged","ranged_bonus","ranged","ranged_strength","rangedStrength","ranged_str"]);
-  const hasMagic = has(["magic_attack","magicAttack","attack_magic","magic_bonus","magic","magic_damage","magicDamage","magic_strength","magicStrength"]);
+  const nonZero = value => Number.isFinite(Number(value)) && Number(value) !== 0;
+  const hasMelee = has(["melee_strength","meleeStrength","strength_bonus","strengthBonus","str","stab_attack","slash_attack","crush_attack"])
+    || ["stab","slash","crush"].some(key => nonZero(item?.offensive?.[key]));
+  const hasRanged = has(["ranged_attack","rangedAttack","attack_ranged","ranged_bonus","ranged","ranged_strength","rangedStrength","ranged_str"])
+    || nonZero(item?.offensive?.ranged);
+  const hasMagic = has(["magic_attack","magicAttack","attack_magic","magic_bonus","magic","magic_str","magic_damage","magicDamage","magic_strength","magicStrength"])
+    || nonZero(item?.offensive?.magic);
   if (style === "Ranged" && hasMagic && !hasRanged && !hasMelee) return false;
   if (style === "Melee" && (hasMagic || hasRanged) && !hasMelee) return false;
   if (style === "Magic" && (hasMelee || hasRanged) && !hasMagic) return false;
@@ -96,7 +100,19 @@ export async function optimizeLoadoutWithEngine({
   budget = 0, runtimeUrl = "", fetchImpl = globalThis.fetch, onProgress = () => {},
 } = {}) {
   const budgetGp = Math.max(0, Number(budget) || 0);
-  if (!playerName) return { status:"review-required", issues:["Import an account with public combat levels before requesting a verified build."] };
+  const hasAccount = typeof playerName === "string" && Boolean(playerName.trim());
+  if (!hasAccount && accountAware) return {
+    status:"review-required",
+    issues:["Import an OSRS account or switch Account Progress to Ignore account restrictions. Guest builds use an explicitly labelled maxed-level demo profile."],
+  };
+  const resolvedPlayerName = hasAccount ? playerName.trim() : "OSRS Hub guest demo profile";
+  // A guest has no real skill data. Use a clearly disclosed maxed baseline only
+  // when account restrictions are explicitly disabled; never present it as the
+  // user's actual account levels.
+  const resolvedStats = hasAccount ? stats : {
+    Attack:99, Defence:99, Hitpoints:99, Magic:99, Prayer:99, Ranged:99,
+    Strength:99, Mining:99, Herblore:99, Farming:99,
+  };
   if (!target || !Number.isInteger(Number(target.id)) || Number(target.id) <= 0) return { status:"review-required", issues:["Choose a monster with a canonical combat-engine ID."] };
   if (!budgetGp) return { status:"review-required", issues:["Enter a budget greater than 0 GP."] };
   if (!runtimeUrl) return { status:"unavailable", issues:["The combat Worker is not configured. Open DPS Calculator and set its Worker URL first."] };
@@ -127,8 +143,9 @@ export async function optimizeLoadoutWithEngine({
   }
   if (!pools.get("Weapon").length) return {
     status:"review-required",
-    issues:["No priced, account-eligible weapon with a canonical engine item ID matched this style. No guessed setup was returned."],
+    issues:[`No priced, ${accountAware ? "account-eligible" : "eligible"} weapon with a canonical engine item ID matched this style. No guessed setup was returned. ${skippedUnknownPrice} records had no usable price; ${skippedMissingId} records had no canonical ID.`],
     skippedUnknownPrice,skippedMissingId,
+    eligibleBySlot:Object.fromEntries([...pools].map(([slot,pool])=>[slot,pool.length])),
   };
 
   const picked = new Map();
@@ -149,7 +166,7 @@ export async function optimizeLoadoutWithEngine({
   if (!weapon) return { status:"review-required",issues:["No valid weapon could fit within the budget."] };
 
   const requestFor = nextPicked => buildLiveCalculationRequest({
-    playerName,stats,slots:asSlotPairs(nextPicked),items,target,
+    playerName:resolvedPlayerName,stats:resolvedStats,slots:asSlotPairs(nextPicked),items,target,
     style:{name:`${attackType} ${stance}`,type:attackType,stance},
     boosts:ZERO_BOOSTS,prayers:[],buffs:EMPTY_BUFFS,spell,
   });
@@ -214,6 +231,7 @@ export async function optimizeLoadoutWithEngine({
   if (skippedMissingId) warnings.push(`${skippedMissingId} equipment records had no canonical item ID and were not considered.`);
   if (rejected) warnings.push(`${rejected} candidate calculation(s) were rejected by the canonical engine and were skipped.`);
   warnings.push("The returned DPS is engine-calculated with zero boosts and no prayers.");
+  if (!hasAccount) warnings.push("Guest demo profile: all ten engine skill levels are assumed to be 99. This is not your account; import your HiScores for personalised levels.");
   warnings.push("The search tests at most two shortlisted alternatives per slot. It returns the best verified setup it checked, not a proof of the global best combination.");
   return {
     status:"calculated",slots:outputSlots,totalCost,remainingBudget:Math.max(0,budgetGp-totalCost),
