@@ -270,3 +270,44 @@
 .combat-studio .cs-hero-art{background:color-mix(in srgb,var(--cs-accent) 13%,var(--oh-surface2))!important}
 .combat-studio .cs-live-message>svg{color:var(--cs-accent)!important}
 @media(prefers-reduced-motion:reduce){.combat-studio *{scroll-behavior:auto!important}}
+
+/* Canonical monster intelligence panel: theme-aware and compact on mobile. */
+.combat-studio .cs-target-intelligence{
+  display:grid;gap:10px;margin:12px 0;padding:12px;
+  border:1px solid var(--cs-line);border-radius:10px;
+  background:color-mix(in srgb,var(--cs-accent) 5%,var(--oh-surface,var(--cs-bg2)));
+  color:var(--cs-text)
+}
+.combat-studio .cs-intel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.combat-studio .cs-intel-heading strong{font-size:13px;color:var(--cs-accent)}
+.combat-studio .cs-intel-heading span{font-size:9px;line-height:1.4;color:var(--cs-muted);text-align:right}
+.combat-studio .cs-intel-attributes{display:flex;flex-wrap:wrap;gap:5px}
+.combat-studio .cs-intel-attributes>span{padding:4px 7px;border:1px solid var(--cs-line);border-radius:20px;background:var(--oh-surface2,var(--cs-bg2));font-size:9px;font-weight:800;color:var(--cs-text)}
+.combat-studio .cs-intel-attributes>small{font-size:10px;color:var(--cs-muted)}
+.combat-studio .cs-intel-weakness{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:start;padding:9px;border:1px solid var(--cs-line);border-radius:8px;background:var(--oh-surface2,var(--cs-bg2))}
+.combat-studio .cs-intel-weakness>div{display:grid;gap:3px}
+.combat-studio .cs-intel-weakness small,.combat-studio .cs-intel-defences small,.combat-studio .cs-intel-counter small{font-size:9px;color:var(--cs-muted)}
+.combat-studio .cs-intel-weakness b{font-size:15px;color:var(--cs-accent)}
+.combat-studio .cs-intel-weakness p{margin:2px 0 0;font-size:10px;line-height:1.45;color:var(--cs-muted)!important}
+.combat-studio .cs-intel-subheading{font-size:10px;font-weight:850;letter-spacing:.06em;text-transform:uppercase;color:var(--cs-muted)}
+.combat-studio .cs-intel-defences{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.combat-studio .cs-intel-defences>div{display:grid;gap:3px;padding:7px 8px;border:1px solid var(--cs-line);border-radius:7px;background:var(--oh-surface2,var(--cs-bg2))}
+.combat-studio .cs-intel-defences b{font-size:13px;color:var(--cs-text);font-variant-numeric:tabular-nums}
+.combat-studio .cs-intel-counters{border-top:1px solid var(--cs-line);padding-top:8px}
+.combat-studio .cs-intel-counters>summary{cursor:pointer;font-size:11px;font-weight:800;color:var(--cs-accent)}
+.combat-studio .cs-intel-counter{display:grid;gap:5px;padding:9px 0;border-bottom:1px solid var(--cs-line)}
+.combat-studio .cs-intel-counter>strong{font-size:11px;color:var(--cs-text)}
+.combat-studio .cs-intel-counter>p{margin:0;font-size:10px;line-height:1.45;color:var(--cs-muted)!important}
+.combat-studio .cs-intel-counter>div{display:grid;gap:2px}
+.combat-studio .cs-intel-counter>div span{font-size:10px;line-height:1.45;color:var(--cs-text)}
+.combat-studio .cs-intel-footnote{font-size:9px;line-height:1.45;color:var(--cs-muted)}
+@media(max-width:760px){
+ .combat-studio .cs-intel-defences{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .combat-studio .cs-intel-heading{display:grid}
+ .combat-studio .cs-intel-heading span{text-align:left}
+}
+
+.combat-studio .cs-intel-action{justify-self:start;margin-top:5px;padding:6px 9px;border:1px solid var(--cs-accent);border-radius:7px;background:color-mix(in srgb,var(--cs-accent) 12%,var(--oh-surface2,var(--cs-bg2)));color:var(--cs-accent);font-size:10px;font-weight:850;cursor:pointer}
+.combat-studio .cs-intel-spells{display:grid;gap:3px;margin-top:7px;padding-top:7px;border-top:1px solid var(--cs-line)}
+.combat-studio .cs-intel-spells span{font-size:10px;line-height:1.45;color:var(--cs-text)}
+.combat-studio .cs-intel-spells em{font-size:9px;line-height:1.4;font-style:normal;color:var(--cs-muted)}
