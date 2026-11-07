@@ -131,10 +131,22 @@ export function buildMonsterIntelligence(record, { style = null } = {}) {
   const defences = DEFENCE_FIELDS
     .filter(([field]) => finite(def[field]))
     .map(([field, label]) => ({ field, label, value: def[field] }));
+  // Compare defensive bonuses by actual attack style. Lower recorded defence
+  // means a more favourable accuracy matchup; this is guidance, not a DPS rank.
+  const defenceGroups = [
+    { style: "Melee", fields: ["stab", "slash", "crush"] },
+    { style: "Ranged", fields: ["light", "standard", "heavy"] },
+    { style: "Magic", fields: ["magic"] },
+  ];
+  const weakestByStyle = defenceGroups.map(group => {
+    const rows = defences.filter(row => group.fields.includes(row.field));
+    if (!rows.length) return null;
+    const value = Math.min(...rows.map(row => row.value));
+    return { style: group.style, value, defences: rows.filter(row => row.value === value).map(row => row.label) };
+  }).filter(Boolean);
+  // Retain the legacy field for existing consumers while the UI migrates.
   const meleeDefences = defences.filter(row => ["stab", "slash", "crush", "magic"].includes(row.field));
-  const lowest = meleeDefences.length
-    ? Math.min(...meleeDefences.map(row => row.value))
-    : null;
+  const lowest = meleeDefences.length ? Math.min(...meleeDefences.map(row => row.value)) : null;
   const weakestStyles = lowest === null ? [] : meleeDefences.filter(row => row.value === lowest).map(row => row.label);
   const counters = attributes.map(attribute => countersFor(attribute, style)).filter(Boolean);
   const immunity = record.immunities && typeof record.immunities === "object"
@@ -157,6 +169,7 @@ export function buildMonsterIntelligence(record, { style = null } = {}) {
     defences,
     rangedDefences: defences.filter(row => ["light", "standard", "heavy"].includes(row.field)),
     weakestStyles,
+    weakestByStyle,
     counters,
     immunities: immunity,
     isSlayerMonster: record.is_slayer_monster === true,
