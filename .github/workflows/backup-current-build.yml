@@ -1,0 +1,90 @@
+name: Build rollback backup archive
+
+on:
+  push:
+    branches:
+      - "backup/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    name: Package exact OSRS Hub test build and dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website snapshot
+        uses: actions/checkout@v4
+        with:
+          path: website
+          fetch-depth: 0
+
+      - name: Check out matching Combat Engine source
+        uses: actions/checkout@v4
+        with:
+          repository: lewisxatk/osrshub-combat-engine
+          ref: bd565dc0d869a4771deac393bfe188e4fdcc1c3e
+          path: combat-engine
+          fetch-depth: 1
+
+      - name: Check out OSRS game-data snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: lewisxatk/osrshub-game-data
+          ref: d2bf97f6d6a1c98bf149f0795d3976d1f03ffda1
+          path: game-data
+          fetch-depth: 1
+
+      - name: Verify exact source revisions and create manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE_SHA="$(git -C website rev-parse HEAD)"
+          ENGINE_SHA="$(git -C combat-engine rev-parse HEAD)"
+          DATA_SHA="$(git -C game-data rev-parse HEAD)"
+          test "$SITE_SHA" = "71e07ce3031470a6682ff01d2db341e47a0727a3"
+          test "$ENGINE_SHA" = "bd565dc0d869a4771deac393bfe188e4fdcc1c3e"
+          test "$DATA_SHA" = "d2bf97f6d6a1c98bf149f0795d3976d1f03ffda1"
+          mkdir -p rollback-backup/website rollback-backup/combat-engine rollback-backup/game-data
+          git -C website archive --format=tar HEAD | tar -xf - -C rollback-backup/website
+          git -C combat-engine archive --format=tar HEAD | tar -xf - -C rollback-backup/combat-engine
+          git -C game-data archive --format=tar HEAD | tar -xf - -C rollback-backup/game-data
+          cat > rollback-backup/BACKUP-MANIFEST.txt <<EOF
+          OSRS HUB TEST - ROLLBACK SNAPSHOT
+          Created: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          Website repository: lewisxatk/osrshubtest
+          Website commit: $SITE_SHA
+          Website deployment: https://osrshubtest.prices-app.workers.dev
+          Combat Engine repository: lewisxatk/osrshub-combat-engine
+          Combat Engine commit: $ENGINE_SHA
+          Test runtime: https://osrshubtest-combat-runtime.prices-app.workers.dev
+          Game-data repository: lewisxatk/osrshub-game-data
+          Game-data commit: $DATA_SHA
+
+          This archive contains full source snapshots for all three repositories.
+          It does not contain Cloudflare credentials, API tokens, production secrets,
+          user-local account data, or Discord secrets.
+
+          Restore:
+          1. Extract this ZIP.
+          2. Restore website source from website/ to the osrshubtest repository.
+          3. Restore Combat Engine source from combat-engine/ to the matching engine repository.
+          4. Restore game-data source from game-data/ to the matching data repository.
+          5. Use the exact commits above as the rollback reference.
+          6. Deploy only to the OSRS Hub TEST Worker and TEST Combat runtime.
+          EOF
+          cd rollback-backup
+          zip -q -r -9 ../OSRSHub-Test-Rollback-2026-11-07.zip .
+          cd ..
+          sha256sum OSRSHub-Test-Rollback-2026-11-07.zip > OSRSHub-Test-Rollback-2026-11-07.zip.sha256
+          ls -lh OSRSHub-Test-Rollback-2026-11-07.zip
+      - name: Upload downloadable rollback ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: OSRSHub-Test-Rollback-2026-11-07
+          path: |
+            OSRSHub-Test-Rollback-2026-11-07.zip
+            OSRSHub-Test-Rollback-2026-11-07.zip.sha256
+          retention-days: 90
+          if-no-files-found: error
