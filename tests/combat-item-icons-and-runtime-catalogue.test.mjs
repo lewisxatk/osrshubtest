@@ -51,6 +51,45 @@ test("loads and paginates both canonical engine catalogues", async () => {
   assert.equal(calls.length, 4);
 });
 
+test("preserves monster variants that share an NPC ID and gives each a stable record index", async () => {
+  const data = {
+    monsters: [
+      { id: 265, name: "Blue dragon", version: "1" },
+      { id: 265, name: "Blue dragon", version: "Task only, 1" },
+      { id: 8059, name: "Vorkath", version: "Post-quest" },
+    ],
+    equipment: [
+      { id: 21012, name: "Dragon hunter crossbow", slot: "weapon" },
+    ],
+  };
+  const fetchImpl = async input => {
+    const url = new URL(String(input));
+    const resource = url.pathname.split("/").at(-1);
+    const offset = Number(url.searchParams.get("offset"));
+    const limit = Number(url.searchParams.get("limit"));
+    const rows = data[resource];
+    return new Response(JSON.stringify({
+      status: "ok",
+      total: rows.length,
+      offset,
+      limit,
+      results: rows.slice(offset, offset + limit),
+    }), { status: 200 });
+  };
+
+  const result = await loadRuntimeCombatCatalogue({
+    baseUrl: "https://test-runtime.example",
+    fetchImpl,
+    pageSize: 1,
+  });
+
+  assert.equal(result.counts.monsters, 3);
+  assert.deepEqual(result.monsters.map(row => row.recordIndex), [0, 1, 2]);
+  assert.equal(result.monsters.filter(row => row.id === 265).length, 2);
+  assert.equal(result.monsters[1].version, "Task only, 1");
+  assert.equal(result.equipment.length, 1);
+});
+
 test("fails closed when the canonical catalogue API is unavailable", async () => {
   await assert.rejects(
     loadRuntimeCombatCatalogue({
