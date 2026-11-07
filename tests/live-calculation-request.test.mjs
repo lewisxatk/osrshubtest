@@ -59,6 +59,27 @@ test("refuses a target without a positive canonical engine ID", () => {
   assert.ok(result.issues.some(issue => issue.includes("canonical engine monster ID")));
 });
 
+test("passes the exact canonical monster variant identity through to the runtime", () => {
+  const result = buildLiveCalculationRequest({
+    ...base,
+    target: { id: 265, name: "Blue dragon", version: "Task only, 1", recordIndex: 876 },
+  });
+  assert.equal(result.status, "ready");
+  assert.equal(result.request.monsterId, 265);
+  assert.equal(result.request.monsterIndex, 876);
+  assert.equal(result.request.monsterName, "Blue dragon");
+  assert.equal(result.request.monsterVersion, "Task only, 1");
+});
+
+test("rejects an invalid monster record index", () => {
+  const result = buildLiveCalculationRequest({
+    ...base,
+    target: { id: 8059, name: "Vorkath", recordIndex: -1 },
+  });
+  assert.equal(result.status, "review-required");
+  assert.ok(result.issues.some(issue => issue.includes("recordIndex")));
+});
+
 test("keeps explicit monster inputs and does not mutate caller state", () => {
   const monsterInputs = { partySize: 1, monsterCurrentHp: 750 };
   const result = buildLiveCalculationRequest({ ...base, monsterInputs });
