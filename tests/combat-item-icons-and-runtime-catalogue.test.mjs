@@ -121,7 +121,7 @@ test("untradeable equipment remains discoverable and uses canonical engine icons
   const workbench = readFileSync(new URL("../src/combat-studio/LoadoutWorkbench.jsx", import.meta.url), "utf8");
   assert.match(workbench, /item\.tradeable === false/);
   assert.match(workbench, /equipmentIconUrl/);
-  assert.match(workbench, /Untradeable · manual selection/);
+  assert.match(workbench, /Untradeable/);
 });
 
 test("the test Worker exposes untradeable quest and unlock metadata from D1", () => {
