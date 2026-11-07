@@ -5,6 +5,7 @@ const source=await readFile(new URL("../src/main.jsx",import.meta.url),"utf8");
 const combat=await readFile(new URL("../src/CombatStudioPage.jsx",import.meta.url),"utf8");
 const css=await readFile(new URL("../src/combat-studio.css",import.meta.url),"utf8");
 const workbench=await readFile(new URL("../src/combat-studio/LoadoutWorkbench.jsx",import.meta.url),"utf8");
+const v2=await readFile(new URL("../src/combat-studio-v2.css",import.meta.url),"utf8");
 test("Account Studio exposes a local manual editor for every OSRS skill",()=>{
  assert.match(source,/function ManualAccountStats\(/);
  assert.match(source,/SKILL_NAMES\.map\(skill/);
@@ -27,4 +28,10 @@ test("Combat Studio inherits active OSRS Hub theme tokens",()=>{
 test("gear slot picker only offers canonical equipment when the engine catalogue is loaded",()=>{
  assert.match(workbench,/canonicalCataloguePresent = items\.some\(item => item\?\._engineCanonical === true\)/);
  assert.match(workbench,/item\._engineCanonical === true\) && equipmentSlotOf\(item\) === activeSlot/);
+});
+
+test("Combat Studio V2 overrides its old gold skin with live theme tokens",()=>{
+ assert.match(v2,/--cs-accent:var\(--oh-accent/);
+ assert.match(v2,/\.cs-primary,.combat-studio \.cs-command-build[\s\S]*background:var\(--cs-accent\)!important/);
+ assert.match(v2,/\.cs-slot\{[\s\S]*background:var\(--oh-surface/);
 });
