@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArrowDownRight, ArrowRightLeft, Bookmark, Check, ChevronDown, Coins, Search, ShieldCheck, Sparkles, Swords } from "lucide-react";
-import { estimateLoadout, inferEquipmentSlot } from "./optimizer.js";
+import { estimateLoadout, inferEquipmentSlot, questAccessStatus } from "./optimizer.js";
 import { equipmentIconUrl } from "./item-icons.js";
 import "./loadout-workbench.css";
 
@@ -8,13 +8,48 @@ const SLOT_ORDER = ["Head", "Cape", "Neck", "Ammo", "Weapon", "Body", "Legs", "S
 const money = value => Number.isFinite(Number(value)) ? Math.round(Number(value)).toLocaleString("en-GB") + " gp" : "—";
 const normal = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const itemName = item => String(item?._name ?? item?.name ?? item?.item_name ?? "");
-const compatibleStyle = (item, style, slot) => {
-  const name = normal(itemName(item));
-  if (slot === "Ammo") return style === "Ranged" && /arrow|bolt|javelin|dart|chinchompa|throwingknife/.test(name);
-  if (slot !== "Weapon") return true;
-  if (style === "Melee") return !/bow|crossbow|blowpipe|chinchompa|ballista|staff|wand|trident|sceptre|tome/.test(name);
-  if (style === "Ranged") return /bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife/.test(name);
-  return /staff|wand|trident|sceptre|battlestaff|mystic/.test(name);
+const slotAliases = Object.freeze({
+  head: "Head", helmet: "Head", headslot: "Head",
+  cape: "Cape", back: "Cape",
+  neck: "Neck", amulet: "Neck",
+  ammo: "Ammo", ammunition: "Ammo",
+  weapon: "Weapon",
+  body: "Body", chest: "Body",
+  legs: "Legs",
+  shield: "Shield",
+  hands: "Hands", gloves: "Hands",
+  feet: "Feet", boots: "Feet",
+  ring: "Ring",
+});
+const equipmentSlotOf = item => {
+  const raw = item?.engineSlot ?? item?.slot ?? item?.equipment_slot ?? item?.equipmentSlot
+    ?? item?.equip_slot ?? item?.slot_name;
+  if (raw !== undefined && raw !== null && String(raw).trim()) {
+    // Canonical engine slot metadata is authoritative. Do not guess another
+    // slot from the item name when the engine has supplied an unknown value.
+    return slotAliases[normal(raw)] ?? null;
+  }
+  return inferEquipmentSlot(item);
+};
+const itemId = item => {
+  const id = Number(item?._id ?? item?.id ?? item?.item_id ?? item?.itemId);
+  return Number.isInteger(id) && id > 0 ? id : null;
+};
+const requirementStatus = (item, stats) => {
+  const requirements = item?.requirements ?? item?.level_requirements ?? item?.skill_requirements ?? {};
+  if (!requirements || typeof requirements !== "object" || Array.isArray(requirements)) return "unknown";
+  const aliases = {att:"Attack",attack:"Attack",atk:"Attack",str:"Strength",strength:"Strength",def:"Defence",defence:"Defence",ranged:"Ranged",range:"Ranged",magic:"Magic",prayer:"Prayer"};
+  let unknown = false;
+  for (const [raw, requirement] of Object.entries(requirements)) {
+    const skill = aliases[normal(raw)];
+    const level = Number(typeof requirement === "object" ? requirement?.level ?? requirement?.value : requirement);
+    if (!skill || !Number.isFinite(level) || level <= 1) continue;
+    const supplied = stats?.[skill] ?? stats?.[skill.toLowerCase()];
+    const actual = Number(typeof supplied === "object" ? supplied?.level ?? supplied?.lvl ?? supplied?.value : supplied);
+    if (!Number.isFinite(actual)) unknown = true;
+    else if (actual < level) return "locked";
+  }
+  return unknown ? "unknown" : "available";
 };
 const iconSource = item => equipmentIconUrl(itemName(item), item?._icon ?? item?.icon_url ?? item?.wiki_image ?? item?.icon ?? item?.image ?? "");
 const itemPrice = item => {
@@ -24,16 +59,19 @@ const itemPrice = item => {
   }
   return null;
 };
-const setupCost = (slots, items) => slots.reduce((sum, [, name]) => {
-  const match = items.find(item => normal(itemName(item)) === normal(name));
-  return sum + (itemPrice(match) ?? 0);
+const setupCost = (slots, items) => slots.reduce((sum, [, name, id, knownPrice]) => {
+  if (!name || name === "—") return sum;
+  const match = id
+    ? items.find(item => itemId(item) === Number(id))
+    : items.find(item => normal(itemName(item)) === normal(name));
+  return sum + (Number(knownPrice) > 0 ? Number(knownPrice) : itemPrice(match) ?? 0);
 }, 0);
 
 /**
  * A budget-aware workbench around the existing transparent gear estimator.
  * Scores are labelled as estimates; this component never presents them as DPS.
  */
-export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false, styleValue, budgetValue, onStyleChange, onBudgetChange }) {
+export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false, styleValue, budgetValue, onStyleChange, onBudgetChange, activeSlotValue, onActiveSlotChange }) {
   const [budget, setBudget] = useState(String(budgetValue ?? "5000000"));
   const [style, setStyle] = useState(styleValue ?? "Melee");
   const [showRecommendations, setShowRecommendations] = useState(false);
@@ -41,8 +79,16 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   useEffect(() => { if (budgetValue != null && String(budgetValue) !== budget) setBudget(String(budgetValue)); }, [budgetValue]);
   const [accountAware, setAccountAware] = useState(true);
   const [search, setSearch] = useState("");
-  const [activeSlot, setActiveSlot] = useState("Weapon");
+  const [activeSlot, setActiveSlot] = useState(activeSlotValue || "Weapon");
+  const [visibleItemCount, setVisibleItemCount] = useState(80);
   const [draft, setDraft] = useState(() => currentSlots.map(pair => [...pair]));
+  useEffect(() => {
+    if (activeSlotValue && SLOT_ORDER.includes(activeSlotValue) && activeSlotValue !== activeSlot) {
+      setActiveSlot(activeSlotValue);
+      setSearch("");
+      setVisibleItemCount(80);
+    }
+  }, [activeSlotValue]);
   useEffect(() => { setDraft(currentSlots.map(pair => [...pair])); }, [currentSlots]);
   const [activeBuild, setActiveBuild] = useState("current");
   const [saveName, setSaveName] = useState("");
@@ -74,24 +120,63 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   const currentCost = setupCost(draft, items);
   const selectedEstimate = options.find(option => option.id === activeBuild);
   const filteredItems = useMemo(() => items
-    .filter(item => inferEquipmentSlot(item) === activeSlot)
-    .filter(item => compatibleStyle(item, style, activeSlot))
+    .filter(item => equipmentSlotOf(item) === activeSlot)
     .filter(item => !search.trim() || itemName(item).toLowerCase().includes(search.trim().toLowerCase()))
-    .filter(item => itemPrice(item) !== null ? itemPrice(item) <= numericBudget : item.tradeable === false)
-    .sort((a, b) => (itemPrice(a) ?? Infinity) - (itemPrice(b) ?? Infinity))
-    .slice(0, 80), [items, activeSlot, search, numericBudget, style]);
+    .sort((a, b) => {
+      const priceDelta = (itemPrice(a) ?? Infinity) - (itemPrice(b) ?? Infinity);
+      return priceDelta || itemName(a).localeCompare(itemName(b));
+    }), [items, activeSlot, search]);
+  const visibleItems = filteredItems.slice(0, visibleItemCount);
+  const excludedNames = new Set(excluded.map(normal));
+  const allowedNames = new Set(allowedItems.map(normal));
+  const itemAvailability = item => {
+    const name = normal(itemName(item));
+    if (excludedNames.has(name)) return { selectable: false, note: "Manually excluded" };
+    const levels = requirementStatus(item, stats);
+    if (accountAware && levels === "locked") return { selectable: false, note: "Account level requirement not met" };
+    if (accountAware && questAccessStatus(item, quests, questOverrides) === "locked" && !allowedNames.has(name)) {
+      return { selectable: false, note: "Required quest marked incomplete" };
+    }
+    if (accountAware && (levels === "unknown" || questAccessStatus(item, quests, questOverrides) === "unknown")) {
+      return { selectable: true, note: "Requirement data incomplete — verify before use" };
+    }
+    return { selectable: true, note: item.tradeable === false || item.tradable === false ? "Untradeable" : "Eligible for this slot" };
+  };
 
+  const toCanonicalSlotPairs = pairs => (pairs ?? []).map(([slot, name, suppliedId, suppliedPrice]) => {
+    if (!name || name === "—") return [slot, "—", null, null];
+    const item = suppliedId != null
+      ? items.find(candidate => itemId(candidate) === Number(suppliedId))
+      : items.find(candidate => normal(itemName(candidate)) === normal(name));
+    return [
+      slot,
+      name,
+      suppliedId ?? itemId(item),
+      suppliedPrice ?? itemPrice(item),
+    ];
+  });
+  const setSlot = slot => {
+    setActiveSlot(slot);
+    onActiveSlotChange?.(slot);
+    setSearch("");
+    setVisibleItemCount(80);
+  };
+  const chooseItem = item => {
+    const name = itemName(item);
+    const availability = itemAvailability(item);
+    if (!name || !availability.selectable) return;
+    const next = draft.map(([slot, currentName, currentId, currentPrice]) => slot === activeSlot
+      ? [slot, name, itemId(item), itemPrice(item)]
+      : [slot, currentName, currentId ?? null, currentPrice ?? null]);
+    setDraft(next);
+    setActiveBuild("custom");
+    onDraftChange?.(next);
+  };
   const applyEstimate = option => {
-    const next = (option?.estimate?.slots ?? []).map(pair => [...pair]);
+    const next = toCanonicalSlotPairs(option?.estimate?.slots ?? []);
     if (!next.length) return;
     setDraft(next);
     setActiveBuild(option.id);
-    onDraftChange?.(next);
-  };
-  const chooseItem = item => {
-    const next = draft.map(([slot, name]) => slot === activeSlot ? [slot, itemName(item)] : [slot, name]);
-    setDraft(next);
-    setActiveBuild("custom");
     onDraftChange?.(next);
   };
   const saveBuild = () => {
@@ -116,7 +201,15 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   const recommendedNames = new Map(recommendedSlots.map(([slot, name]) => [slot, name]));
   const priceForName = name => { const match = items.find(item => normal(itemName(item)) === normal(name)); return itemPrice(match); };
   const comparisonRows = SLOT_ORDER.map(slot => ({ slot, current: currentNames.get(slot) || "—", recommended: recommendedNames.get(slot) || "—" })).filter(row => row.current !== row.recommended);
-  const applyRecommendedSlot = (slot, name) => { const next = draft.map(([currentSlot, currentName]) => currentSlot === slot ? [currentSlot, name] : [currentSlot, currentName]); setDraft(next); setActiveBuild("custom"); onDraftChange?.(next); };
+  const applyRecommendedSlot = (slot, name) => {
+    const item = items.find(candidate => normal(itemName(candidate)) === normal(name));
+    const next = draft.map(([currentSlot, currentName, currentId, currentPrice]) => currentSlot === slot
+      ? [currentSlot, name, itemId(item), itemPrice(item)]
+      : [currentSlot, currentName, currentId ?? null, currentPrice ?? null]);
+    setDraft(next);
+    setActiveBuild("custom");
+    onDraftChange?.(next);
+  };
   const missingPrices = draft.filter(([, name]) => name && name !== "—" && !items.some(item => normal(itemName(item)) === normal(name) && itemPrice(item) !== null));
 
   return <section className="cs-workbench cs-panel" aria-labelledby="cs-workbench-title">
@@ -149,9 +242,18 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
     </div>
     <div className="cs-workbench-editor">
       <div className="cs-workbench-editor-head"><div><h3><Swords size={16}/> Gear by slot</h3><p>Choose an item to update the draft used by the live calculation panel.</p></div><span>{draft.filter(([, name]) => name && name !== "—").length} slots filled</span></div>
-      <div className="cs-workbench-slots">{SLOT_ORDER.map(slot => <button type="button" key={slot} className={activeSlot === slot ? "active" : ""} onClick={() => { setActiveSlot(slot); setSearch(""); }}><small>{slot}</small><strong>{currentNames.get(slot) || "Empty"}</strong></button>)}</div>
-      <label className="cs-workbench-search"><Search size={15}/><input value={search} onChange={event => setSearch(event.target.value)} placeholder={"Search " + activeSlot.toLowerCase() + " equipment"}/></label>
-      <div className="cs-workbench-item-list">{filteredItems.map(item => <button type="button" key={item.id ?? itemName(item)} onClick={() => chooseItem(item)}><span className="cs-workbench-item-icon">{iconSource(item) ? <img src={iconSource(item)} alt="" onError={event => { event.currentTarget.style.display = "none"; }}/> : <ShieldCheck size={16}/>}</span><span><strong>{itemName(item)}</strong><small>{item.tradeable === false ? "Untradeable · manual selection" : item.requirements ? "Requirements recorded" : "Requirements not fully recorded"} · {item.members === false ? "F2P" : "Membership data as supplied"}</small></span><b>{itemPrice(item) === null ? "Unpriced" : money(itemPrice(item))}</b><ChevronDown size={14}/></button>)}{!filteredItems.length && <p className="cs-workbench-empty">No equipment found for this slot and search.</p>}</div>
+      <div className="cs-workbench-slots">{SLOT_ORDER.map(slot => <button type="button" key={slot} className={activeSlot === slot ? "active" : ""} onClick={() => setSlot(slot)}><small>{slot}</small><strong>{currentNames.get(slot) || "Empty"}</strong></button>)}</div>
+      <label className="cs-workbench-search"><Search size={15}/><input value={search} onChange={event => { setSearch(event.target.value); setVisibleItemCount(80); }} placeholder={"Search " + activeSlot.toLowerCase() + " equipment"}/></label>
+      <div className="cs-workbench-item-list">{visibleItems.map(item => {
+        const availability = itemAvailability(item);
+        const price = itemPrice(item);
+        return <button type="button" key={itemId(item) ?? itemName(item)} disabled={!availability.selectable} onClick={() => chooseItem(item)} title={availability.note}>
+          <span className="cs-workbench-item-icon">{iconSource(item) ? <img src={iconSource(item)} alt="" onError={event => { event.currentTarget.style.display = "none"; }}/> : <ShieldCheck size={16}/>}</span>
+          <span><strong>{itemName(item)}</strong><small>{availability.note} · {item.members === false ? "F2P" : "Membership data as supplied"}</small></span>
+          <b>{price === null ? "Unpriced" : price > numericBudget ? "Over budget · " + money(price) : money(price)}</b><ChevronDown size={14}/>
+        </button>;
+      })}{!filteredItems.length && <p className="cs-workbench-empty">No equipment records belong to this slot in the canonical engine catalogue.</p>}</div>
+      {filteredItems.length > visibleItems.length && <button type="button" className="cs-workbench-more" onClick={() => setVisibleItemCount(value => value + 80)}>Show {Math.min(80, filteredItems.length - visibleItems.length)} more ({filteredItems.length - visibleItems.length} remaining)</button>}
       {missingPrices.length > 0 && <p className="cs-workbench-warning"><Coins size={14}/> {missingPrices.length} selected item(s) have no usable price record. Total cost may be incomplete.</p>}
     </div>
     <div className="cs-workbench-saved">
