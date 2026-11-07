@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { estimateLoadout, inferEquipmentSlot, isQuestAvailable, targetProfile } from "../src/combat-studio/optimizer.js";
+import { estimateItemScore, estimateLoadout, inferEquipmentSlot, isQuestAvailable, targetProfile } from "../src/combat-studio/optimizer.js";
 
 test("item classification does not mistake raw fish for equipment", () => {
   assert.equal(inferEquipmentSlot({name:"Raw Herring",slot:"ring"}), null);
