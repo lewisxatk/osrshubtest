@@ -94,6 +94,68 @@ jobs:
           verify_get /health
           verify_get '/api/monsters?limit=2'
           verify_get '/api/equipment?limit=2'
+          # Exercise the real canonical calculation path, not just Worker health/catalogue.
+          node <<'NODE'
+          const BASE = 'https://osrshubtest-combat-runtime.prices-app.workers.dev';
+          const ORIGIN = 'https://osrshubtest.prices-app.workers.dev';
+          const slots = ['head','cape','neck','ammo','weapon','body','shield','legs','hands','feet','ring'];
+          const skills = { atk:99, def:99, hp:99, magic:99, prayer:99, ranged:99, str:99, mining:99, herblore:99, farming:99 };
+          const boosts = Object.fromEntries(Object.keys(skills).map((key) => [key, 0]));
+          const buffs = {
+            potions: [], onSlayerTask: false, inWilderness: false, forinthrySurge: false,
+            soulreaperStacks: 0, baAttackerLevel: 0, chinchompaDistance: 0,
+            kandarinDiary: false, chargeSpell: false, markOfDarknessSpell: false,
+            usingSunfireRunes: false, fragmentOfWind: false, fragmentOfWater: false,
+            fragmentOfEarth: false, fragmentOfFire: false,
+          };
+          async function get(path) {
+            const response = await fetch(BASE + path, { headers: { Origin: ORIGIN, Accept: 'application/json' } });
+            if (!response.ok) throw new Error(`GET ${path} failed: HTTP ${response.status}`);
+            const payload = await response.json();
+            if (payload.status !== 'ok' || !Array.isArray(payload.results)) throw new Error(`GET ${path} returned an invalid catalogue`);
+            return payload.results;
+          }
+          async function main() {
+            const [monsters, weapons] = await Promise.all([
+              get('/api/monsters?offset=0&limit=1000'),
+              get('/api/equipment?slot=weapon&offset=0&limit=1000'),
+            ]);
+            const monster = monsters.find((row) => Number(row?.skills?.hp) > 0);
+            const weapon = weapons.find((row) => Number(row?.offensive?.ranged) > 0)
+              || weapons.find((row) => Number(row?.offensive?.stab) > 0 || Number(row?.offensive?.slash) > 0 || Number(row?.offensive?.crush) > 0)
+              || weapons[0];
+            if (!monster || !weapon) throw new Error('No usable canonical monster/weapon found for calculation smoke test');
+            const isRanged = Number(weapon.offensive?.ranged) > 0;
+            const isMagic = !isRanged && Number(weapon.offensive?.magic) > 0;
+            const stance = isRanged ? 'Rapid' : isMagic ? 'Autocast' : 'Aggressive';
+            const style = { name: stance, type: isRanged ? 'ranged' : isMagic ? 'magic' : 'slash', stance };
+            const equipment = Object.fromEntries(slots.map((slot) => [slot, null]));
+            equipment.weapon = { id: weapon.id };
+            const request = {
+              player: {
+                name: 'OSRS Hub deployment smoke test', style, skills, boosts,
+                equipment, prayers: [], buffs, spell: null,
+              },
+              monsterId: monster.id, monsterIndex: monster.recordIndex,
+              monsterName: monster.name, monsterVersion: monster.version ?? '',
+            };
+            const response = await fetch(BASE + '/api/calculate', {
+              method: 'POST',
+              headers: { Origin: ORIGIN, Accept: 'application/json', 'Content-Type': 'application/json' },
+              body: JSON.stringify(request),
+            });
+            const payload = await response.json().catch(() => null);
+            if (!response.ok || payload?.status !== 'calculated') {
+              throw new Error(`Real combat calculation smoke test failed (HTTP ${response.status}): ${(payload?.issues || [payload?.error || 'invalid response']).join('; ')}`);
+            }
+            const values = ['dps','maxHit','accuracy','attackRoll','npcDefenceRoll','attackSpeed'];
+            if (!payload.result || values.some((key) => !Number.isFinite(payload.result[key]))) {
+              throw new Error('Real combat calculation returned missing/non-finite result fields');
+            }
+            console.log(`Combat calculation verified: ${weapon.name} vs ${monster.name}, DPS ${payload.result.dps}`);
+          }
+          main().catch((error) => { console.error(error); process.exitCode = 1; });
+          NODE
           PREFLIGHT_HEADERS="$(mktemp)"
           PREFLIGHT_STATUS="$(curl --silent --show-error -X OPTIONS -D "$PREFLIGHT_HEADERS" -o /dev/null -w '%{http_code}' -H "Origin: $ORIGIN" -H 'Access-Control-Request-Method: GET' -H 'Access-Control-Request-Headers: accept' "$BASE/api/monsters")"
           test "$PREFLIGHT_STATUS" = "204"
