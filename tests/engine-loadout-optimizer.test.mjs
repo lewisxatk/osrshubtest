@@ -41,7 +41,7 @@ function mockEngine(fetchCalls = []) {
 
 const base = {
   items,stats,quests:[],questOverrides:{},accountAware:true,
-  target:{id:8059,name:"Vorkath",version:"",recordIndex:12},
+  target:{id:8059,name:"Vorkath",version:"",recordIndex:12,attributes:["dragon","undead"]},
   style:"Ranged",attackType:"ranged",stance:"Rapid",
   budget:1000,runtimeUrl:"https://test-combat.example.workers.dev",
 };
@@ -106,4 +106,44 @@ test("canonical engine catalogue excludes market-only rows that claim an equipme
   assert.equal(outcome.status,"calculated",JSON.stringify(outcome.issues));
   assert.ok(!outcome.selectedItemIds.includes(347),"non-canonical market data must never become an engine equipment candidate");
   assert.ok(outcome.selectedItemIds.includes(6),"the real canonical ring remains eligible");
+});
+
+test("excludes Morrigan's javelin Deadman-only item ID even when the display name omits the mode",async()=>{
+ const dmm={id:22636,name:"Morrigan's javelin",slot:"weapon",_price:1,
+  offensive:{stab:0,slash:0,crush:0,magic:0,ranged:250},
+  bonuses:{str:0,ranged_str:150,magic_str:0,prayer:0},isTwoHanded:false};
+ const outcome=await optimizeLoadoutWithEngine({...base,items:[...items,dmm],playerName:"Example",fetchImpl:mockEngine()});
+ assert.equal(outcome.status,"calculated",JSON.stringify(outcome.issues));
+ assert.ok(!outcome.selectedItemIds.includes(22636));
+ assert.ok(outcome.skippedRestrictedMode>=1);
+});
+test("injects dragonbane weapon and Vorkath bolt candidates into engine-ranked search",async()=>{
+ const dragonbane={id:6,name:"Dragon hunter crossbow",slot:"weapon",_price:25000000,
+  offensive:{stab:0,slash:0,crush:0,magic:0,ranged:95},
+  bonuses:{str:0,ranged_str:0,magic_str:0,prayer:0},isTwoHanded:false};
+ const ruby={id:7,name:"Ruby dragon bolts (e)",slot:"ammo",_price:1000,
+  offensive:{stab:0,slash:0,crush:0,magic:0,ranged:0},
+  bonuses:{str:0,ranged_str:103,magic_str:0,prayer:0}};
+ const diamond={id:8,name:"Diamond dragon bolts (e)",slot:"ammo",_price:1500,
+  offensive:{stab:0,slash:0,crush:0,magic:0,ranged:0},
+  bonuses:{str:0,ranged_str:105,magic_str:0,prayer:0}};
+ const calls=[];
+ const fetchImpl=async(url,options={})=>{
+  calls.push({url,options});
+  if(url.endsWith("/health"))return new Response(JSON.stringify({status:"ok",service:"osrshub-combat-runtime"}),{status:200});
+  if(url.endsWith("/api/calculate")){
+   const request=JSON.parse(options.body),weapon=request.player.equipment.weapon?.id,ammo=request.player.equipment.ammo?.id;
+   const dps=weapon===6?(ammo===7?9.5:ammo===8?9.2:8.8):1.1;
+   return new Response(JSON.stringify({status:"calculated",issues:[],result:{monster:{id:8059,name:"Vorkath",version:"",recordIndex:12},dps,maxHit:48,accuracy:.63,attackRoll:100,npcDefenceRoll:200,attackSpeed:4,issues:[]}}),{status:200});
+  }
+  throw new Error("Unexpected runtime URL: "+url);
+ };
+ const outcome=await optimizeLoadoutWithEngine({...base,items:[...items,dragonbane,ruby,diamond],budget:50000000,playerName:"Example",fetchImpl});
+ assert.equal(outcome.status,"calculated",JSON.stringify(outcome.issues));
+ assert.ok(outcome.selectedItemIds.includes(6),"Dragon hunter crossbow must be tested even when its raw gear score is not top-ranked");
+ assert.ok(outcome.selectedItemIds.includes(7),"Ruby dragon bolts (e) must be included in the Vorkath shortlist");
+ assert.equal(outcome.engineResult.dps,9.5);
+ const tested=calls.filter(call=>call.url.endsWith("/api/calculate")).map(call=>JSON.parse(call.options.body).player.equipment);
+ assert.ok(tested.some(gear=>gear.weapon?.id===6&&gear.ammo?.id===7));
+ assert.ok(tested.some(gear=>gear.weapon?.id===6&&gear.ammo?.id===8));
 });
