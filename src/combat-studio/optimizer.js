@@ -13,7 +13,13 @@ const num = (...values) => {
   }
   return null;
 };
-const valueOf = (item, keys) => num(...keys.map(k => item?.[k] ?? item?.equipment?.[k] ?? item?.bonuses?.[k] ?? item?.stats?.[k]));
+// Canonical Combat Engine equipment stores attack rolls in nested `offensive`
+ // records and defensive bonuses in `defensive`. Include these in the ranking
+ // helper so shortlist selection is based on real equipment stats.
+const valueOf = (item, keys) => num(...keys.map(k =>
+  item?.[k] ?? item?.equipment?.[k] ?? item?.bonuses?.[k] ?? item?.stats?.[k]
+    ?? item?.offensive?.[k] ?? item?.defensive?.[k]
+));
 export function inferEquipmentSlot(item) {
   const itemName = key(item?.name ?? item?.item_name ?? "");
   if (/rawherring|cookedherring|rawtrout|rawsalmon|rawanchovies|rawsardine|rawmackerel|rawcod|rawtuna|rawshark|rawmonkfish|rawlobster|rawswordfish|potato|logs|ores|runes$/.test(itemName)) return null;
@@ -109,7 +115,7 @@ const attackBonus = (item, style) => {
 const strengthBonus = (item, style) => style === "Ranged"
  ? valueOf(item,["ranged_strength","rangedStrength","ranged_str","rangedStrengthBonus"])
  : style === "Magic"
- ? valueOf(item,["magic_damage","magicDamage","magic_strength","magicStrength"])
+ ? valueOf(item,["magic_damage","magicDamage","magic_strength","magicStrength","magic_str"])
  : valueOf(item,["melee_strength","meleeStrength","strength_bonus","strengthBonus","str"]);
 const priceOf = item => {
   for (const value of [item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.latest_price,item?.last_price]) {
