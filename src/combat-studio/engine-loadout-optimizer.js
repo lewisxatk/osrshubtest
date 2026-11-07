@@ -152,7 +152,7 @@ export async function optimizeLoadoutWithEngine({
   if (!pools.get("Weapon").length) return {
     status:"review-required",
     issues:[`No priced, ${accountAware ? "account-eligible" : "eligible"} weapon with a canonical engine item ID matched this style. No guessed setup was returned. ${skippedUnknownPrice} records had no usable price; ${skippedMissingId} records had no canonical ID.`],
-    skippedUnknownPrice,skippedMissingId,
+    skippedUnknownPrice,skippedMissingId,skippedRestrictedMode,
     eligibleBySlot:Object.fromEntries([...pools].map(([slot,pool])=>[slot,pool.length])),
   };
 
@@ -237,6 +237,7 @@ export async function optimizeLoadoutWithEngine({
   const warnings=[];
   if (skippedUnknownPrice) warnings.push(`${skippedUnknownPrice} eligible equipment records had no usable price and were not considered.`);
   if (skippedMissingId) warnings.push(`${skippedMissingId} equipment records had no canonical item ID and were not considered.`);
+  if (skippedRestrictedMode) warnings.push(`${skippedRestrictedMode} Deadman Mode-only equipment records were excluded from this standard OSRS build.`);
   if (rejected) warnings.push(`${rejected} candidate calculation(s) were rejected by the canonical engine and were skipped.`);
   warnings.push("The returned DPS is engine-calculated with zero boosts and no prayers.");
   if (!hasAccount) warnings.push("Guest demo profile: all ten engine skill levels are assumed to be 99. This is not your account; import your HiScores for personalised levels.");
