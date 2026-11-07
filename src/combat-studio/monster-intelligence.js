@@ -16,7 +16,7 @@ const ATTRIBUTE_COUNTERS = Object.freeze({
   demon: {
     label: "Demon",
     summary: "Demonbane effects are target-specific. The engine handles Arclight/Emberlight, Silverlight/Darklight and supported demonbane spells, including target effectiveness.",
-    equipment: { Weapon: { Melee: ["Arclight", "Emberlight", "Silverlight", "Darklight"] , Ranged: ["Scorching bow"] } },
+    equipment: { Weapon: { Melee: ["Arclight", "Emberlight", "Silverlight", "Darklight", "Burning claws"] , Ranged: ["Scorching bow"] } },
     spells: ["Inferior Demonbane", "Superior Demonbane", "Dark Demonbane"],
   },
   undead: {
@@ -28,7 +28,7 @@ const ATTRIBUTE_COUNTERS = Object.freeze({
   kalphite: {
     label: "Kalphite",
     summary: "Keris and Keris partisan variants have special damage rules; the breaching variant also has an accuracy modifier.",
-    equipment: { Weapon: { Melee: ["Keris partisan of breaching", "Keris partisan of amascut", "Keris partisan", "Keris"] } },
+    equipment: { Weapon: { Melee: ["Keris partisan of breaching", "Keris partisan of amascut", "Keris partisan of corruption", "Keris partisan of the sun", "Keris partisan", "Keris"] } },
   },
   vampyre1: {
     label: "Vampyre (tier 1)",
@@ -37,13 +37,21 @@ const ATTRIBUTE_COUNTERS = Object.freeze({
   },
   vampyre2: {
     label: "Vampyre (tier 2)",
-    summary: "Tier 2 vampyres have silver-weapon restrictions. Efaritay's aid can modify which weapons are effective.",
-    equipment: { Weapon: { Melee: ["Ivandis flail", "Blisterwood flail", "Blisterwood sickle", "Hallowed flail", "Sunspear"] }, Ring: { Melee: ["Efaritay's aid"] } },
+    summary: "Tier 2 vampyres have silver-weapon restrictions. Efaritay's aid can modify which weapons are effective; the engine checks the exact tier and weapon.",
+    equipment: {
+      Weapon: { Melee: ["Silverlight", "Darklight", "Arclight", "Emberlight", "Ivandis flail", "Blisterwood flail", "Blisterwood sickle", "Hallowed flail", "Sunspear"], Ranged: ["Blisterwood stake"] },
+      Ammo: { Ranged: ["Silver bolts"] },
+      Ring: { Melee: ["Efaritay's aid"], Ranged: ["Efaritay's aid"] },
+    },
   },
   vampyre3: {
     label: "Vampyre (tier 3)",
     summary: "Tier 3 vampyres have strict weapon restrictions and different vampyre-bane multipliers. The engine validates the exact weapon/tier combination.",
-    equipment: { Weapon: { Melee: ["Ivandis flail", "Blisterwood flail", "Blisterwood sickle", "Hallowed flail", "Sunspear", "Blisterwood stake"] }, Ring: { Melee: ["Efaritay's aid"] } },
+    equipment: {
+      Weapon: { Melee: ["Silverlight", "Darklight", "Arclight", "Emberlight", "Ivandis flail", "Blisterwood flail", "Blisterwood sickle", "Hallowed flail", "Sunspear"], Ranged: ["Blisterwood stake"] },
+      Ammo: { Ranged: ["Silver bolts"] },
+      Ring: { Melee: ["Efaritay's aid"], Ranged: ["Efaritay's aid"] },
+    },
   },
   golem: {
     label: "Golem",
