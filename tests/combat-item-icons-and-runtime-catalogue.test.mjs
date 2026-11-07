@@ -165,7 +165,7 @@ test("Combat Studio resolves monster variants by record index and keeps variant 
  const page=readFileSync(new URL("../src/CombatStudioPage.jsx",import.meta.url),"utf8");
  assert.match(page,/recordIndex:Number\.isInteger\(m\.recordIndex\)\?m\.recordIndex:index/);
  assert.match(page,/const selectedTargetRecord=useMemo\(\(\)=>loadedTargetRecords\.find\(record=>record\.recordIndex===selectedTargetRecordIndex\)/);
- assert.match(page,/target:\{id:Number\(canonicalTarget\.id\),name:canonicalTarget\.name,version:canonicalTarget\.version\?\?\"\",recordIndex:Number\(canonicalTarget\.recordIndex\)\}/);
+ assert.match(page,/target:\{id:Number\(canonicalTarget\.id\),name:canonicalTarget\.name,version:canonicalTarget\.version\?\?\"\",recordIndex:Number\(canonicalTarget\.recordIndex\),attributes:Array\.isArray\(canonicalTarget\.attributes\)\?canonicalTarget\.attributes:\[\]\}/);
  assert.match(page,/record\.version\?\" — \"\+record\.version/);
 });
 
