@@ -170,3 +170,98 @@ html[data-theme="dark"] .environmentBadge,html[data-theme="aurora"] .environment
 .tradingCoachFoot svg{flex:none;color:var(--oh-positive)}
 @media(max-width:760px){.tradingCoach{padding:14px}.tradingCoachHead{flex-direction:column;gap:9px}.tradingCoachMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.tradingCoachBody{grid-template-columns:1fr}.tradingCoachLeaders{grid-template-columns:repeat(2,minmax(0,1fr))}.tradingCoachLeaders>div:last-child{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){.tradingCoach *{transition:none!important;animation:none!important}}
+
+
+/* Market palette contract: replace legacy hard-coded white surfaces with the
+   active theme tokens on every supported theme, including Gilded and Opera. */
+html[data-theme] .marketWorkspace{
+  --market-surface:var(--oh-surface,var(--hub-panel-strong,var(--hub-panel,#fff)));
+  --market-surface-2:var(--oh-surface2,var(--hub-panel-soft,var(--hub-panel,#f5f6f8)));
+  --market-text:var(--oh-text,var(--hub-text,var(--hub-ink,#202438)));
+  --market-muted:var(--oh-muted,var(--hub-muted,#778096));
+  --market-line:var(--oh-line,var(--hub-line,#e5e7f2));
+  --market-shadow:var(--oh-shadow,var(--hub-shadow,0 8px 28px rgba(0,0,0,.08)));
+  color:var(--market-text);
+}
+html[data-theme] .marketWorkspace .mobileFlipCard,
+html[data-theme] .marketWorkspace .tablewrap,
+html[data-theme] .marketWorkspace .tablewrap td,
+html[data-theme] .marketWorkspace .tablewrap tbody,
+html[data-theme] .marketWorkspace .tablewrap tbody tr,
+html[data-theme] .marketWorkspace .stats .stat,
+html[data-theme] .marketWorkspace .mobileColumnsPanel,
+html[data-theme] .marketWorkspace .mobileProfilePanel,
+html[data-theme] .marketWorkspace .columnMenu,
+html[data-theme] .marketWorkspace .profileMenu{
+  background:var(--market-surface)!important;
+  color:var(--market-text)!important;
+  border-color:var(--market-line)!important;
+  box-shadow:var(--market-shadow)!important;
+}
+html[data-theme] .marketWorkspace .mobileFlipCard{
+  border-radius:14px!important;
+}
+html[data-theme] .marketWorkspace .mobileItem strong,
+html[data-theme] .marketWorkspace .mobileMeta b,
+html[data-theme] .marketWorkspace .stats .stat strong,
+html[data-theme] .marketWorkspace .tablewrap td{
+  color:var(--market-text)!important;
+}
+html[data-theme] .marketWorkspace .mobileItem small,
+html[data-theme] .marketWorkspace .mobilePriceRow small,
+html[data-theme] .marketWorkspace .mobileMeta,
+html[data-theme] .marketWorkspace .mobileMeta span,
+html[data-theme] .marketWorkspace .mobileCardHint,
+html[data-theme] .marketWorkspace .stats .stat small,
+html[data-theme] .marketWorkspace .tablewrap th,
+html[data-theme] .marketWorkspace .instantLabel{
+  color:var(--market-muted)!important;
+}
+html[data-theme] .marketWorkspace .mobilePriceRow{
+  background:transparent!important;
+  border-color:var(--market-line)!important;
+}
+html[data-theme] .marketWorkspace .mobileMeta span,
+html[data-theme] .marketWorkspace .tablewrap th{
+  background:var(--market-surface-2)!important;
+  border-color:var(--market-line)!important;
+}
+html[data-theme] .marketWorkspace .toolbar .search,
+html[data-theme] .marketWorkspace .toolbar .search input,
+html[data-theme] .marketWorkspace .toolbar .chips span,
+html[data-theme] .marketWorkspace .filterButton,
+html[data-theme] .marketWorkspace .mobileToolBtn,
+html[data-theme] .marketWorkspace .mobileSortSelect,
+html[data-theme] .marketWorkspace .columnMenu,
+html[data-theme] .marketWorkspace .mobileColumnsPanel,
+html[data-theme] .marketWorkspace .mobileProfilePanel{
+  background:var(--market-surface)!important;
+  color:var(--market-text)!important;
+  border-color:var(--market-line)!important;
+}
+html[data-theme] .marketWorkspace .toolbar .search input{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html[data-theme] .marketWorkspace .toolbar .search input::placeholder,
+html[data-theme] .marketWorkspace .mobileProfilePanel input::placeholder{
+  color:var(--market-muted)!important;
+}
+html[data-theme] .marketWorkspace .mobileColumnsPanel button,
+html[data-theme] .marketWorkspace .mobileProfilePanel button,
+html[data-theme] .marketWorkspace .columnMenu button,
+html[data-theme] .marketWorkspace .profileMenu button{
+  color:var(--market-text);
+}
+html[data-theme] .marketWorkspace .mobileColumnsPanel button:hover,
+html[data-theme] .marketWorkspace .mobileProfilePanel button:hover,
+html[data-theme] .marketWorkspace .columnMenu button:hover,
+html[data-theme] .marketWorkspace .profileMenu button:hover{
+  background:var(--market-surface-2)!important;
+}
+html[data-theme] .marketWorkspace .tablewrap th{
+  border-bottom-color:var(--market-line)!important;
+}
+html[data-theme] .marketWorkspace .tablewrap td{
+  border-top-color:var(--market-line)!important;
+}
