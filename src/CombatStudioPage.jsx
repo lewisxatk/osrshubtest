@@ -47,7 +47,7 @@ function CombatMissingSkillsEditor({account,missingSkills=[]}){
   catch{setSaved(false);setMessage("Could not save to this browser's local account storage.");}
  };
  return <section className="cs-missing-skills" aria-label="Complete missing account skills">
-  <div><strong>Complete your account skills</strong><p>These four missing levels are needed for real DPS. Enter them here; your existing HiScores and quest data stay intact.</p></div>
+  <div><strong>Complete your account skills</strong><p>These missing levels are needed for real DPS. Enter them here; your existing HiScores and quest data stay intact.</p></div>
   <div className="cs-missing-skills-grid">{missingSkills.map(skill=><label key={skill}><span>{skill}</span><input type="number" min="1" max="99" step="1" inputMode="numeric" placeholder="Level" value={values[skill]??""} onChange={event=>{setValues(old=>({...old,[skill]:event.target.value}));setSaved(false)}}/></label>)}</div>
   <button type="button" className="cs-primary" onClick={save}>Save missing skill levels</button>
   {message&&<p className={saved?"is-saved":""} role="status">{message}</p>}
