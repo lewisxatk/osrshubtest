@@ -165,9 +165,9 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
     const name = itemName(item);
     const availability = itemAvailability(item);
     if (!name || !availability.selectable) return;
-    const next = draft.map(([slot, currentName]) => slot === activeSlot
+    const next = draft.map(([slot, currentName, currentId, currentPrice]) => slot === activeSlot
       ? [slot, name, itemId(item), itemPrice(item)]
-      : [slot, currentName, itemId(items.find(candidate => normal(itemName(candidate)) === normal(currentName))), itemPrice(items.find(candidate => normal(itemName(candidate)) === normal(currentName)))]);
+      : [slot, currentName, currentId ?? null, currentPrice ?? null]);
     setDraft(next);
     setActiveBuild("custom");
     onDraftChange?.(next);
@@ -203,9 +203,9 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   const comparisonRows = SLOT_ORDER.map(slot => ({ slot, current: currentNames.get(slot) || "—", recommended: recommendedNames.get(slot) || "—" })).filter(row => row.current !== row.recommended);
   const applyRecommendedSlot = (slot, name) => {
     const item = items.find(candidate => normal(itemName(candidate)) === normal(name));
-    const next = draft.map(([currentSlot, currentName]) => currentSlot === slot
+    const next = draft.map(([currentSlot, currentName, currentId, currentPrice]) => currentSlot === slot
       ? [currentSlot, name, itemId(item), itemPrice(item)]
-      : [currentSlot, currentName, itemId(items.find(candidate => normal(itemName(candidate)) === normal(currentName))), itemPrice(items.find(candidate => normal(itemName(candidate)) === normal(currentName)))]);
+      : [currentSlot, currentName, currentId ?? null, currentPrice ?? null]);
     setDraft(next);
     setActiveBuild("custom");
     onDraftChange?.(next);
