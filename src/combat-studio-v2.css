@@ -161,3 +161,112 @@
  .combat-studio .cs-upgrade{grid-template-columns:28px minmax(0,1fr) auto}
  .combat-studio .cs-upgrade>*:nth-child(n+4){grid-column:2/-1}
 }
+
+
+/* Final theme binding: replace the original fixed stone-and-gold palette with
+   the active Hub theme while retaining the Combat Studio layout and surfaces. */
+.combat-studio{
+  --cs-bg:var(--oh-bg,#f5f6fb);
+  --cs-bg2:var(--oh-surface2,var(--oh-surface,#fff));
+  --cs-line:var(--oh-line,#e1e5ef);
+  --cs-text:var(--oh-text,#171b2c);
+  --cs-muted:var(--oh-muted,#777f91);
+  --cs-accent:var(--oh-accent,#7357e8);
+  --cs-gold:var(--oh-accent2,var(--oh-accent,#7357e8));
+  color:var(--cs-text)!important;
+  color-scheme:normal;
+  background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--cs-accent) 9%,transparent),transparent 46%)!important;
+}
+.combat-studio .cs-hero,.combat-studio .cs-panel,.combat-studio .cs-account,
+.combat-studio .cs-controls,.combat-studio .cs-tabs,.combat-studio .cs-import,
+.combat-studio .cs-live-runtime{
+  color:var(--cs-text)!important;
+  border-color:var(--cs-line)!important;
+  background:linear-gradient(145deg,var(--oh-surface,var(--cs-bg2)),var(--oh-bg,var(--cs-bg)))!important;
+}
+.combat-studio .cs-intro h1,.combat-studio .cs-intro h1 em,
+.combat-studio .cs-panel h2,.combat-studio .cs-panel h3,
+.combat-studio .cs-quest-summary,.combat-studio .cs-panel h2 svg,
+.combat-studio .cs-panel h3 svg,.combat-studio .cs-tabs svg,
+.combat-studio .cs-hero-art,.combat-studio .cs-guide-links a{
+  color:var(--cs-accent)!important;
+}
+.combat-studio .cs-intro p,.combat-studio .cs-intro span,
+.combat-studio .cs-panel p,.combat-studio .cs-account small,
+.combat-studio .cs-controls label,.combat-studio .cs-slot small,
+.combat-studio .cs-table-head,.combat-studio .cs-gear-row>small{
+  color:var(--cs-muted)!important;
+}
+.combat-studio .cs-hero:after{
+  background:repeating-linear-gradient(135deg,transparent 0 17px,color-mix(in srgb,var(--cs-accent) 7%,transparent) 18px,transparent 19px 36px);
+}
+.combat-studio .cs-account>div,.combat-studio .cs-panel header{border-color:var(--cs-line)!important}
+.combat-studio .cs-tabs button,.combat-studio .cs-controls select,
+.combat-studio .cs-controls input:not([type=checkbox]),
+.combat-studio .cs-import-controls input:not([type=file]),
+.combat-studio .cs-target-input,.combat-studio .cs-exclude-picker>input,
+.combat-studio .cs-quest-row select,.combat-studio .cs-quest-search,
+.combat-studio .cs-live-runtime input,.combat-studio .cs-live-runtime select{
+  color:var(--cs-text)!important;
+  background:var(--oh-surface2,var(--cs-bg2))!important;
+  border-color:var(--cs-line)!important;
+}
+.combat-studio .cs-tabs button.active,.combat-studio .cs-alt-tabs button.active{
+  color:var(--cs-text)!important;border-color:var(--cs-accent)!important;
+  background:color-mix(in srgb,var(--cs-accent) 18%,var(--oh-surface,var(--cs-bg2)))!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--cs-accent) 22%,transparent)!important;
+}
+.combat-studio .cs-paperdoll{
+  border-color:var(--cs-line)!important;
+  background:radial-gradient(ellipse at 50% 44%,color-mix(in srgb,var(--cs-accent) 12%,transparent),transparent 58%),var(--oh-surface2,var(--cs-bg2))!important;
+}
+.combat-studio .cs-avatar{color:var(--cs-accent)!important;border-color:var(--cs-line)!important;background:color-mix(in srgb,var(--oh-bg) 75%,transparent)!important}
+.combat-studio .cs-slot{
+  background:var(--oh-surface,var(--cs-bg2))!important;
+  border-color:var(--cs-line)!important;color:var(--cs-text)!important;
+}
+.combat-studio .cs-slot:hover{border-color:var(--cs-accent)!important;box-shadow:0 0 16px color-mix(in srgb,var(--cs-accent) 20%,transparent)!important}
+.combat-studio .cs-table{border-color:var(--cs-line)!important;background:var(--oh-surface,var(--cs-bg2))!important}
+.combat-studio .cs-table-head,.combat-studio .cs-gear-row,.combat-studio .cs-table footer{
+  background:var(--oh-surface2,var(--cs-bg2))!important;border-color:var(--cs-line)!important;color:var(--cs-text)!important;
+}
+.combat-studio .cs-item-name{color:var(--cs-text)!important}
+.combat-studio .cs-primary,.combat-studio .cs-command-build{
+  color:var(--oh-on-accent,#fff)!important;background:var(--cs-accent)!important;
+  border:1px solid var(--cs-accent)!important;border-radius:9px!important;
+  box-shadow:0 5px 14px color-mix(in srgb,var(--cs-accent) 22%,transparent)!important;
+}
+.combat-studio .cs-secondary,.combat-studio .cs-panel header button,
+.combat-studio .cs-upgrade button,.combat-studio .cs-alt button,
+.combat-studio .cs-table footer button,.combat-studio .cs-remove-slot{
+  color:var(--cs-text)!important;background:var(--oh-surface2,var(--cs-bg2))!important;
+  border-color:var(--cs-line)!important;
+}
+.combat-studio .cs-metrics>span,.combat-studio .cs-stats>div,
+.combat-studio .cs-target-profile,.combat-studio .cs-calculation-note,
+.combat-studio .cs-note,.combat-studio .cs-upgrade-grid{
+  color:var(--cs-text)!important;background:var(--oh-surface2,var(--cs-bg2))!important;
+  border-color:var(--cs-line)!important;
+}
+.combat-studio .cs-metrics small,.combat-studio .cs-stats small,
+.combat-studio .cs-target-profile span,.combat-studio .cs-calculation-note,
+.combat-studio .cs-note{color:var(--cs-muted)!important}
+.combat-studio .cs-target-results,.combat-studio .cs-exclude-options,
+.combat-studio .cs-item-detail{
+  background:var(--oh-surface,var(--cs-bg2))!important;
+  border-color:var(--cs-line)!important;color:var(--cs-text)!important;
+}
+.combat-studio .cs-target-results button,.combat-studio .cs-exclude-options button{color:var(--cs-text)!important}
+.combat-studio .cs-target-results button:hover,.combat-studio .cs-exclude-options button:hover{background:var(--oh-surface2,var(--cs-bg2))!important}
+.combat-studio .cs-quest-row,.combat-studio .cs-excluded,.combat-studio .cs-alt,
+.combat-studio .cs-upgrade{border-color:var(--cs-line)!important;color:var(--cs-text)!important}
+.combat-studio .cs-quest-summary,.combat-studio .cs-item-detail-head small{color:var(--cs-accent)!important}
+.combat-studio .cs-item-detail-grid>div{background:var(--oh-surface2,var(--cs-bg2))!important;border-color:var(--cs-line)!important}
+.combat-studio .cs-live-runtime{color:var(--cs-text)!important}
+.combat-studio .cs-live-runtime h2{color:var(--cs-accent)!important}
+.combat-studio .cs-command-meter span,.combat-studio .cs-workbench-meter i{
+  background:linear-gradient(90deg,var(--cs-accent),color-mix(in srgb,var(--cs-accent) 58%,var(--oh-surface2)))!important;
+}
+.combat-studio .cs-hero-art{background:color-mix(in srgb,var(--cs-accent) 13%,var(--oh-surface2))!important}
+.combat-studio .cs-live-message>svg{color:var(--cs-accent)!important}
+@media(prefers-reduced-motion:reduce){.combat-studio *{scroll-behavior:auto!important}}

@@ -119,13 +119,14 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
 
   const currentCost = setupCost(draft, items);
   const selectedEstimate = options.find(option => option.id === activeBuild);
+  const canonicalCataloguePresent = items.some(item => item?._engineCanonical === true);
   const filteredItems = useMemo(() => items
-    .filter(item => equipmentSlotOf(item) === activeSlot)
+    .filter(item => (!canonicalCataloguePresent || item._engineCanonical === true) && equipmentSlotOf(item) === activeSlot)
     .filter(item => !search.trim() || itemName(item).toLowerCase().includes(search.trim().toLowerCase()))
     .sort((a, b) => {
       const priceDelta = (itemPrice(a) ?? Infinity) - (itemPrice(b) ?? Infinity);
       return priceDelta || itemName(a).localeCompare(itemName(b));
-    }), [items, activeSlot, search]);
+    }), [items, activeSlot, search, canonicalCataloguePresent]);
   const visibleItems = filteredItems.slice(0, visibleItemCount);
   const excludedNames = new Set(excluded.map(normal));
   const allowedNames = new Set(allowedItems.map(normal));

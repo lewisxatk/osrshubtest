@@ -32,7 +32,8 @@ test("account-aware mode excludes gear with known unmet level requirements", () 
 
 test("canonical slot choices are not hidden by budget or style-name heuristics",()=>{
  const source=readFileSync(new URL("../src/combat-studio/LoadoutWorkbench.jsx",import.meta.url),"utf8");
- assert.match(source,/\.filter\(item => equipmentSlotOf\(item\) === activeSlot\)/);
+ assert.match(source,/canonicalCataloguePresent = items\.some\(item => item\?\._engineCanonical === true\)/);
+ assert.match(source,/\.filter\(item => \(!canonicalCataloguePresent \|\| item\._engineCanonical === true\) && equipmentSlotOf\(item\) === activeSlot\)/);
  assert.doesNotMatch(source,/\.filter\(item => compatibleStyle/);
  assert.doesNotMatch(source,/itemPrice\(item\) <= numericBudget/);
  assert.match(source,/price > numericBudget \? "Over budget/);

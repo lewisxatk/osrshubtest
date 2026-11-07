@@ -109,7 +109,18 @@ export function buildLiveCalculationRequest({
           ? Number(item.id ?? item.item_id ?? item.itemId) === requestedId
           : isRecord(item) && normaliseName(item._name ?? item.name ?? item.item_name ?? item.title) === normaliseName(itemName))
         : null;
+      const canonicalCataloguePresent = Array.isArray(items) && items.some(item => item?._engineCanonical === true);
       const id = Number(match?.id ?? match?.item_id ?? match?.itemId);
+      if (canonicalCataloguePresent && match && match._engineCanonical !== true) {
+        issues.push(label + ' item "' + String(itemName) + '" (ID ' + (Number.isInteger(requestedId) ? requestedId : "unknown") + ') is not in the canonical engine equipment dataset.');
+        continue;
+      }
+      const expectedSlot = SLOT_MAP[label];
+      const actualSlot = String(match?.engineSlot ?? match?.slot ?? "").toLowerCase();
+      if (match?._engineCanonical === true && actualSlot !== expectedSlot) {
+        issues.push(label + ' item "' + String(itemName) + '" resolves to engine slot "' + (actualSlot || "unknown") + '", not "' + expectedSlot + '".');
+        continue;
+      }
       if (!Number.isInteger(id) || id <= 0) {
         issues.push(`${label} item "${String(itemName)}" has no resolved canonical item ID.`);
         continue;

@@ -44,7 +44,8 @@ test("mobile navigation keeps the original five primary tabs and places Watchlis
  const end=main.indexOf("</nav>",start);
  assert.ok(start>=0&&end>start,"mobile navigation markup exists");
  const nav=main.slice(start,end);
- const primary=nav.slice(0,nav.indexOf('<div className="mobileMore">'));
+ const moreStart=nav.indexOf('<div className="mobileMore groupedMobileMore">');
+ const primary=nav.slice(0,moreStart);
  assert.equal((primary.match(/<button/g)||[]).length,5);
  assert.match(primary,/<span>Home<\/span>/);
  assert.match(primary,/<span>Market<\/span>/);

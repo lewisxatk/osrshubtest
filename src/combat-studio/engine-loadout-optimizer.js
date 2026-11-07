@@ -123,17 +123,26 @@ export async function optimizeLoadoutWithEngine({
   if (!["Melee","Ranged","Magic"].includes(style) || !attackType || !stance) return { status:"review-required", issues:["Choose a combat style, attack type and stance."] };
   if (style === "Magic" && !spell) return { status:"review-required", issues:["Choose a spell before asking the engine to build a magic setup."] };
 
+  const canonicalCataloguePresent = Array.isArray(items) && items.some(item => item?._engineCanonical === true);
   const excludedKeys = new Set(excluded.map(key));
   const allowedKeys = new Set(allowedItems.map(key));
   const pools = new Map(SLOT_ORDER.map(slot => [slot, []]));
   let skippedUnknownPrice = 0, skippedMissingId = 0, skippedRestrictedMode = 0;
   for (const item of Array.isArray(items) ? items : []) {
     if (!item || typeof item !== "object" || item.equipable === false || item.equippable === false) continue;
+    // Once canonical engine equipment is available, market-only rows cannot
+    // become candidates just because a loose metadata field says "ring".
+    if (canonicalCataloguePresent && item._engineCanonical !== true) continue;
     // This is the standard OSRS account builder, not a Deadman Mode preset.
     // DMM-exclusive equipment can appear in upstream datasets, but is unusable
     // on a normal account and must never be recommended here.
     if (isDeadmanOnlyEquipment(item)) { skippedRestrictedMode++; continue; }
-    const id = itemId(item), name = itemName(item), slot = inferEquipmentSlot(item);
+    const id = itemId(item), name = itemName(item);
+    const canonicalSlot = item._engineCanonical
+      ? SLOT_ORDER.find(candidate => candidate.toLowerCase() === String(item.engineSlot ?? item.slot ?? "").toLowerCase())
+      : null;
+    const slot = item._engineCanonical ? canonicalSlot : inferEquipmentSlot(item);
+    if (item._engineCanonical && !slot) continue;
     if (!id) { if (slot) skippedMissingId++; continue; }
     if (!name || !pools.has(slot) || !styleCompatible(item, style, slot)) continue;
     const normalized = key(name);

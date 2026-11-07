@@ -9,15 +9,16 @@ test('High Alcher handles both supported latest-price response shapes and shows 
  assert.match(source,/No market items are loaded yet/);
  assert.match(source,/marketLoading=\{loading\}/);
 });
-test('High Alcher is named consistently and the More dropdown is alphabetically ordered',()=>{
+test('High Alcher is named consistently and More navigation groups tools by purpose',()=>{
  assert.match(source,/"highalch","High Alcher"/);
  assert.match(source,/Open High Alcher/);
- const start=source.indexOf('className="extrasMenu toolsMenu"');
- const end=source.indexOf('</div></div></div>',start);
+ const start=source.indexOf('className="extrasMenu toolsMenu groupedToolsMenu"');
+ const end=source.indexOf('className="globalSearch"',start);
  const menu=source.slice(start,end);
- const labels=['Analysis','Alerts','Dashboard','High Alcher','Money Makers','OSRS Brain','Recipes','Watchlists'];
- let prev=-1;
- for(const label of labels){const i=menu.indexOf(`"${label}"`);assert.ok(i>prev,`${label} should appear after the previous menu item`);prev=i;}
+ const groups=['TRADING','ACCOUNT & PROGRESSION','OSRS INTELLIGENCE','TOOLS & UTILITIES'];
+ let previous=-1;
+ for(const group of groups){const index=menu.indexOf(`"${group}"`);assert.ok(index>previous,`${group} should follow the previous category`);previous=index;}
+ for(const label of ['Analysis','Alerts','Dashboard','High Alcher','Money Makers','OSRS Brain','Recipes','Watchlists','Combat Studio','Quest Pathway']) assert.ok(menu.includes(`"${label}"`),`${label} remains available in More`);
 });
 test('shared page headings are compact and hide repeated descriptions',()=>{
  assert.match(styles,/\.pageIntro p\{display:none!important\}/);

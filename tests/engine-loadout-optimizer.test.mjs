@@ -94,3 +94,16 @@ test("guest Auto Build refuses account-aware mode rather than inventing account 
   assert.ok(outcome.issues.some(issue=>issue.includes("Ignore account restrictions")));
   assert.equal(calls,0);
 });
+
+test("canonical engine catalogue excludes market-only rows that claim an equipment slot", async () => {
+  const canonical = items.filter(item => item.id !== 5).map(item => ({...item,_engineCanonical:true,engineSlot:item.slot}));
+  canonical.push({id:6,name:"Archer ring",slot:"ring",engineSlot:"ring",_engineCanonical:true,_price:50,
+    offensive:{stab:0,slash:0,crush:0,magic:0,ranged:4},
+    bonuses:{str:0,ranged_str:0,magic_str:0,prayer:0},isTwoHanded:false});
+  const invalidMarketRow = {id:347,name:"Raw mackerel",slot:"ring",_price:1,
+    offensive:{stab:0,slash:0,crush:0,magic:0,ranged:999},bonuses:{str:0,ranged_str:999,magic_str:0,prayer:0}};
+  const outcome = await optimizeLoadoutWithEngine({...base,items:[...canonical,invalidMarketRow],playerName:"Example",fetchImpl:mockEngine()});
+  assert.equal(outcome.status,"calculated",JSON.stringify(outcome.issues));
+  assert.ok(!outcome.selectedItemIds.includes(347),"non-canonical market data must never become an engine equipment candidate");
+  assert.ok(outcome.selectedItemIds.includes(6),"the real canonical ring remains eligible");
+});
