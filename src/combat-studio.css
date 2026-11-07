@@ -88,3 +88,31 @@ html[data-theme="comfort"] .combat-studio{--cs-accent:#a65b38;--cs-bg:#fffaf4;--
 @keyframes cs-item-pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
 @media(max-width:760px){.combat-studio .cs-workspace-controls{align-items:stretch}.combat-studio .cs-workspace-controls .cs-primary{min-height:46px}.combat-studio .cs-workspace-controls .cs-build-status{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.combat-studio .cs-build-status,.combat-studio .cs-primary,.combat-studio .cs-slot-image img,.combat-studio .cs-table-item-icon,.combat-studio .cs-item-detail-head img{animation:none!important;transition:none!important}}
+
+/* Combat Studio inherits the active OSRS Hub palette rather than forcing red. */
+.combat-studio{--cs-accent:var(--oh-accent,var(--accent,#7357e8));--cs-bg:var(--oh-surface,var(--surface,#fff));--cs-bg2:var(--oh-surface2,var(--surface-muted,#f7f7f8));--cs-line:var(--oh-line,var(--border,#e4e4e7));--cs-text:var(--oh-text,var(--foreground,#171717));--cs-muted:var(--oh-muted,var(--muted-foreground,#6b7280));color-scheme:normal}
+.combat-studio .cs-primary{background:var(--cs-accent);border-color:var(--cs-accent)}
+.combat-studio .cs-tabs button.active,.combat-studio .cs-slot.active{background:color-mix(in srgb,var(--cs-accent) 12%,var(--cs-bg));border-color:var(--cs-accent)}
+.manualAccountStats{margin:0 0 16px;padding:18px;border:1px solid var(--oh-line,var(--border,#e4e4e7));border-radius:14px;background:var(--oh-surface,var(--surface,#fff));color:var(--oh-text,var(--foreground,#171717))}
+.manualAccountHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+.manualAccountHead h3{margin:3px 0 6px;font-size:19px}.manualAccountHead p{margin:0;color:var(--oh-muted,var(--muted-foreground,#737985));font-size:12px;line-height:1.55}
+.manualAccountSource{padding:6px 9px;border:1px solid var(--oh-line,#ddd);border-radius:8px;font-size:10px;color:var(--oh-muted,#737985);white-space:nowrap}
+.manualAccountGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.manualAccountGrid label{display:flex;flex-direction:column;gap:5px;min-width:0;font-size:10px;color:var(--oh-muted,#737985)}
+.manualAccountGrid input{width:100%;min-width:0;height:36px;padding:0 9px;border:1px solid var(--oh-line,#ddd);border-radius:7px;background:var(--oh-surface2,#f5f6f8);color:var(--oh-text,#171923);font:inherit;font-size:13px}
+.manualAccountGrid input:focus{outline:2px solid var(--oh-accent,#7357e8);outline-offset:1px}
+.manualAccountFoot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px}
+.manualAccountFoot small{max-width:720px;color:var(--oh-muted,#737985);font-size:10px;line-height:1.55}
+.manualAccountFoot .primary{flex:none}.manualAccountMessage{margin:12px 0 0;padding:9px 11px;border-radius:8px;background:var(--oh-surface2,#f5f6f8);color:var(--oh-text,#171923);font-size:11px;line-height:1.5}
+.manualAccountMessage.is-saved{border:1px solid color-mix(in srgb,var(--oh-accent,#7357e8) 35%,var(--oh-line,#ddd))}
+.toolsMenu.groupedToolsMenu{width:330px;max-height:min(76vh,680px);overflow:auto;padding:8px}
+.toolsMenuGroup{padding:7px 4px;border-bottom:1px solid var(--oh-line,#e5e7eb)}.toolsMenuGroup:last-child{border-bottom:0}
+.toolsMenuGroup h4,.mobileMoreGroup h4{margin:3px 8px 6px;font-size:9px;letter-spacing:.13em;font-weight:850;color:var(--oh-accent,#7357e8)}
+.toolsMenuGroup button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 10px!important;border-radius:7px!important;text-align:left;color:var(--oh-text,#171923)!important}
+.toolsMenuGroup button:hover,.toolsMenuGroup button.active{background:var(--oh-surface2,#f3f4f6)!important;color:var(--oh-accent,#7357e8)!important}
+.mobileMore.groupedMobileMore{max-height:min(72vh,650px);overflow:auto;padding:9px 12px 16px}
+.mobileMoreGroup{padding:8px 0;border-bottom:1px solid var(--oh-line,#e5e7eb)}.mobileMoreGroup:last-child{border-bottom:0}
+.mobileMoreGroup h4{margin:4px 8px 6px}.mobileMoreGroup button{width:100%;text-align:left}
+.mobileMoreGroup button.active{color:var(--oh-accent,#7357e8);background:var(--oh-surface2,#f3f4f6)}
+@media(max-width:900px){.manualAccountGrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){.manualAccountStats{padding:13px}.manualAccountHead{display:block}.manualAccountSource{display:inline-flex;margin-top:8px}.manualAccountGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.manualAccountFoot{align-items:stretch;flex-direction:column}.manualAccountFoot .primary{width:100%;min-height:42px}.toolsMenu.groupedToolsMenu{width:min(330px,calc(100vw - 24px))}}
