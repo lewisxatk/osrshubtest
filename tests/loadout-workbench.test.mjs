@@ -27,3 +27,19 @@ test("account-aware mode excludes gear with known unmet level requirements", () 
   const result = estimateLoadout({ items, style: "Melee", budget: 100000, stats: { Attack: 1, Defence: 1, Strength: 1 }, quests: [], accountAware: true });
   assert.ok(!result.slots.some(([, name]) => name === "Rune full helm" || name === "Rune scimitar"));
 });
+
+
+test("canonical slot choices are not hidden by budget or style-name heuristics",()=>{
+ const source=readFileSync(new URL("../src/combat-studio/LoadoutWorkbench.jsx",import.meta.url),"utf8");
+ assert.match(source,/\.filter\(item => equipmentSlotOf\(item\) === activeSlot\)/);
+ assert.doesNotMatch(source,/\.filter\(item => compatibleStyle/);
+ assert.doesNotMatch(source,/itemPrice\(item\) <= numericBudget/);
+ assert.match(source,/price > numericBudget \? "Over budget/);
+});
+
+test("manual gear changes preserve canonical item IDs and known prices",()=>{
+ const source=readFileSync(new URL("../src/combat-studio/LoadoutWorkbench.jsx",import.meta.url),"utf8");
+ assert.match(source,/\[slot, name, itemId\(item\), itemPrice\(item\)\]/);
+ assert.match(source,/\[slot, currentName, currentId \?\? null, currentPrice \?\? null\]/);
+ assert.match(source,/activeSlotValue, onActiveSlotChange/);
+});
