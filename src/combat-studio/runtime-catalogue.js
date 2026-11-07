@@ -13,7 +13,10 @@ async function readCollection(baseUrl, resource, fetchImpl, pageSize, maxItems) 
     if (!Number.isInteger(total) || total < 0 || total > maxItems) {
       throw new Error(`The canonical ${resource} catalogue returned an invalid or unsafe record count.`);
     }
-    return { total, rows: payload.results };
+    if (Number(payload.offset ?? offset) !== offset) {
+      throw new Error(`The canonical ${resource} catalogue returned an unexpected page offset.`);
+    }
+    return { total, offset, rows: payload.results };
   };
 
   const first = await readPage(0);
@@ -28,6 +31,31 @@ async function readCollection(baseUrl, resource, fetchImpl, pageSize, maxItems) 
     }
   }
 
+  if (resource === "monsters") {
+    // The engine source contains distinct NPC variants that can share a numeric
+    // ID (for example, a base form and a quest/phase form). A numeric monster
+    // ID is therefore not a unique catalogue identity. Preserve each source
+    // row using its stable global array index, with a positional fallback for
+    // older runtimes that have not yet exposed recordIndex.
+    const indexed = rows.map((row, index) => {
+      const expectedIndex = index;
+      const suppliedIndex = Number(row?.recordIndex);
+      if (row?.recordIndex !== undefined && suppliedIndex !== expectedIndex) {
+        throw new Error(`The canonical monsters catalogue returned an unstable record index at position ${expectedIndex}.`);
+      }
+      if (!Number.isInteger(Number(row?.id)) || Number(row.id) <= 0
+        || typeof row?.name !== "string" || !row.name.trim()) return null;
+      return { ...row, id: Number(row.id), name: row.name.trim(), recordIndex: expectedIndex };
+    }).filter(Boolean);
+    const unique = new Map(indexed.map(row => [row.recordIndex, row]));
+    if (unique.size !== first.total) {
+      throw new Error(`The canonical monsters catalogue returned ${unique.size} unique source records; expected ${first.total}.`);
+    }
+    return [...unique.values()];
+  }
+
+  // Equipment uses item IDs as identities; variant duplicates are resolved by
+  // the engine's canonical equipment lookup, unlike monster form records.
   const unique = new Map();
   for (const row of rows) {
     const id = Number(row?.id);
