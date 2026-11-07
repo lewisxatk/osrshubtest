@@ -126,9 +126,11 @@ jobs:
               || weapons[0];
             if (!monster || !weapon) throw new Error('No usable canonical monster/weapon found for calculation smoke test');
             const isRanged = Number(weapon.offensive?.ranged) > 0;
-            const isMagic = !isRanged && Number(weapon.offensive?.magic) > 0;
-            const stance = isRanged ? 'Rapid' : isMagic ? 'Autocast' : 'Aggressive';
-            const style = { name: stance, type: isRanged ? 'ranged' : isMagic ? 'magic' : 'slash', stance };
+            const meleeType = Number(weapon.offensive?.slash) > 0 ? 'slash'
+              : Number(weapon.offensive?.stab) > 0 ? 'stab'
+              : Number(weapon.offensive?.crush) > 0 ? 'crush' : null;
+            const stance = isRanged ? 'Rapid' : 'Aggressive';
+            const style = { name: stance, type: isRanged ? 'ranged' : meleeType, stance };
             const equipment = Object.fromEntries(slots.map((slot) => [slot, null]));
             equipment.weapon = { id: weapon.id };
             const request = {
