@@ -14,6 +14,7 @@ const items = [
   {id:2,name:"Rune crossbow",slot:"weapon",_price:500,offensive:{stab:0,slash:0,crush:0,magic:0,ranged:60},bonuses:{str:0,ranged_str:6,magic_str:0,prayer:0},isTwoHanded:false},
   {id:3,name:"Bronze bolts",slot:"ammo",_price:1,offensive:{stab:0,slash:0,crush:0,magic:0,ranged:0},bonuses:{str:0,ranged_str:0,magic_str:0,prayer:0}},
   {id:4,name:"Coif",slot:"head",_price:25,offensive:{stab:0,slash:0,crush:0,magic:0,ranged:2},bonuses:{str:0,ranged_str:0,magic_str:0,prayer:0}},
+  {id:5,name:"Morrigan's javelin (Deadman Mode)",slot:"weapon",_price:1,offensive:{stab:0,slash:0,crush:0,magic:0,ranged:250},bonuses:{str:0,ranged_str:150,magic_str:0,prayer:0},isTwoHanded:false},
 ];
 
 function mockEngine(fetchCalls = []) {
@@ -54,6 +55,8 @@ test("engine-backed Auto Build returns a verified, in-budget loadout and ranks D
   assert.ok(outcome.totalCost<=base.budget);
   assert.ok(outcome.calculations>=2);
   assert.ok(outcome.selectedItemIds.includes(2),"higher-DPS canonical weapon should be selected");
+  assert.ok(!outcome.selectedItemIds.includes(5),"Deadman Mode-only weapon must never enter a standard OSRS build");
+  assert.ok(outcome.warnings.some(w=>w.includes("Deadman Mode-only")),"excluded mode-only equipment should be explained");
   assert.equal(outcome.engineResult.dps,4.25);
   assert.ok(calls.some(call=>call.url.endsWith("/api/calculate")));
 });
