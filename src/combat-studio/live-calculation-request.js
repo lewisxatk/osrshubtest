@@ -82,6 +82,9 @@ export function buildLiveCalculationRequest({
 
   if (!target || !Number.isInteger(Number(target.id)) || Number(target.id) <= 0) {
     issues.push("Target must have a positive canonical engine monster ID.");
+  } else if (target.recordIndex !== undefined
+    && (!Number.isInteger(Number(target.recordIndex)) || Number(target.recordIndex) < 0)) {
+    issues.push("Target recordIndex must be a non-negative canonical catalogue index.");
   }
 
   const equipment = Object.fromEntries(Object.values(SLOT_MAP).map(slot => [slot, null]));
@@ -165,6 +168,9 @@ export function buildLiveCalculationRequest({
     request: {
       player,
       monsterId: Number(target.id),
+      ...(target.recordIndex === undefined ? {} : { monsterIndex: Number(target.recordIndex) }),
+      ...(target.name ? { monsterName: String(target.name) } : {}),
+      ...(target.version !== undefined ? { monsterVersion: String(target.version ?? "") } : {}),
       ...(monsterInputs === undefined ? {} : { monsterInputs: { ...monsterInputs } }),
     },
   };
