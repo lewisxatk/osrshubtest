@@ -14,14 +14,14 @@ const SLOT_MAP = Object.freeze({
 const SKILLS = Object.freeze({
   atk: ["Attack", "attack", "atk"],
   def: ["Defence", "defence", "Defense", "defense", "def"],
-  hp: ["Hitpoints", "Hitpoints level", "hitpoints", "hp"],
+  hp: ["Hitpoints", "Hitpoints level", "hitpoints", "hit_points", "hp", "hp_level"],
   magic: ["Magic", "magic"],
   prayer: ["Prayer", "prayer"],
   ranged: ["Ranged", "ranged", "Range", "range"],
   str: ["Strength", "strength", "str"],
-  mining: ["Mining", "mining"],
-  herblore: ["Herblore", "herblore"],
-  farming: ["Farming", "farming"],
+  mining: ["Mining", "mining", "mining_level"],
+  herblore: ["Herblore", "herblore", "herblore_level"],
+  farming: ["Farming", "farming", "farming_level"],
 });
 const VALID_STANCES = new Set([
   null, "Accurate", "Aggressive", "Autocast", "Controlled", "Defensive",
