@@ -9,6 +9,10 @@ const SLOT_MAP = Object.freeze({
 });
 const key = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const itemName = item => String(item?._name ?? item?.name ?? item?.item_name ?? "");
+const isDeadmanOnlyEquipment = item => /deadman(?:\s+mode)?/i.test([
+  itemName(item), item?.gameMode, item?.game_mode, item?.worldType, item?.world_type,
+  item?.seasonalMode, item?.seasonal_mode,
+].filter(Boolean).join(" "));
 const itemId = item => {
   const value = Number(item?.id ?? item?.item_id ?? item?.itemId);
   return Number.isInteger(value) && value > 0 ? value : null;
@@ -122,9 +126,13 @@ export async function optimizeLoadoutWithEngine({
   const excludedKeys = new Set(excluded.map(key));
   const allowedKeys = new Set(allowedItems.map(key));
   const pools = new Map(SLOT_ORDER.map(slot => [slot, []]));
-  let skippedUnknownPrice = 0, skippedMissingId = 0;
+  let skippedUnknownPrice = 0, skippedMissingId = 0, skippedRestrictedMode = 0;
   for (const item of Array.isArray(items) ? items : []) {
     if (!item || typeof item !== "object" || item.equipable === false || item.equippable === false) continue;
+    // This is the standard OSRS account builder, not a Deadman Mode preset.
+    // DMM-exclusive equipment can appear in upstream datasets, but is unusable
+    // on a normal account and must never be recommended here.
+    if (isDeadmanOnlyEquipment(item)) { skippedRestrictedMode++; continue; }
     const id = itemId(item), name = itemName(item), slot = inferEquipmentSlot(item);
     if (!id) { if (slot) skippedMissingId++; continue; }
     if (!name || !pools.has(slot) || !styleCompatible(item, style, slot)) continue;
@@ -144,7 +152,7 @@ export async function optimizeLoadoutWithEngine({
   if (!pools.get("Weapon").length) return {
     status:"review-required",
     issues:[`No priced, ${accountAware ? "account-eligible" : "eligible"} weapon with a canonical engine item ID matched this style. No guessed setup was returned. ${skippedUnknownPrice} records had no usable price; ${skippedMissingId} records had no canonical ID.`],
-    skippedUnknownPrice,skippedMissingId,
+    skippedUnknownPrice,skippedMissingId,skippedRestrictedMode,
     eligibleBySlot:Object.fromEntries([...pools].map(([slot,pool])=>[slot,pool.length])),
   };
 
@@ -229,6 +237,7 @@ export async function optimizeLoadoutWithEngine({
   const warnings=[];
   if (skippedUnknownPrice) warnings.push(`${skippedUnknownPrice} eligible equipment records had no usable price and were not considered.`);
   if (skippedMissingId) warnings.push(`${skippedMissingId} equipment records had no canonical item ID and were not considered.`);
+  if (skippedRestrictedMode) warnings.push(`${skippedRestrictedMode} Deadman Mode-only equipment records were excluded from this standard OSRS build.`);
   if (rejected) warnings.push(`${rejected} candidate calculation(s) were rejected by the canonical engine and were skipped.`);
   warnings.push("The returned DPS is engine-calculated with zero boosts and no prayers.");
   if (!hasAccount) warnings.push("Guest demo profile: all ten engine skill levels are assumed to be 99. This is not your account; import your HiScores for personalised levels.");
@@ -237,6 +246,6 @@ export async function optimizeLoadoutWithEngine({
     status:"calculated",slots:outputSlots,totalCost,remainingBudget:Math.max(0,budgetGp-totalCost),
     engineResult:currentResult.result,calculations,eligibleItemCount:SLOT_ORDER.reduce((n,slot)=>n+pools.get(slot).length,0),
     warnings,selectedItemIds:selectedItems.map(item=>item._engineId),
-    skippedUnknownPrice,skippedMissingId,
+    skippedUnknownPrice,skippedMissingId,skippedRestrictedMode,
   };
 }
