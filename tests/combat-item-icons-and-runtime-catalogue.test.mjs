@@ -137,11 +137,13 @@ test("changing the budget or target clears every old equipment slot and recommen
   assert.match(page, /setSlots\(EMPTY_SLOTS\.map\(x=>\[\.\.\.x\]\)\);setStatus\(""\);setError\(false\)\},\[boss,selectedTargetRecordIndex,attackType,stance,budget,account\?\.name,accountAware\]\)/);
 });
 
-test("Auto Build gives an actionable message instead of silently attempting a guest build", () => {
+test("Auto Build offers an explicit guest demo when account restrictions are disabled", () => {
   const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
-  assert.match(page, /if\(!account\?\.name\)/);
+  assert.match(page, /if\(!account\?\.name&&accountAware\)/);
   assert.match(page, /No OSRS account is linked/);
   assert.match(page, /cs-account-settings/);
+  assert.match(page, /useState\(Boolean\(account\?\.name\)\)/);
+  assert.match(page, /Guest build · assumed maxed levels \(99\) · not account-specific/);
 });
 
 test("verified Auto Build only accepts a canonical monster record, never a heuristic target", () => {
