@@ -86,6 +86,9 @@ async function main() {
     if (!(Number(outcome.engineResult?.dps) > 0) || !weapon || weapon === "—") {
       throw new Error(`${scenario.label} Auto Build returned no useful weapon/DPS (weapon=${weapon}, DPS=${outcome.engineResult?.dps}).`);
     }
+    if (/deadman/i.test(weapon)) {
+      throw new Error(`${scenario.label} Auto Build incorrectly selected Deadman Mode-only gear: ${weapon}.`);
+    }
     if (!(Number(outcome.totalCost) > 0) || Number(outcome.totalCost) > budget) {
       throw new Error(`${scenario.label} Auto Build returned an invalid cost ${outcome.totalCost} for budget ${budget}.`);
     }
