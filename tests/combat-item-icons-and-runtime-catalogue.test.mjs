@@ -101,6 +101,27 @@ test("fails closed when the canonical catalogue API is unavailable", async () =>
 });
 
 
+test("passes the exact canonical monster variant identity through to the runtime", () => {
+  const result = buildLiveCalculationRequest({
+    ...base,
+    target: { id: 265, name: "Blue dragon", version: "Task only, 1", recordIndex: 876 },
+  });
+  assert.equal(result.status, "ready");
+  assert.equal(result.request.monsterId, 265);
+  assert.equal(result.request.monsterIndex, 876);
+  assert.equal(result.request.monsterName, "Blue dragon");
+  assert.equal(result.request.monsterVersion, "Task only, 1");
+});
+
+test("rejects an invalid monster record index", () => {
+  const result = buildLiveCalculationRequest({
+    ...base,
+    target: { id: 8059, name: "Vorkath", recordIndex: -1 },
+  });
+  assert.equal(result.status, "review-required");
+  assert.ok(result.issues.some(issue => issue.includes("recordIndex")));
+});
+
 test("Combat Studio never shows hard-coded sample gear as a completed recommendation", () => {
   const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
   assert.doesNotMatch(page, /STYLE_SLOTS/);
@@ -156,4 +177,19 @@ test("untradeable gear can enter DPS search only when its acquisition price is r
   assert.match(optimizer, /item\?\.shopPrice/);
   assert.match(optimizer, /if \(price == null\)/);
   assert.doesNotMatch(optimizer, /item\.tradeable === false && normalized !==/);
+});
+
+
+test("Combat Studio resolves monster variants by record index and keeps variant IDs in live builds",()=>{
+ const page=readFileSync(new URL("../src/CombatStudioPage.jsx",import.meta.url),"utf8");
+ assert.match(page,/recordIndex:Number\.isInteger\(m\.recordIndex\)\?m\.recordIndex:index/);
+ assert.match(page,/const selectedTargetRecord=useMemo\(\(\)=>loadedTargetRecords\.find\(record=>record\.recordIndex===selectedTargetRecordIndex\)/);
+ assert.match(page,/target:\{id:Number\(canonicalTarget\.id\),name:canonicalTarget\.name,version:canonicalTarget\.version\?\?\"\",recordIndex:Number\(canonicalTarget\.recordIndex\)\}/);
+ assert.match(page,/record\.name\+\" — \"\+record\.version/);
+});
+
+test("paper-doll slots open the matching canonical item picker",()=>{
+ const page=readFileSync(new URL("../src/CombatStudioPage.jsx",import.meta.url),"utf8");
+ assert.match(page,/onClick=\{\(\)=>openWorkbenchSlot\(slot\)\}/);
+ assert.match(page,/activeSlotValue=\{workbenchSlot\} onActiveSlotChange=\{setWorkbenchSlot\}/);
 });
