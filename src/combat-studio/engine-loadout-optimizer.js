@@ -9,10 +9,15 @@ const SLOT_MAP = Object.freeze({
 });
 const key = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const itemName = item => String(item?._name ?? item?.name ?? item?.item_name ?? "");
-const isDeadmanOnlyEquipment = item => /deadman(?:\s+mode)?/i.test([
-  itemName(item), item?.gameMode, item?.game_mode, item?.worldType, item?.world_type,
-  item?.seasonalMode, item?.seasonal_mode,
-].filter(Boolean).join(" "));
+const DEADMAN_ONLY_ITEM_IDS = new Set([22636]); // Morrigan's javelin (Deadman Mode)
+const isDeadmanOnlyEquipment = item => {
+  if (DEADMAN_ONLY_ITEM_IDS.has(itemId(item))) return true;
+  return /deadman(?:\s+mode)?/i.test([
+    itemName(item), item?.version, item?.engineVersion, item?.category, item?.engineCategory,
+    item?.gameMode, item?.game_mode, item?.worldType, item?.world_type,
+    item?.seasonalMode, item?.seasonal_mode, item?.variant, item?.description,
+  ].filter(Boolean).join(" "));
+};
 const itemId = item => {
   const value = Number(item?.id ?? item?.item_id ?? item?.itemId);
   return Number.isInteger(value) && value > 0 ? value : null;
@@ -71,6 +76,31 @@ const ammoCompatible = (weapon, ammo) => {
 };
 const costOf = picked => [...picked.values()].reduce((sum, item) => sum + (itemPrice(item) ?? 0), 0);
 const preference = (item, style, target) => estimateItemScore(item, style, target) ?? 0;
+const hasTargetAttribute = (target, attribute) => Array.isArray(target?.attributes)
+  && target.attributes.some(value => key(value) === key(attribute));
+const isDragonTarget = target => hasTargetAttribute(target, "dragon")
+  || (!Array.isArray(target?.attributes) && key(target?.name) === "vorkath");
+function targetSpecificCandidates(slot, pool, style, target) {
+  const dragon = isDragonTarget(target);
+  const undead = hasTargetAttribute(target, "undead");
+  if (!dragon && !undead) return [];
+  const wanted = [];
+  if (slot === "Weapon" && dragon) {
+    if (style === "Ranged") wanted.push("dragonhuntercrossbow");
+    if (style === "Melee") wanted.push("dragonhunterlance");
+    if (style === "Magic") wanted.push("dragonhunterwand");
+  }
+  if (slot === "Ammo" && dragon && style === "Ranged") {
+    wanted.push("rubydragonbolts(e)", "diamonddragonbolts(e)");
+  }
+  if (slot === "Neck" && undead) {
+    wanted.push("salveamulet(ei)", "salveamulet(i)");
+  }
+  if (slot === "Shield" && dragon) {
+    wanted.push("dragonfireward", "antidragonshield");
+  }
+  return pool.filter(item => wanted.includes(key(itemName(item))));
+}
 const compareResult = (next, previous, nextItem, previousItem, style, target) => {
   if (!previous) return true;
   const delta = next.result.dps - previous.result.dps;
@@ -219,34 +249,44 @@ export async function optimizeLoadoutWithEngine({
   currentResult = initial;
   onProgress({checked:calculations,total:23,slot:"Weapon",dps:currentResult.result.dps});
 
-  for (const slot of SLOT_ORDER) {
-    const pool = pools.get(slot);
-    if (!pool.length) continue;
-    const current = picked.get(slot) ?? null;
-    const cheapest = [...pool].sort((a,b)=>a._enginePrice-b._enginePrice)[0];
-    const highest = [...pool].sort((a,b)=>
-      preference(b,style,target.name)-preference(a,style,target.name)
-      || a._enginePrice-b._enginePrice)[0];
-    const shortlist = [...new Map([cheapest,highest].filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,2);
-    const alternatives = shortlist.filter(item=>item._engineId!==current?._engineId);
-    const evaluated = await Promise.all(alternatives.map(async candidate=>{
-      const draft = new Map(picked);
-      draft.set(slot,candidate);
-      if (slot === "Weapon" && twoHanded(candidate)) draft.delete("Shield");
-      if (slot === "Shield" && twoHanded(draft.get("Weapon"))) return null;
-      if (slot === "Ammo" && !ammoCompatible(draft.get("Weapon"),candidate)) return null;
-      if (slot === "Weapon" && !ammoCompatible(candidate,draft.get("Ammo"))) draft.delete("Ammo");
-      if (costOf(draft)>budgetGp) return null;
-      const response = await evaluate(draft);
-      return response.status==="calculated"?{candidate,draft,response}:null;
-    }));
-    const best = evaluated.filter(Boolean).reduce((selected,option)=>{
-      const oldItem=picked.get(slot)??null;
-      const better=compareResult(option.response,currentResult,option.candidate,oldItem,style,target.name);
-      return better?option:selected;
-    },null);
-    if (best) { picked.clear(); for (const [keyName,item] of best.draft) picked.set(keyName,item); currentResult=best.response; }
-    onProgress({checked:calculations,total:23,slot,dps:currentResult.result.dps});
+  // Two coordinate-descent passes let later upgrades (for example, the right
+  // ammunition or a target-specific neck slot) change which earlier weapon is
+  // best. Keep the shortlist bounded, but always inject canonical target-specific
+  // weapons/ammunition so a generic high-stat item cannot hide a dragonbane option.
+  const searchPasses = 2;
+  const maxScenarios = 1 + searchPasses * SLOT_ORDER.length * 3;
+  for (let pass = 0; pass < searchPasses; pass++) {
+    for (const slot of SLOT_ORDER) {
+      const pool = pools.get(slot);
+      if (!pool.length) continue;
+      const current = picked.get(slot) ?? null;
+      const cheapest = [...pool].sort((a,b)=>a._enginePrice-b._enginePrice)[0];
+      const ranked = [...pool].sort((a,b)=>
+        preference(b,style,target.name)-preference(a,style,target.name)
+        || a._enginePrice-b._enginePrice);
+      const forced = targetSpecificCandidates(slot,pool,style,target);
+      const shortlist = [...new Map([cheapest,...forced,...ranked.slice(0,2)]
+        .filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,4);
+      const alternatives = shortlist.filter(item=>item._engineId!==current?._engineId);
+      const evaluated = await Promise.all(alternatives.map(async candidate=>{
+        const draft = new Map(picked);
+        draft.set(slot,candidate);
+        if (slot === "Weapon" && twoHanded(candidate)) draft.delete("Shield");
+        if (slot === "Shield" && twoHanded(draft.get("Weapon"))) return null;
+        if (slot === "Ammo" && !ammoCompatible(draft.get("Weapon"),candidate)) return null;
+        if (slot === "Weapon" && !ammoCompatible(candidate,draft.get("Ammo"))) draft.delete("Ammo");
+        if (costOf(draft)>budgetGp) return null;
+        const response = await evaluate(draft);
+        return response.status==="calculated"?{candidate,draft,response}:null;
+      }));
+      const best = evaluated.filter(Boolean).reduce((selected,option)=>{
+        const oldItem=picked.get(slot)??null;
+        const better=compareResult(option.response,currentResult,option.candidate,oldItem,style,target.name);
+        return better?option:selected;
+      },null);
+      if (best) { picked.clear(); for (const [keyName,item] of best.draft) picked.set(keyName,item); currentResult=best.response; }
+      onProgress({checked:calculations,total:maxScenarios,slot,pass:pass+1,dps:currentResult.result.dps});
+    }
   }
 
   const outputSlots=asSlotPairs(picked);
@@ -259,7 +299,7 @@ export async function optimizeLoadoutWithEngine({
   if (rejected) warnings.push(`${rejected} candidate calculation(s) were rejected by the canonical engine and were skipped.`);
   warnings.push("The returned DPS is engine-calculated with zero boosts and no prayers.");
   if (!hasAccount) warnings.push("Guest demo profile: all ten engine skill levels are assumed to be 99. This is not your account; import your HiScores for personalised levels.");
-  warnings.push("The search tests at most two shortlisted alternatives per slot. It returns the best verified setup it checked, not a proof of the global best combination.");
+  warnings.push("The search uses two passes over a bounded shortlist, including source-backed target-specific candidates. It returns the best verified setup it checked, not a proof of the global best combination.");
   return {
     status:"calculated",slots:outputSlots,totalCost,remainingBudget:Math.max(0,budgetGp-totalCost),
     engineResult:currentResult.result,calculations,eligibleItemCount:SLOT_ORDER.reduce((n,slot)=>n+pools.get(slot).length,0),
