@@ -32,8 +32,12 @@ const ATTRIBUTE_COUNTERS = Object.freeze({
   },
   vampyre1: {
     label: "Vampyre (tier 1)",
-    summary: "Tier 1 vampyres can be harmed by ordinary weapons; vampyre-bane effects may still improve damage.",
-    equipment: { Weapon: { Melee: ["Blisterwood flail", "Blisterwood sickle", "Hallowed flail", "Sunspear", "Ivandis flail"] } },
+    summary: "Tier 1 vampyres can be harmed by ordinary weapons. Silver weapons and Efaritay's aid can add their engine-defined vampyre effects.",
+    equipment: {
+      Weapon: { Melee: ["Silverlight", "Darklight", "Arclight", "Emberlight", "Ivandis flail", "Blisterwood flail", "Blisterwood sickle", "Hallowed flail", "Sunspear"], Ranged: ["Blisterwood stake"] },
+      Ammo: { Ranged: ["Silver bolts"] },
+      Ring: { Melee: ["Efaritay's aid"], Ranged: ["Efaritay's aid"] },
+    },
   },
   vampyre2: {
     label: "Vampyre (tier 2)",
@@ -148,7 +152,7 @@ export function buildMonsterIntelligence(record, { style = null } = {}) {
     attributeLabels: attributes.map(attribute => ATTRIBUTE_COUNTERS[attribute]?.label ?? attribute),
     weakness,
     elementalAdvice: weakness
-      ? `Use a matching ${weakness.element} elemental spell. The combat engine applies the recorded ${weakness.severity}% weakness to that element; a different element receives no weakness bonus.`
+      ? `Use a matching standard spellbook ${weakness.element} spell. The combat engine applies the recorded ${weakness.severity}% weakness to that element; a different element receives no weakness bonus.`
       : "No elemental weakness is recorded for this exact monster variant.",
     defences,
     rangedDefences: defences.filter(row => ["light", "standard", "heavy"].includes(row.field)),
@@ -163,7 +167,13 @@ export function buildMonsterIntelligence(record, { style = null } = {}) {
 export function getTargetSpecificEquipmentNames(record, style = null) {
   const intelligence = buildMonsterIntelligence(record, { style });
   if (!intelligence) return [];
-  return [...new Set(intelligence.counters.flatMap(counter => counter.equipment
+  const names = intelligence.counters.flatMap(counter => counter.equipment
     .filter(group => group.slot === "Weapon" || group.slot === "Ammo" || group.slot === "Neck" || group.slot === "Ring")
-    .flatMap(group => group.items)))];
+    .flatMap(group => group.items));
+  // Matching elemental amulets add +2 max hit in the engine when paired
+  // with the corresponding standard-book elemental spell.
+  if (style === "Magic" && intelligence.weakness) {
+    names.push("Elemental amulet", `Amulet of ${intelligence.weakness.element}`);
+  }
+  return [...new Set(names)];
 }
