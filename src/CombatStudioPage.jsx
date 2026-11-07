@@ -50,8 +50,37 @@ export default function CombatStudioPage({items=[],account,onSelect}){
  useEffect(()=>{setResult(null);setDpsResult(null);setSaved(false);setSlots(EMPTY_SLOTS.map(x=>[...x]));setStatus("");setError(false)},[boss,selectedTargetRecordIndex,attackType,stance,budget,account?.name,accountAware]);
  useEffect(()=>{let active=true;const readStoredEquipment=async()=>{const rows=[];const readPage=async offset=>{try{const r=await fetch("/api/data/equipment?limit=600&offset="+offset);if(!r.ok)return[];const j=await r.json();return Array.isArray(j?.results)?j.results:[]}catch{return[]}};for(let offset=0;offset<4800&&active;offset+=1200){const batches=await Promise.all([readPage(offset),readPage(offset+600)]);for(const list of batches)rows.push(...list)}return rows};const load=async()=>{setCatalogLoading(true);setCanonicalCatalogueIssue("");const [runtimeResult,storedRows]=await Promise.all([loadRuntimeCombatCatalogue({baseUrl:runtimeUrl}).then(value=>({value})).catch(error=>({error})),readStoredEquipment()]);if(!active)return;if(runtimeResult.value){const records=runtimeResult.value.monsters.map((m,index)=>({...m,recordIndex:Number.isInteger(m.recordIndex)?m.recordIndex:index,defensiveBonuses:m.defensive||m.defensiveBonuses||null}));setLoadedTargetRecords(records);setLoadedTargets(records.map(m=>m.name));const preferred=records.find(record=>record.recordIndex===selectedTargetRecordIndex)||records.find(record=>keyName(record.name)===keyName(boss))||records[0];if(preferred){setBoss(preferred.name);setSelectedTargetRecordIndex(preferred.recordIndex)}}else{setLoadedTargetRecords([]);setLoadedTargets([]);setCanonicalCatalogueIssue("The test combat runtime catalogue could not be loaded: "+(runtimeResult.error?.message||"unknown error"))}const dbMap=new Map(storedRows.filter(e=>e?.id!=null).map(e=>[String(e.id),e]));const marketMap=new Map((Array.isArray(items)?items:[]).map(it=>[String(it.id??it.item_id??it.itemId??""),it]));const canonicalRows=runtimeResult.value?.equipment||[];const merged=canonicalRows.map(canonical=>{const id=Number(canonical.id),database=dbMap.get(String(id))||{},market=marketMap.get(String(id))||{},name=canonical.name||database.name||market.name||String(id),knownIcon=database.icon||market.icon_url||market.wiki_image||market.icon||"";const requirements=database.requirements&&Object.keys(database.requirements).length?database.requirements:(canonical.requirements||{});return {...canonical,...database,...market,id,name,_name:name,slot:canonical.slot,engineSlot:canonical.slot,equipment_slot:canonical.slot,_engineCanonical:true,equipable:true,equippable:true,twoHanded:Boolean(canonical.isTwoHanded??canonical.twoHanded??database.twoHanded??false),attack_speed:Number(canonical.speed||database.attack_speed||0),bonuses:canonical.bonuses||database.bonuses,offensive:canonical.offensive||database.offensive,defensive:canonical.defensive||database.defensive,equipment:{...(database.equipment||{}),slot:canonical.slot||database.slot,attack_speed:Number(canonical.speed||database.attack_speed||0),two_handed:Boolean(canonical.isTwoHanded??canonical.twoHanded??database.twoHanded??false)},requirements,quest_requirements:database.quest_requirements||canonical.quest_requirements||[],_price:Number(market.sell||market.high||market.price||market.buy||database.sell||database.buy||database.shopPrice||database.shop_price||0),_icon:iconUrl(knownIcon)||equipmentIconUrl(name,canonical.image),image:canonical.image||database.image}});setCatalogItems(merged);setCatalogLoading(false)};load().catch(error=>{if(active){setCanonicalCatalogueIssue(error?.message||"The canonical combat catalogue failed to load.");setCatalogLoading(false)}});return()=>{active=false}},[runtimeUrl]);
  useEffect(()=>{let active=true;const load=async()=>{try{const r=await fetch("/api/data/quests?limit=800");const j=await r.json();if(active&&Array.isArray(j.results)&&j.results.length)setQuestCatalog(j.results)}catch{}};load();return()=>{active=false}},[]);
- const normalizedItems=useMemo(()=>{const map=new Map();for(const it of [...catalogItems,...(Array.isArray(items)?items:[])]){if(!it||typeof it!=="object")continue;const id=String(it.id??it.item_id??it.itemId??"");const name=String(it._name||it.name||it.item_name||it.title||"");const k=id||keyName(name);if(!k||!name)continue;const prev=map.get(k)||{};const canonical=it._engineCanonical?it:prev._engineCanonical?prev:null;map.set(k,{...prev,...it,...(canonical?{_engineCanonical:true,slot:canonical.slot,engineSlot:canonical.slot,equipment_slot:canonical.slot,equipable:true,equippable:true,twoHanded:Boolean(canonical.twoHanded??canonical.two_handed??canonical.isTwoHanded)}:{}),_name:name,_id:it.id??it.item_id??it.itemId??prev._id??null,_price:Number(it.sell??it.high??it.price??it.buy??it._price??prev._price??0),_icon:it._icon||prev._icon||iconUrl(it.icon_url||it.wiki_image||it.icon||"")||equipmentIconUrl(name,it.image||prev.image)})}return [...map.values()]},[items,catalogItems]);{if(!it||typeof it!=="object")continue;const id=String(it.id??it.item_id??it.itemId??"");const name=String(it._name||it.name||it.item_name||it.title||"");const k=id||keyName(name);if(!k||!name)continue;const prev=map.get(k)||{};map.set(k,{...prev,...it,_name:name,_id:it.id??it.item_id??it.itemId??prev._id??null,_price:Number(it.sell??it.high??it.price??it.buy??it._price??prev._price??0),_icon:it._icon||iconUrl(it.icon_url||it.wiki_image||it.icon||"")||equipmentIconUrl(name,it.image||prev.image)})}return [...map.values()]},[items,catalogItems]);
- const itemsByName=useMemo(()=>new Map(normalizedItems.map(it=>[keyName(it._name),it])),[normalizedItems]);
+ const normalizedItems=useMemo(()=>{
+  const map=new Map();
+  for(const it of [...catalogItems,...(Array.isArray(items)?items:[])]){
+    if(!it||typeof it!=="object")continue;
+    const id=String(it.id??it.item_id??it.itemId??"");
+    const name=String(it._name||it.name||it.item_name||it.title||"");
+    const k=id||keyName(name);
+    if(!k||!name)continue;
+    const prev=map.get(k)||{};
+    const canonical=it._engineCanonical?it:prev._engineCanonical?prev:null;
+    map.set(k,{
+      ...prev,
+      ...it,
+      ...(canonical?{
+        _engineCanonical:true,
+        slot:canonical.slot,
+        engineSlot:canonical.slot,
+        equipment_slot:canonical.slot,
+        equipable:true,
+        equippable:true,
+        twoHanded:Boolean(canonical.twoHanded??canonical.two_handed??canonical.isTwoHanded)
+      }:{}),
+      _name:name,
+      _id:it.id??it.item_id??it.itemId??prev._id??null,
+      _price:Number(it.sell??it.high??it.price??it.buy??it._price??prev._price??0),
+      _icon:it._icon||prev._icon||iconUrl(it.icon_url||it.wiki_image||it.icon||"")||equipmentIconUrl(name,it.image||prev.image)
+    });
+  }
+  return [...map.values()];
+},[items,catalogItems]);
+  const itemsByName=useMemo(()=>new Map(normalizedItems.map(it=>[keyName(it._name),it])),[normalizedItems]);
  const findItem=(name,id)=>{if(id!=null){const exact=normalizedItems.find(it=>Number(it.id??it.item_id??it.itemId)===Number(id));if(exact)return exact}return itemsByName.get(keyName(name))};
  const priceFor=(name,id,knownPrice)=>{if(name==="—")return null;const known=Number(knownPrice);if(knownPrice!=null&&Number.isFinite(known))return known;const x=findItem(name,id);if(!x)return keyName(name)==="barrowsgloves"?130000:null;return Number(x._price??x.sell??x.high??x.price??x.buy??0)||null};
  const stats=account?.stats||{},quests=Array.isArray(account?.quests)?account.quests:[];
