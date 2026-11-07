@@ -1,6 +1,7 @@
 import { estimateItemScore, inferEquipmentSlot, isQuestAvailable } from "./optimizer.js";
 import { buildLiveCalculationRequest, getMissingEngineSkills } from "./live-calculation-request.js";
 import { calculateLiveCombat } from "./live-calculation-client.js";
+import { getTargetSpecificEquipmentNames } from "./monster-intelligence.js";
 
 const SLOT_ORDER = ["Weapon", "Ammo", "Head", "Neck", "Cape", "Body", "Legs", "Shield", "Hands", "Feet", "Ring"];
 const SLOT_MAP = Object.freeze({
@@ -78,26 +79,18 @@ const costOf = picked => [...picked.values()].reduce((sum, item) => sum + (itemP
 const preference = (item, style, target) => estimateItemScore(item, style, target) ?? 0;
 const hasTargetAttribute = (target, attribute) => Array.isArray(target?.attributes)
   && target.attributes.some(value => key(value) === key(attribute));
-const isDragonTarget = target => hasTargetAttribute(target, "dragon")
-  || (!Array.isArray(target?.attributes) && key(target?.name) === "vorkath");
-function targetSpecificCandidates(slot, pool, style, target) {
-  const dragon = isDragonTarget(target);
-  const undead = hasTargetAttribute(target, "undead");
-  if (!dragon && !undead) return [];
-  const wanted = [];
-  if (slot === "Weapon" && dragon) {
-    if (style === "Ranged") wanted.push("dragonhuntercrossbow");
-    if (style === "Melee") wanted.push("dragonhunterlance");
-    if (style === "Magic") wanted.push("dragonhunterwand");
-  }
+
+/**
+ * Force canonical, attribute-specific candidates into the bounded shortlist.
+ * This is not a hand-written boss-name lookup: exact monster attributes and
+ * the engine's target row determine which affinity candidates are added.
+ * Every candidate is still scored by the live engine before it can be selected.
+ */
+export function targetSpecificCandidates(slot, pool, style, target) {
+  const wanted = getTargetSpecificEquipmentNames(target, style).map(key);
+  const dragon = hasTargetAttribute(target, "dragon");
   if (slot === "Ammo" && dragon && style === "Ranged") {
     wanted.push("rubydragonboltse", "diamonddragonboltse");
-  }
-  if (slot === "Neck" && undead) {
-    wanted.push("salveamuletei", "salveamuleti");
-  }
-  if (slot === "Shield" && dragon) {
-    wanted.push("dragonfireward", "antidragonshield");
   }
   return pool.filter(item => wanted.includes(key(itemName(item))));
 }
@@ -254,7 +247,7 @@ export async function optimizeLoadoutWithEngine({
   // best. Keep the shortlist bounded, but always inject canonical target-specific
   // weapons/ammunition so a generic high-stat item cannot hide a dragonbane option.
   const searchPasses = 2;
-  const maxScenarios = 1 + searchPasses * SLOT_ORDER.length * 3;
+  const maxScenarios = 1 + searchPasses * SLOT_ORDER.length * 5;
   for (let pass = 0; pass < searchPasses; pass++) {
     for (const slot of SLOT_ORDER) {
       const pool = pools.get(slot);
@@ -266,7 +259,7 @@ export async function optimizeLoadoutWithEngine({
         || a._enginePrice-b._enginePrice);
       const forced = targetSpecificCandidates(slot,pool,style,target);
       const shortlist = [...new Map([cheapest,...forced,...ranked.slice(0,2)]
-        .filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,4);
+        .filter(Boolean).map(item=>[item._engineId,item])).values()].slice(0,6);
       const alternatives = shortlist.filter(item=>item._engineId!==current?._engineId);
       const evaluated = await Promise.all(alternatives.map(async candidate=>{
         const draft = new Map(picked);
@@ -299,7 +292,7 @@ export async function optimizeLoadoutWithEngine({
   if (rejected) warnings.push(`${rejected} candidate calculation(s) were rejected by the canonical engine and were skipped.`);
   warnings.push("The returned DPS is engine-calculated with zero boosts and no prayers.");
   if (!hasAccount) warnings.push("Guest demo profile: all ten engine skill levels are assumed to be 99. This is not your account; import your HiScores for personalised levels.");
-  warnings.push("The search uses two passes over a bounded shortlist, including source-backed target-specific candidates. It returns the best verified setup it checked, not a proof of the global best combination.");
+  warnings.push("The search uses two passes over a bounded shortlist, including canonical monster-attribute counter candidates. Every shortlisted setup is engine-calculated; the bounded search is not a proof of the global best combination.");
   return {
     status:"calculated",slots:outputSlots,totalCost,remainingBudget:Math.max(0,budgetGp-totalCost),
     engineResult:currentResult.result,calculations,eligibleItemCount:SLOT_ORDER.reduce((n,slot)=>n+pools.get(slot).length,0),
