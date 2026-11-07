@@ -92,7 +92,13 @@ export function targetSpecificCandidates(slot, pool, style, target) {
   if (slot === "Ammo" && dragon && style === "Ranged") {
     wanted.push("rubydragonboltse", "diamonddragonboltse");
   }
-  return pool.filter(item => wanted.includes(key(itemName(item))));
+  if (slot === "Weapon" && style === "Melee" && hasTargetAttribute(target, "flying")) {
+    wanted.push(...pool.filter(item => /halberd/.test(key(itemName(item)))).map(item => key(itemName(item))));
+  }
+  return pool.filter(item => {
+    const itemKey = key(itemName(item));
+    return wanted.some(name => itemKey === name || itemKey.startsWith(name));
+  });
 }
 const compareResult = (next, previous, nextItem, previousItem, style, target) => {
   if (!previous) return true;
