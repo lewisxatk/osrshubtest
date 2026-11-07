@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { estimateLoadout, inferEquipmentSlot } from "../src/combat-studio/optimizer.js";
 
 const items = [
