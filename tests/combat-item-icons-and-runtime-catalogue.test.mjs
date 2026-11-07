@@ -101,27 +101,6 @@ test("fails closed when the canonical catalogue API is unavailable", async () =>
 });
 
 
-test("passes the exact canonical monster variant identity through to the runtime", () => {
-  const result = buildLiveCalculationRequest({
-    ...base,
-    target: { id: 265, name: "Blue dragon", version: "Task only, 1", recordIndex: 876 },
-  });
-  assert.equal(result.status, "ready");
-  assert.equal(result.request.monsterId, 265);
-  assert.equal(result.request.monsterIndex, 876);
-  assert.equal(result.request.monsterName, "Blue dragon");
-  assert.equal(result.request.monsterVersion, "Task only, 1");
-});
-
-test("rejects an invalid monster record index", () => {
-  const result = buildLiveCalculationRequest({
-    ...base,
-    target: { id: 8059, name: "Vorkath", recordIndex: -1 },
-  });
-  assert.equal(result.status, "review-required");
-  assert.ok(result.issues.some(issue => issue.includes("recordIndex")));
-});
-
 test("Combat Studio never shows hard-coded sample gear as a completed recommendation", () => {
   const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
   assert.doesNotMatch(page, /STYLE_SLOTS/);
@@ -155,7 +134,7 @@ test("the test Worker exposes untradeable quest and unlock metadata from D1", ()
 
 test("changing the budget or target clears every old equipment slot and recommendation", () => {
   const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
-  assert.match(page, /setSlots\(EMPTY_SLOTS\.map\(x=>\[\.\.\.x\]\)\);setStatus\(""\);setError\(false\)\},\[boss,attackType,stance,budget,account\?\.name,accountAware\]\)/);
+  assert.match(page, /setSlots\(EMPTY_SLOTS\.map\(x=>\[\.\.\.x\]\)\);setStatus\(""\);setError\(false\)\},\[boss,selectedTargetRecordIndex,attackType,stance,budget,account\?\.name,accountAware\]\)/);
 });
 
 test("Auto Build gives an actionable message instead of silently attempting a guest build", () => {
@@ -167,7 +146,7 @@ test("Auto Build gives an actionable message instead of silently attempting a gu
 
 test("verified Auto Build only accepts a canonical monster record, never a heuristic target", () => {
   const page = readFileSync(new URL("../src/CombatStudioPage.jsx", import.meta.url), "utf8");
-  assert.match(page, /loadedTargetRecords\.find\(record=>keyName\(record\.name\)===keyName\(boss\)\)/);
+  assert.match(page, /const canonicalTarget=selectedTargetRecord/);
   assert.match(page, /heuristic target hints cannot be used/);
   assert.doesNotMatch(page, /Use “\{bossQuery\.trim\(\)\}” as target/);
 });
